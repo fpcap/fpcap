@@ -1,0 +1,12 @@
+Checks: '-*,readability-identifier-naming'
+CheckOptions:
+  - { key: readability-identifier-naming.NamespaceCase,       value: lower_case }
+  - { key: readability-identifier-naming.Variable,            value: camelBack  }
+  - { key: readability-identifier-naming.ClassMemberPrefix,   value: m          }
+  - { key: readability-identifier-naming.StaticConstant,      value: UPPER_CASE }
+  - { key: readability-identifier-naming.GlobalConstant,      value: UPPER_CASE }
+  - { key: readability-identifier-naming.MacroDefinition,     value: UPPER_CASE }
+  - { key: readability-identifier-naming.Struct,              value: CamelCase  }
+  - { key: readability-identifier-naming.Class,               value: CamelCase  }
+  - { key: readability-identifier-naming.FunctionCase,        value: camelBack  }
+  - { key: readability-identifier-naming.VariableCase,        value: camelBack  }
