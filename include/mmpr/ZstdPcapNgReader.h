@@ -8,22 +8,25 @@
 #include <utility>
 
 namespace mmpr {
-class ZstdPcapNgReader {
+class ZstdPcapNgReader : PcapNgReader {
 public:
     explicit ZstdPcapNgReader(const std::string& filepath);
 
-    void open();
-    bool isExhausted() const;
-    bool readNextPacket(Packet& packet);
-    uint32_t readBlock();
-    void close();
-    size_t getFileSize() const { return mFileSize; };
+    void open() override;
+    bool isExhausted() const override;
+    bool readNextPacket(Packet& packet) override;
+    uint32_t readBlock() override;
+    void close() override;
+
+    size_t getFileSize() const override { return mFileSize; };
+    size_t getCurrentOffset() const override { return mOffset; };
+    int getDataLinkType() const override { return mDataLinkType; };
 
 private:
-    std::string mFilepath;
     size_t mFileSize{0};
     const uint8_t* mData{nullptr};
     size_t mOffset{0};
+    int mDataLinkType{-1};
 };
 } // namespace mmpr
 

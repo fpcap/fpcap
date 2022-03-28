@@ -10,7 +10,7 @@ set(HEADER_LIST
 # MMPR lib target, will be static or dynamic based on user setting
 add_library(mmpr
         ${HEADER_LIST}
-        PcapNgReader.cpp
+        MMPcapNgReader.cpp
         PcapNgBlockParser.cpp
         PcapNgBlockOptionParser.cpp
         ZstdDecompressor.cpp

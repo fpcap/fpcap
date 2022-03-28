@@ -14,18 +14,10 @@ using namespace boost::algorithm;
 using namespace fmt;
 
 namespace mmpr {
-ZstdPcapNgReader::ZstdPcapNgReader(const std::string& filepath) : mFilepath(filepath) {
-    if (filepath.empty()) {
-        throw runtime_error("Cannot read empty filepath");
-    }
-
+ZstdPcapNgReader::ZstdPcapNgReader(const std::string& filepath) : PcapNgReader(filepath) {
     // TODO determine by file header or similar
     if (!ends_with(filepath, ".zst") && !ends_with(filepath, ".zstd")) {
         throw runtime_error("ZstdPcapNgReader only supports files with .zst or .zstd endings");
-    }
-
-    if (!exists(filepath)) {
-        throw runtime_error(format("Cannot find file {}", canonical(filepath).string()));
     }
 }
 
@@ -57,6 +49,12 @@ bool ZstdPcapNgReader::readNextPacket(Packet& packet) {
 
     // TODO add support for Simple Packet Blocks
     while (blockType != MMPR_ENHANCED_PACKET_BLOCK) {
+        if (blockType == MMPR_INTERFACE_DESCRIPTION_BLOCK) {
+            InterfaceDescriptionBlock idb{};
+            PcapNgBlockParser::readIDB(&mData[mOffset], idb);
+            mDataLinkType = idb.linkType;
+        }
+
         mOffset += blockTotalLength;
 
         if (isExhausted()) {
@@ -123,6 +121,7 @@ uint32_t ZstdPcapNgReader::readBlock() {
     case MMPR_INTERFACE_DESCRIPTION_BLOCK: {
         InterfaceDescriptionBlock idb{};
         PcapNgBlockParser::readIDB(&mData[mOffset], idb);
+        mDataLinkType = idb.linkType;
         break;
     }
     case MMPR_ENHANCED_PACKET_BLOCK: {
@@ -166,4 +165,5 @@ uint32_t ZstdPcapNgReader::readBlock() {
 
     return blockType;
 }
+
 } // namespace mmpr

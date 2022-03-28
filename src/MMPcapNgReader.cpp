@@ -1,4 +1,4 @@
-#include <mmpr/PcapNgReader.h>
+#include <mmpr/MMPcapNgReader.h>
 
 #include <boost/filesystem.hpp>
 #include <cerrno>
@@ -15,17 +15,7 @@ using namespace boost::filesystem;
 using namespace fmt;
 
 namespace mmpr {
-PcapNgReader::PcapNgReader(const std::string& filepath) : mFilepath(filepath) {
-    if (filepath.empty()) {
-        throw runtime_error("Cannot read empty filepath");
-    }
-
-    if (!exists(filepath)) {
-        throw runtime_error(format("Cannot find file {}", canonical(filepath).string()));
-    }
-}
-
-void PcapNgReader::open() {
+void MMPcapNgReader::open() {
     mFileDescriptor = ::open(mFilepath.c_str(), O_RDONLY, 0);
     if (mFileDescriptor < 0) {
         throw runtime_error(format("Error while reading file {}: {}",
@@ -47,11 +37,11 @@ void PcapNgReader::open() {
     mMappedMemory = reinterpret_cast<const uint8_t*>(mmapResult);
 }
 
-bool PcapNgReader::isExhausted() const {
+bool MMPcapNgReader::isExhausted() const {
     return mOffset >= mFileSize;
 }
 
-bool PcapNgReader::readNextPacket(Packet& packet) {
+bool MMPcapNgReader::readNextPacket(Packet& packet) {
     if (isExhausted()) {
         // nothing more to read
         return false;
@@ -70,6 +60,12 @@ bool PcapNgReader::readNextPacket(Packet& packet) {
 
     // TODO add support for Simple Packet Blocks
     while (blockType != MMPR_ENHANCED_PACKET_BLOCK) {
+        if (blockType == MMPR_INTERFACE_DESCRIPTION_BLOCK) {
+            InterfaceDescriptionBlock idb{};
+            PcapNgBlockParser::readIDB(&mMappedMemory[mOffset], idb);
+            mDataLinkType = idb.linkType;
+        }
+
         mOffset += blockTotalLength;
 
         if (isExhausted()) {
@@ -103,7 +99,7 @@ bool PcapNgReader::readNextPacket(Packet& packet) {
     return true;
 }
 
-void PcapNgReader::close() {
+void MMPcapNgReader::close() {
     munmap((void*)mMappedMemory, mMappedSize);
     ::close(mFileDescriptor);
 }
@@ -124,7 +120,7 @@ void PcapNgReader::close() {
  *   |                      Block Total Length                       |
  *   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
-uint32_t PcapNgReader::readBlock() {
+uint32_t MMPcapNgReader::readBlock() {
     const auto blockType = *(const uint32_t*)&mMappedMemory[mOffset];
     const auto blockTotalLength = *(const uint32_t*)&mMappedMemory[mOffset + 4];
 
@@ -137,6 +133,7 @@ uint32_t PcapNgReader::readBlock() {
     case MMPR_INTERFACE_DESCRIPTION_BLOCK: {
         InterfaceDescriptionBlock idb{};
         PcapNgBlockParser::readIDB(&mMappedMemory[mOffset], idb);
+        mDataLinkType = idb.linkType;
         break;
     }
     case MMPR_ENHANCED_PACKET_BLOCK: {

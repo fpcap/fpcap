@@ -1,4 +1,4 @@
-#include <mmpr/PcapNgReader.h>
+#include <mmpr/MMPcapNgReader.h>
 #include <chrono>
 #include <fmt/chrono.h>
 #include <iostream>
@@ -11,7 +11,7 @@ int main() {
 
     // open file, map to memory and measure execution time
     auto start = high_resolution_clock::now();
-    mmpr::PcapNgReader reader(filepath);
+    mmpr::MMPcapNgReader reader(filepath);
     reader.open();
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<milliseconds>(stop - start);
