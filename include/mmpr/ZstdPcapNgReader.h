@@ -8,7 +8,7 @@
 #include <utility>
 
 namespace mmpr {
-class ZstdPcapNgReader : PcapNgReader {
+class ZstdPcapNgReader : public PcapNgReader {
 public:
     explicit ZstdPcapNgReader(const std::string& filepath);
 
