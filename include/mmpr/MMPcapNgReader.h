@@ -10,7 +10,7 @@
 namespace mmpr {
 class MMPcapNgReader : public PcapNgReader {
 public:
-    explicit MMPcapNgReader(const std::string& filepath) : PcapNgReader(filepath) {};
+    explicit MMPcapNgReader(const std::string& filepath);
 
     void open() override;
     bool isExhausted() const override;

@@ -1,5 +1,6 @@
 #include <mmpr/MMPcapNgReader.h>
 
+#include <boost/algorithm/string/predicate.hpp>
 #include <boost/filesystem.hpp>
 #include <cerrno>
 #include <cstring>
@@ -12,9 +13,17 @@
 
 using namespace std;
 using namespace boost::filesystem;
+using namespace boost::algorithm;
 using namespace fmt;
 
 namespace mmpr {
+MMPcapNgReader::MMPcapNgReader(const string& filepath) : PcapNgReader(filepath) {
+    // TODO determine by file header or similar
+    if (!ends_with(filepath, ".pcapng")) {
+        throw runtime_error("MMPcapNgReader only supports files with .pcapng endings");
+    }
+}
+
 void MMPcapNgReader::open() {
     mFileDescriptor = ::open(mFilepath.c_str(), O_RDONLY, 0);
     if (mFileDescriptor < 0) {
@@ -177,4 +186,5 @@ uint32_t MMPcapNgReader::readBlock() {
 
     return blockType;
 }
+
 } // namespace mmpr
