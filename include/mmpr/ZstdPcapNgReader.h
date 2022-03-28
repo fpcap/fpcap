@@ -1,5 +1,5 @@
-#ifndef MMPR_PCAPNGREADER_H
-#define MMPR_PCAPNGREADER_H
+#ifndef MMPR_ZSTDPCAPNGREADER_H
+#define MMPR_ZSTDPCAPNGREADER_H
 
 #include <mmpr/mmpr.h>
 #include <sstream>
@@ -8,9 +8,9 @@
 #include <utility>
 
 namespace mmpr {
-class PcapNgReader {
+class ZstdPcapNgReader {
 public:
-    explicit PcapNgReader(const std::string& filepath);
+    explicit ZstdPcapNgReader(const std::string& filepath);
 
     void open();
     bool isExhausted() const;
@@ -20,12 +20,10 @@ public:
 
 private:
     std::string mFilepath;
-    int mFileDescriptor{0};
     size_t mFileSize{0};
-    size_t mMappedSize{0};
-    const uint8_t* mMappedMemory{nullptr};
+    const uint8_t* mData{nullptr};
     size_t mOffset{0};
 };
 } // namespace mmpr
 
-#endif // MMPR_PCAPNGREADER_H
+#endif // MMPR_ZSTDPCAPNGREADER_H
