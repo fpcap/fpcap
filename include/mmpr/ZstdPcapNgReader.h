@@ -17,6 +17,7 @@ public:
     bool readNextPacket(Packet& packet);
     uint32_t readBlock();
     void close();
+    size_t getFileSize() const { return mFileSize; };
 
 private:
     std::string mFilepath;
