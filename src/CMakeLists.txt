@@ -19,14 +19,16 @@ add_library(mmpr
 
 target_include_directories(mmpr
         PUBLIC
-        "${MMPR_SOURCE_DIR}/include"
         ${Boost_INCLUDE_DIRS}
+        ${ZSTD_INCLUDE_DIRS}
+        "${MMPR_SOURCE_DIR}/include"
         )
 
 target_link_libraries(mmpr
         PRIVATE
         ${Boost_LIBRARIES}
         fmt::fmt
+        ZSTD::ZSTD
         )
 
 target_compile_features(mmpr PUBLIC cxx_std_11)
