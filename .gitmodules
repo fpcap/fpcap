@@ -1,6 +1,8 @@
 [submodule "libs/googlebenchmark"]
 	path = libs/googlebenchmark
 	url = https://github.com/google/benchmark.git
+	branch = 0d98dba29d66e93259db7daa53a9327df767a415
 [submodule "libs/googletest"]
 	path = libs/googletest
 	url = https://github.com/google/googletest.git
+	branch = e2239ee6043f73722e7aa812a459f54a28552929
