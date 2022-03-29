@@ -31,18 +31,24 @@ void PcapNgBlockOptionParser::readSHBOption(const uint8_t* data,
     readOption(data, option, offset);
 
     switch (option.type) {
-    case 2:
+    case MMPR_BLOCK_OPTION_COMMENT:
+        // opt_comment
+        // TODO parse as UTF-8 string (not zero-terminated)
+        MMPR_DEBUG_LOG_2("[SHB][OPT] Comment: %.*s\n", option.length,
+                         option.value);
+        return;
+    case MMPR_BLOCK_OPTION_SHB_HARDWARE:
         // shb_hardware
         // TODO parse as UTF-8 string (not zero-terminated)
         MMPR_DEBUG_LOG_2("[SHB][OPT] Hardware: %.*s\n", option.length,
                     option.value);
         return;
-    case 3:
+    case MMPR_BLOCK_OPTION_SHB_OS:
         // shb_os
         // TODO parse as UTF-8 string (not zero-terminated)
         MMPR_DEBUG_LOG_2("[SHB][OPT] OS: %.*s\n", option.length, option.value);
         return;
-    case 4:
+    case MMPR_BLOCK_OPTION_SHB_USERAPPL:
         // shb_userappl
         // TODO parse as UTF-8 string (not zero-terminated)
         MMPR_DEBUG_LOG_2("[SHB][OPT] User Application: %.*s\n", option.length,

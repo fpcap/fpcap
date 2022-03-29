@@ -85,7 +85,7 @@ endif ()
 # Benchmark only available if this is the main app
 if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME OR MMPR_BUILD_BENCHMARK)
     # PcapPlusPlus library
-    add_subdirectory(libs/pcap-plus-plus)
+    add_subdirectory(libs/pcap-plus-plus EXCLUDE_FROM_ALL)
 
     set(BENCHMARK_DOWNLOAD_DEPENDENCIES ON BOOL)
     add_subdirectory(libs/googlebenchmark EXCLUDE_FROM_ALL)

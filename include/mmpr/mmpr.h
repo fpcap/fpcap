@@ -34,6 +34,15 @@
 #define MMPR_CUSTOM_CAN_COPY_BLOCK 0x00000BAD
 #define MMPR_CUSTOM_DO_NOT_COPY_BLOCK 0x40000BAD
 
+/**
+ * Block Options
+ */
+#define MMPR_BLOCK_OPTION_END_OF_OPT 0
+#define MMPR_BLOCK_OPTION_COMMENT 1
+#define MMPR_BLOCK_OPTION_SHB_HARDWARE 2
+#define MMPR_BLOCK_OPTION_SHB_OS 3
+#define MMPR_BLOCK_OPTION_SHB_USERAPPL 4
+
 namespace mmpr {
 struct Packet {
     uint32_t timestampHigh;
@@ -62,6 +71,12 @@ struct SectionHeaderBlock {
     uint16_t majorVersion;
     uint16_t minorVersion;
     int64_t sectionLength;
+    struct Options {
+        std::string comment;
+        std::string os;
+        std::string hardware;
+        std::string userApplication;
+    } options{};
 };
 
 struct InterfaceDescriptionBlock {
@@ -109,9 +124,19 @@ public:
     virtual size_t getFileSize() const = 0;
     virtual size_t getCurrentOffset() const = 0;
     virtual int getDataLinkType() const = 0;
+    virtual std::string getComment() const  { return mMetadata.comment; };
+    virtual std::string getOS() const  { return mMetadata.os; };
+    virtual std::string getHardware() const  { return mMetadata.hardware; };
+    virtual std::string getUserApplication() const  { return mMetadata.userApplication; };
 
 protected:
     std::string mFilepath;
+    struct PcapNgMetadata {
+        std::string comment;
+        std::string os;
+        std::string hardware;
+        std::string userApplication;
+    } mMetadata{};
 };
 
 } // namespace mmpr

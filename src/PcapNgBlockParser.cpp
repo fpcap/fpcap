@@ -65,6 +65,24 @@ void PcapNgBlockParser::readSHB(const uint8_t* data,
             Option option{};
             PcapNgBlockOptionParser::readSHBOption(data, option, 24 + readOptionsLength);
             readOptionsLength += option.totalLength();
+            switch (option.type) {
+            case MMPR_BLOCK_OPTION_COMMENT:
+                sectionHeaderBlock.options.comment =
+                    std::string((char*)option.value, option.length);
+                break;
+            case MMPR_BLOCK_OPTION_SHB_OS:
+                sectionHeaderBlock.options.os =
+                    std::string((char*)option.value, option.length);
+                break;
+            case MMPR_BLOCK_OPTION_SHB_HARDWARE:
+                sectionHeaderBlock.options.hardware =
+                    std::string((char*)option.value, option.length);
+                break;
+            case MMPR_BLOCK_OPTION_SHB_USERAPPL:
+                sectionHeaderBlock.options.userApplication =
+                    std::string((char*)option.value, option.length);
+                break;
+            }
         }
     }
 

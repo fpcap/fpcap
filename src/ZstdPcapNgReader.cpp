@@ -49,7 +49,14 @@ bool ZstdPcapNgReader::readNextPacket(Packet& packet) {
 
     // TODO add support for Simple Packet Blocks
     while (blockType != MMPR_ENHANCED_PACKET_BLOCK) {
-        if (blockType == MMPR_INTERFACE_DESCRIPTION_BLOCK) {
+        if (blockType == MMPR_SECTION_HEADER_BLOCK) {
+            SectionHeaderBlock shb{};
+            PcapNgBlockParser::readSHB(&mData[mOffset], shb);
+            mMetadata.comment = shb.options.comment;
+            mMetadata.os = shb.options.os;
+            mMetadata.hardware = shb.options.hardware;
+            mMetadata.userApplication = shb.options.userApplication;
+        } else if (blockType == MMPR_INTERFACE_DESCRIPTION_BLOCK) {
             InterfaceDescriptionBlock idb{};
             PcapNgBlockParser::readIDB(&mData[mOffset], idb);
             mDataLinkType = idb.linkType;
@@ -116,6 +123,10 @@ uint32_t ZstdPcapNgReader::readBlock() {
     case MMPR_SECTION_HEADER_BLOCK: {
         SectionHeaderBlock shb{};
         PcapNgBlockParser::readSHB(&mData[mOffset], shb);
+        mMetadata.comment = shb.options.comment;
+        mMetadata.os = shb.options.os;
+        mMetadata.hardware = shb.options.hardware;
+        mMetadata.userApplication = shb.options.userApplication;
         break;
     }
     case MMPR_INTERFACE_DESCRIPTION_BLOCK: {
