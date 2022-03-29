@@ -29,9 +29,9 @@ The following libraries need to be installed in the build environment:
 - Zstd compression library (https://github.com/facebook/zstd), tested with v1.5.2
 - CMake-enabled version of PcapPlusPlus for benchmarks (https://github.com/seladb/PcapPlusPlus), tested with v21.11
     - Clone PcapPlusPlus to `libs/pcap-plus-plus` (TODO: add as proper submodule)
-- (Optional) fmt library (`v5.3.0` will be downloaded from GitHub if not already present)
 
 ### Submodules
 
 - google/benchmark in `v1.6.1` (https://github.com/google/benchmark)
 - google/googletest in `v1.11.0` (https://github.com/google/googletest)
+- fmtlib/fmt in `v8.1.1` (https://github.com/fmtlib/fmt)

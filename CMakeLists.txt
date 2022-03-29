@@ -37,22 +37,8 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 find_package(ZSTD 1.4.0 MODULE REQUIRED)
 
 # Add fmt (target fmt::fmt)
-find_package(fmt MODULE)
-if (fmt_FOUND)
-    message(STATUS "Found fmt in version ${fmt_VERSION_STRING}")
-else ()
-    # Download fmt from git if not already present
-    FetchContent_Declare(
-            fmt
-            GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-            GIT_TAG 5.3.0)
-    FetchContent_GetProperties(fmt)
-    if (NOT fmt_POPULATED)
-        FetchContent_Populate(fmt)
-        add_subdirectory(${fmt_SOURCE_DIR} ${fmt_BINARY_DIR} EXCLUDE_FROM_ALL)
-    endif ()
-    find_package(fmt MODULE)
-    message(STATUS "Downloaded fmt in version ${fmt_VERSION_STRING}")
+if (NOT TARGET fmt)
+    add_subdirectory(libs/fmt EXCLUDE_FROM_ALL)
 endif ()
 
 # MMPR library

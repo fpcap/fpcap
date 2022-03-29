@@ -6,3 +6,7 @@
 	path = libs/googletest
 	url = https://github.com/google/googletest.git
 	branch = e2239ee6043f73722e7aa812a459f54a28552929
+[submodule "libs/fmt"]
+	path = libs/fmt
+	url = https://github.com/fmtlib/fmt.git
+	branch = b6f4ceaed0a0a24ccf575fab6c56dd50ccf6f1a9
