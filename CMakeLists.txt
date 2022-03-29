@@ -35,10 +35,9 @@ find_package(Boost 1.71.0 COMPONENTS filesystem REQUIRED)
 # Add Zstd compression library
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 find_package(ZSTD 1.4.0 MODULE REQUIRED)
-message(STATUS "Found Zstd in version ${ZSTD_VERSION_STRING}")
 
 # Add fmt (target fmt::fmt)
-find_package(fmt)
+find_package(fmt MODULE)
 if (fmt_FOUND)
     message(STATUS "Found fmt in version ${fmt_VERSION_STRING}")
 else ()
@@ -52,9 +51,9 @@ else ()
         FetchContent_Populate(fmt)
         add_subdirectory(${fmt_SOURCE_DIR} ${fmt_BINARY_DIR} EXCLUDE_FROM_ALL)
     endif ()
-    find_package(fmt)
+    find_package(fmt MODULE)
     message(STATUS "Downloaded fmt in version ${fmt_VERSION_STRING}")
-endif()
+endif ()
 
 # MMPR library
 add_subdirectory(src)
@@ -68,18 +67,20 @@ endif ()
 # Testing only available if this is the main app
 if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME OR MMPR_BUILD_TESTS)
     # Add GoogleTest
-    add_subdirectory(libs/googletest EXCLUDE_FROM_ALL)
+    if (NOT TARGET gtest)
+        add_subdirectory(libs/googletest EXCLUDE_FROM_ALL)
+    endif ()
 
     add_executable(
             testPcapNgReader
             tests/testPcapNgReader.cpp
             include/mmpr/mmpr.h
             include/mmpr/PcapNgBlockOptionParser.h
-            )
+    )
     target_link_libraries(
             testPcapNgReader
             gtest_main
-            )
+    )
 
     include(GoogleTest)
     gtest_discover_tests(testPcapNgReader)
@@ -87,33 +88,37 @@ endif ()
 
 # Benchmark only available if this is the main app
 if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME OR MMPR_BUILD_BENCHMARK)
-    # PcapPlusPlus library
-    add_subdirectory(libs/pcap-plus-plus EXCLUDE_FROM_ALL)
+    if (EXISTS libs/pcap-plus-plus)
+        # PcapPlusPlus library
+        add_subdirectory(libs/pcap-plus-plus EXCLUDE_FROM_ALL)
 
-    #set(BENCHMARK_DOWNLOAD_DEPENDENCIES ON BOOL)
-    add_subdirectory(libs/googlebenchmark EXCLUDE_FROM_ALL)
+        #set(BENCHMARK_DOWNLOAD_DEPENDENCIES ON BOOL)
+        add_subdirectory(libs/googlebenchmark EXCLUDE_FROM_ALL)
 
-    file(GLOB_RECURSE benchmark_files
-            "${PROJECT_SOURCE_DIR}/benchmark/*.cpp"
-            )
+        file(GLOB_RECURSE benchmark_files
+                "${PROJECT_SOURCE_DIR}/benchmark/*.cpp"
+                )
 
-    add_executable(mmpr-benchmarks
-            ${src_files}
-            ${benchmark_files}
-            )
+        add_executable(mmpr-benchmarks
+                ${src_files}
+                ${benchmark_files}
+                )
 
-    target_include_directories(mmpr-benchmarks PUBLIC
-            libs/googlebenchmark/include/
-            libs/pcap-plus-plus/Pcap++/header
-            ${PROJECT_SOURCE_DIR}/include
-            )
+        target_include_directories(mmpr-benchmarks PUBLIC
+                libs/googlebenchmark/include/
+                libs/pcap-plus-plus/Pcap++/header
+                ${PROJECT_SOURCE_DIR}/include
+                )
 
-    target_link_libraries(mmpr-benchmarks
-            PRIVATE
-            ${Boost_LIBRARIES}
-            PUBLIC
-            benchmark::benchmark
-            PcapPP
-            mmpr
-            )
-endif()
+        target_link_libraries(mmpr-benchmarks
+                PRIVATE
+                ${Boost_LIBRARIES}
+                PUBLIC
+                benchmark::benchmark
+                PcapPP
+                mmpr
+                )
+    else ()
+        message(WARNING "Trying to build mmpr-benchmark, but could not find libs/pcap-plus-plus")
+    endif ()
+endif ()
