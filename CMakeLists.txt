@@ -6,8 +6,8 @@ project(MMPR
         LANGUAGES CXX
         )
 
-option(MMPR_BUILD_EXAMPLES "Build examples" ON)
-option(MMPR_BUILD_BENCHMARK "Build benchmarks" ON)
+option(MMPR_BUILD_EXAMPLES "Build examples" OFF)
+option(MMPR_BUILD_BENCHMARK "Build benchmarks" OFF)
 option(MMPR_BUILD_TESTS "Force tests to build" OFF)
 
 if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
@@ -38,11 +38,23 @@ find_package(ZSTD 1.4.0 MODULE REQUIRED)
 message(STATUS "Found Zstd in version ${ZSTD_VERSION_STRING}")
 
 # Add fmt (target fmt::fmt)
-FetchContent_Declare(
-        fmtlib
-        GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-        GIT_TAG 5.3.0)
-FetchContent_MakeAvailable(fmtlib)
+find_package(fmt)
+if (fmt_FOUND)
+    message(STATUS "Found fmt in version ${fmt_VERSION_STRING}")
+else ()
+    # Download fmt from git if not already present
+    FetchContent_Declare(
+            fmt
+            GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+            GIT_TAG 5.3.0)
+    FetchContent_GetProperties(fmt)
+    if (NOT fmt_POPULATED)
+        FetchContent_Populate(fmt)
+        add_subdirectory(${fmt_SOURCE_DIR} ${fmt_BINARY_DIR} EXCLUDE_FROM_ALL)
+    endif ()
+    find_package(fmt)
+    message(STATUS "Downloaded fmt in version ${fmt_VERSION_STRING}")
+endif()
 
 # MMPR library
 add_subdirectory(src)
@@ -54,16 +66,9 @@ if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME OR MMPR_BUILD_EXAMPLES)
 endif ()
 
 # Testing only available if this is the main app
-if ((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME OR MMPR_BUILD_TESTS) AND BUILD_TESTING)
+if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME OR MMPR_BUILD_TESTS)
     # Add GoogleTest
-    include(FetchContent)
-    FetchContent_Declare(
-            googletest
-            URL https://github.com/google/googletest/archive/609281088cfefc76f9d0ce82e1ff6c30cc3591e5.zip
-            )
-    FetchContent_MakeAvailable(googletest)
-
-    enable_testing()
+    add_subdirectory(libs/googletest EXCLUDE_FROM_ALL)
 
     add_executable(
             testPcapNgReader
@@ -78,8 +83,6 @@ if ((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME OR MMPR_BUILD_TESTS) AND BUILD_TES
 
     include(GoogleTest)
     gtest_discover_tests(testPcapNgReader)
-
-    add_subdirectory(tests)
 endif ()
 
 # Benchmark only available if this is the main app
@@ -87,7 +90,7 @@ if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME OR MMPR_BUILD_BENCHMARK)
     # PcapPlusPlus library
     add_subdirectory(libs/pcap-plus-plus EXCLUDE_FROM_ALL)
 
-    set(BENCHMARK_DOWNLOAD_DEPENDENCIES ON BOOL)
+    #set(BENCHMARK_DOWNLOAD_DEPENDENCIES ON BOOL)
     add_subdirectory(libs/googlebenchmark EXCLUDE_FROM_ALL)
 
     file(GLOB_RECURSE benchmark_files
