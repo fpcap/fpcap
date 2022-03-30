@@ -4,6 +4,7 @@ find_package(benchmark QUIET)
 if(NOT TARGET benchmark::benchmark)
     # Add googletest directly to our build. This defines
     # the benchmark targets.
+    set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
     set(BENCHMARK_ENABLE_GTEST_TESTS OFF CACHE BOOL "" FORCE)
     set(BENCHMARK_USE_BUNDLED_GTEST OFF CACHE BOOL "" FORCE)
     add_subdirectory(libs/benchmark EXCLUDE_FROM_ALL)
