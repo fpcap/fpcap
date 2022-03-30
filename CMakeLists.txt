@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 project(mmpr VERSION 0.1.0 LANGUAGES CXX)
 
-list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake)
+list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 option(MMPR_BUILD_EXAMPLES "Build examples" OFF)
 option(MMPR_BUILD_BENCHMARK "Build benchmarks" OFF)
