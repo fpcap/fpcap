@@ -1,39 +1,37 @@
 #include <mmpr/ZstdDecompressor.h>
 
-#include <errno.h>
-#include <fmt/format.h>
-#include <stdlib.h>
-#include <string.h>
-#include <zstd.h>
 #include <boost/filesystem.hpp>
+#include <errno.h>
 #include <fcntl.h>
 #include <mmpr/PcapNgBlockParser.h>
 #include <stdexcept>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/mman.h>
 #include <unistd.h>
+#include <zstd.h>
 
 using namespace std;
 using namespace boost::filesystem;
-using namespace fmt;
 
 namespace mmpr {
 
-void* ZstdDecompressor::decompressFileInMemory(const std::string& fname, size_t &decompressedSize) {
+void* ZstdDecompressor::decompressFileInMemory(const std::string& fname,
+                                               size_t& decompressedSize) {
     int fd = ::open(fname.c_str(), O_RDONLY, 0);
     if (fd < 0) {
-        throw runtime_error(format("Error while reading file {}: {}",
-                                   canonical(fname).string(), strerror(errno)));
+        throw runtime_error("Error while reading file " + canonical(fname).string() +
+                            ": " + strerror(errno));
     }
 
     size_t compressedSize = lseek(fd, 0, SEEK_END);
     size_t mappedSize = (compressedSize / MMPR_PAGE_SIZE + 1) * MMPR_PAGE_SIZE;
 
-    void* const compressedData =
-        mmap(nullptr, mappedSize, PROT_READ, MAP_SHARED, fd, 0);
+    void* const compressedData = mmap(nullptr, mappedSize, PROT_READ, MAP_SHARED, fd, 0);
     if (compressedData == MAP_FAILED) {
         ::close(fd);
-        throw runtime_error(format("Error while mapping file {}: ",
-                                   canonical(fname).string(), strerror(errno)));
+        throw runtime_error("Error while mapping file " + canonical(fname).string() +
+                            ": " + strerror(errno));
     }
 
     /* Read the content size from the frame header. For simplicity we require
@@ -42,17 +40,19 @@ void* ZstdDecompressor::decompressFileInMemory(const std::string& fname, size_t 
      * content size is always written into the header, either use streaming
      * decompression, or ZSTD_decompressBound().
      */
-    unsigned long long const decompressedFileSize = ZSTD_getFrameContentSize(compressedData, compressedSize);
+    unsigned long long const decompressedFileSize =
+        ZSTD_getFrameContentSize(compressedData, compressedSize);
     if (decompressedFileSize == ZSTD_CONTENTSIZE_ERROR) {
-        throw runtime_error(fmt::format("{} is not compressed by zstd", fname));
+        throw runtime_error(fname + " is not compressed by zstd");
     }
     if (decompressedFileSize == ZSTD_CONTENTSIZE_UNKNOWN) {
-        throw runtime_error(fmt::format("{} original size unknown", fname));
+        throw runtime_error(fname + " original size unknown");
     }
 
     void* const decompressedData = malloc(decompressedFileSize);
     if (!decompressedData) {
-        throw runtime_error(fmt::format("Unable to malloc {} for decompressed file", decompressedFileSize));
+        throw runtime_error("Unable to malloc " + to_string(decompressedFileSize) +
+                                " for decompressed file");
     }
 
     /* Decompress.
@@ -60,9 +60,10 @@ void* ZstdDecompressor::decompressFileInMemory(const std::string& fname, size_t 
      * and use ZSTD_decompressDCtx(). If you want to set advanced parameters,
      * use ZSTD_DCtx_setParameter().
      */
-    decompressedSize = ZSTD_decompress(decompressedData, decompressedFileSize, compressedData, compressedSize);
+    decompressedSize = ZSTD_decompress(decompressedData, decompressedFileSize,
+                                       compressedData, compressedSize);
     if (ZSTD_isError(decompressedSize)) {
-        throw runtime_error(fmt::format("{}", ZSTD_getErrorName(decompressedSize)));
+        throw runtime_error(ZSTD_getErrorName(decompressedSize));
     }
 
     // When zstd knows the content size, it will error if it doesn't match.

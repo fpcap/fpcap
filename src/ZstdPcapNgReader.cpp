@@ -1,28 +1,28 @@
 #include <mmpr/ZstdPcapNgReader.h>
 
+#include <boost/algorithm/string/predicate.hpp>
 #include <boost/filesystem.hpp>
-#include <fmt/format.h>
 #include <mmpr/PcapNgBlockParser.h>
+#include <mmpr/ZstdDecompressor.h>
 #include <stdexcept>
 #include <sys/mman.h>
-#include <boost/algorithm/string/predicate.hpp>
-#include <mmpr/ZstdDecompressor.h>
 
 using namespace std;
 using namespace boost::filesystem;
 using namespace boost::algorithm;
-using namespace fmt;
 
 namespace mmpr {
 ZstdPcapNgReader::ZstdPcapNgReader(const std::string& filepath) : PcapNgReader(filepath) {
     // TODO determine by file header or similar
     if (!ends_with(filepath, ".zst") && !ends_with(filepath, ".zstd")) {
-        throw runtime_error("ZstdPcapNgReader only supports files with .zst or .zstd endings");
+        throw runtime_error(
+            "ZstdPcapNgReader only supports files with .zst or .zstd endings");
     }
 }
 
 void ZstdPcapNgReader::open() {
-    mData = reinterpret_cast<const uint8_t*> (ZstdDecompressor::decompressFileInMemory(mFilepath, mFileSize));
+    mData = reinterpret_cast<const uint8_t*>(
+        ZstdDecompressor::decompressFileInMemory(mFilepath, mFileSize));
     assert(mFileSize > 0);
 }
 
@@ -38,10 +38,9 @@ bool ZstdPcapNgReader::readNextPacket(Packet& packet) {
 
     // make sure there are enough bytes to read
     if (mFileSize - mOffset < 8) {
-        throw runtime_error(
-            fmt::format("Expected to read at least one more block (8 bytes at least), "
-                        "but there are only {} bytes left in the file",
-                        mFileSize - mOffset));
+        throw runtime_error("Expected to read at least one more block (8 bytes at "
+                            "least), but there are only " +
+                            to_string(mFileSize - mOffset) + " bytes left in the file");
     }
 
     uint32_t blockType = *(uint32_t*)&mData[mOffset];
@@ -71,10 +70,10 @@ bool ZstdPcapNgReader::readNextPacket(Packet& packet) {
 
         // make sure there are enough bytes to read
         if (mFileSize - mOffset < 8) {
-            throw runtime_error(
-                fmt::format("Expected to read at least one more block (8 bytes at "
-                            "least), but there are only {} bytes left in the file",
-                            mFileSize - mOffset));
+            throw runtime_error("Expected to read at least one more block (8 bytes at "
+                                "least), but there are only " +
+                                to_string(mFileSize - mOffset) +
+                                " bytes left in the file");
         }
 
         // try to read next block type
@@ -96,7 +95,7 @@ bool ZstdPcapNgReader::readNextPacket(Packet& packet) {
 }
 
 void ZstdPcapNgReader::close() {
-    free((void*) mData);
+    free((void*)mData);
 }
 
 /**

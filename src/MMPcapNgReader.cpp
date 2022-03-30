@@ -5,7 +5,6 @@
 #include <cerrno>
 #include <cstring>
 #include <fcntl.h>
-#include <fmt/format.h>
 #include <mmpr/PcapNgBlockParser.h>
 #include <stdexcept>
 #include <sys/mman.h>
@@ -14,7 +13,6 @@
 using namespace std;
 using namespace boost::filesystem;
 using namespace boost::algorithm;
-using namespace fmt;
 
 namespace mmpr {
 MMPcapNgReader::MMPcapNgReader(const string& filepath) : PcapNgReader(filepath) {
@@ -27,8 +25,8 @@ MMPcapNgReader::MMPcapNgReader(const string& filepath) : PcapNgReader(filepath) 
 void MMPcapNgReader::open() {
     mFileDescriptor = ::open(mFilepath.c_str(), O_RDONLY, 0);
     if (mFileDescriptor < 0) {
-        throw runtime_error(format("Error while reading file {}: {}",
-                                   canonical(mFilepath).string(), strerror(errno)));
+        throw runtime_error("Error while reading file " + canonical(mFilepath).string() +
+                            ": " + strerror(errno));
     }
 
     mFileSize = lseek(mFileDescriptor, 0, SEEK_END);
@@ -38,8 +36,8 @@ void MMPcapNgReader::open() {
         mmap(nullptr, mMappedSize, PROT_READ, MAP_SHARED, mFileDescriptor, 0);
     if (mmapResult == MAP_FAILED) {
         ::close(mFileDescriptor);
-        throw runtime_error(format("Error while mapping file {}: ",
-                                   canonical(mFilepath).string(), strerror(errno)));
+        throw runtime_error("Error while mapping file " + canonical(mFilepath).string() +
+                            ": " + strerror(errno));
     }
 
     mOffset = 0;
@@ -58,10 +56,9 @@ bool MMPcapNgReader::readNextPacket(Packet& packet) {
 
     // make sure there are enough bytes to read
     if (mFileSize - mOffset < 8) {
-        throw runtime_error(
-            fmt::format("Expected to read at least one more block (8 bytes at least), "
-                        "but there are only {} bytes left in the file",
-                        mFileSize - mOffset));
+        throw runtime_error("Expected to read at least one more block (8 bytes at "
+                            "least), but there are only " +
+                            to_string(mFileSize - mOffset) + " bytes left in the file");
     }
 
     uint32_t blockType = *(uint32_t*)&mMappedMemory[mOffset];
@@ -91,10 +88,10 @@ bool MMPcapNgReader::readNextPacket(Packet& packet) {
 
         // make sure there are enough bytes to read
         if (mFileSize - mOffset < 8) {
-            throw runtime_error(
-                fmt::format("Expected to read at least one more block (8 bytes at "
-                            "least), but there are only {} bytes left in the file",
-                            mFileSize - mOffset));
+            throw runtime_error("Expected to read at least one more block (8 bytes at "
+                                "least), but there are only " +
+                                to_string(mFileSize - mOffset) +
+                                " bytes left in the file");
         }
 
         // try to read next block type

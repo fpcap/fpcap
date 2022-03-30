@@ -1,110 +1,119 @@
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.16)
 
-project(MMPR
-        DESCRIPTION "Memory mapping PcapNg reader"
-        VERSION 0.1.0
-        LANGUAGES CXX
-        )
+project(mmpr VERSION 0.1.0 LANGUAGES CXX)
+
+list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake)
 
 option(MMPR_BUILD_EXAMPLES "Build examples" OFF)
 option(MMPR_BUILD_BENCHMARK "Build benchmarks" OFF)
 option(MMPR_BUILD_TESTS "Force tests to build" OFF)
 
-if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-    message(STATUS "Building MMPR as main project")
-
-    set(CMAKE_CXX_STANDARD 11)
-    add_compile_options(-Wall -Wextra -pedantic)
-    set(CMAKE_CXX_FLAGS "-static-libstdc++")
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
-    set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -DDEBUG")
-
-    # Let's nicely support folders in IDEs
-    set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-else ()
-    message(STATUS "Building MMPR as library through add_subdirectory (or similar)")
-endif ()
-
-# FetchContent added in CMake 3.11, downloads missing libs during the configure step
-include(FetchContent)
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+    # Enable tests and benchmarks if building as stand-alone project
+    set(MMPR_BUILD_TESTS ON)
+    set(MMPR_BUILD_BENCHMARK ON)
+endif()
 
 # Add Boost (target Boost::boost)
-find_package(Boost 1.71.0 REQUIRED)
-find_package(Boost 1.71.0 COMPONENTS filesystem REQUIRED)
+set(MIN_BOOST_VERSION 1.71)
+find_package(Boost ${MIN_BOOST_VERSION} REQUIRED COMPONENTS filesystem)
 
 # Add Zstd compression library
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
-find_package(ZSTD 1.4.0 MODULE REQUIRED)
+set(MIN_ZSTD_VERSION 1.4)
+find_package(ZSTD ${MIN_ZSTD_VERSION} REQUIRED MODULE)
 
-# Add fmt (target fmt::fmt)
-if (NOT TARGET fmt)
-    add_subdirectory(libs/fmt EXCLUDE_FROM_ALL)
-endif ()
+# mmpr library target
+add_library(mmpr
+    src/MMPcapNgReader.cpp
+    src/PcapNgBlockOptionParser.cpp
+    src/PcapNgBlockParser.cpp
+    src/util.h
+    src/ZstdDecompressor.cpp
+    src/ZstdPcapNgReader.cpp
+)
 
-# MMPR library
-add_subdirectory(src)
+add_library(mmpr::mmpr ALIAS mmpr)
 
-# Examples only available if this is the main app
-if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME OR MMPR_BUILD_EXAMPLES)
-    # MMPR executables
-    add_subdirectory(examples)
-endif ()
+target_include_directories(mmpr
+    PUBLIC
+        $<INSTALL_INTERFACE:include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
 
-# Testing only available if this is the main app
-if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME OR MMPR_BUILD_TESTS)
-    # Add GoogleTest
-    if (NOT TARGET gtest)
-        add_subdirectory(libs/googletest EXCLUDE_FROM_ALL)
-    endif ()
+target_compile_features(mmpr PRIVATE cxx_std_11)
+target_compile_options(mmpr PRIVATE -static-libstdc++ -Wall -Wextra -pedantic)
 
-    add_executable(
-            testPcapNgReader
-            tests/testPcapNgReader.cpp
-            include/mmpr/mmpr.h
-            include/mmpr/PcapNgBlockOptionParser.h
-    )
-    target_link_libraries(
-            testPcapNgReader
-            gtest_main
-    )
+target_link_libraries(mmpr
+    PUBLIC
+        Boost::filesystem
+    PRIVATE
+        ZSTD::ZSTD
+)
 
-    include(GoogleTest)
-    gtest_discover_tests(testPcapNgReader)
-endif ()
+# mmpr install instructions
+include(GNUInstallDirs)
+set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/mmpr)
 
-# Benchmark only available if this is the main app
-if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME OR MMPR_BUILD_BENCHMARK)
-    if (EXISTS libs/pcap-plus-plus)
-        # PcapPlusPlus library
-        add_subdirectory(libs/pcap-plus-plus EXCLUDE_FROM_ALL)
+install(TARGETS mmpr
+    EXPORT mmpr-targets
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
 
-        #set(BENCHMARK_DOWNLOAD_DEPENDENCIES ON BOOL)
-        add_subdirectory(libs/googlebenchmark EXCLUDE_FROM_ALL)
+install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
-        file(GLOB_RECURSE benchmark_files
-                "${PROJECT_SOURCE_DIR}/benchmark/*.cpp"
-                )
+# Export the targets to a script
+install(EXPORT mmpr-targets
+    FILE
+        mmprTargets.cmake
+    NAMESPACE
+        mmpr::
+    DESTINATION
+        ${INSTALL_CONFIGDIR}
+)
 
-        add_executable(mmpr-benchmarks
-                ${src_files}
-                ${benchmark_files}
-                )
+# Create a ConfigVersion.cmake file
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/mmprVersion.cmake
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY AnyNewerVersion
+)
 
-        target_include_directories(mmpr-benchmarks PUBLIC
-                libs/googlebenchmark/include/
-                libs/pcap-plus-plus/Pcap++/header
-                ${PROJECT_SOURCE_DIR}/include
-                )
+configure_package_config_file(${CMAKE_CURRENT_LIST_DIR}/cmake/mmprConfig.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/mmprConfig.cmake
+    INSTALL_DESTINATION ${INSTALL_CONFIGDIR}
+)
 
-        target_link_libraries(mmpr-benchmarks
-                PRIVATE
-                ${Boost_LIBRARIES}
-                PUBLIC
-                benchmark::benchmark
-                PcapPP
-                mmpr
-                )
-    else ()
-        message(WARNING "Trying to build mmpr-benchmark, but could not find libs/pcap-plus-plus")
-    endif ()
-endif ()
+# Install the config, config version and custom find modules
+install(FILES
+    ${CMAKE_CURRENT_LIST_DIR}/cmake/FindZSTD.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/mmprConfig.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/mmprConfigVersion.cmake
+    DESTINATION ${INSTALL_CONFIGDIR}
+)
+
+# Exporting from the build tree
+configure_file(${CMAKE_CURRENT_LIST_DIR}/cmake/FindZSTD.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/FindZSTD.cmake
+    COPYONLY)
+
+export(EXPORT mmpr-targets
+    FILE ${CMAKE_CURRENT_BINARY_DIR}/mmprTargets.cmake
+    NAMESPACE mmpr::)
+
+# Register package in the User Package Registry
+export(PACKAGE mmpr)
+
+if(MMPR_BUILD_TESTS)
+    # Add tests
+    enable_testing()
+    add_subdirectory(tests)
+endif()
+
+if(MMPR_BUILD_BENCHMARK)
+    # Add benchmarks
+    add_subdirectory(benchmark)
+endif()
