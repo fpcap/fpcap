@@ -1,5 +1,4 @@
 #include <chrono>
-#include <fmt/format.h>
 #include <iostream>
 #include <mmpr/MMPcapNgReader.h>
 
@@ -7,7 +6,8 @@ using namespace std;
 using namespace std::chrono;
 
 int main() {
-    for (const string& filepath : {"tracefiles/pcapng-example.pcapng", "tracefiles/many_interfaces-1.pcapng"}) {
+    for (const string& filepath :
+         {"tracefiles/pcapng-example.pcapng", "tracefiles/many_interfaces-1.pcapng"}) {
         mmpr::MMPcapNgReader reader(filepath);
         reader.open();
 
@@ -19,10 +19,14 @@ int main() {
             }
         }
 
-        cout << fmt::format("Metadata.Comment:  {}", reader.getComment()) << endl;
-        cout << fmt::format("Metadata.OS:       {}", reader.getOS()) << endl;
-        cout << fmt::format("Metadata.Hardware: {}", reader.getHardware()) << endl;
-        cout << fmt::format("Metadata.UserAppl: {}", reader.getUserApplication()) << endl;
+        cout << "Metadata.Comment:             \"" << reader.getComment() << "\"" << endl;
+        cout << "Metadata.OS:                  \"" << reader.getOS() << "\"" << endl;
+        cout << "Metadata.Hardware:            \"" << reader.getHardware() << "\""
+             << endl;
+        cout << "Metadata.UserAppl:            \"" << reader.getUserApplication() << "\""
+             << endl;
+        cout << "Metadata.TimestampResolution: " << reader.getTimestampResolution()
+             << endl;
 
         // close file descriptor and unmap memory
         reader.close();

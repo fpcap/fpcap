@@ -59,6 +59,7 @@ bool ZstdPcapNgReader::readNextPacket(Packet& packet) {
             InterfaceDescriptionBlock idb{};
             PcapNgBlockParser::readIDB(&mData[mOffset], idb);
             mDataLinkType = idb.linkType;
+            mMetadata.timestampResolution = idb.options.timestampResolution;
         }
 
         mOffset += blockTotalLength;
@@ -132,6 +133,7 @@ uint32_t ZstdPcapNgReader::readBlock() {
         InterfaceDescriptionBlock idb{};
         PcapNgBlockParser::readIDB(&mData[mOffset], idb);
         mDataLinkType = idb.linkType;
+        mMetadata.timestampResolution = idb.options.timestampResolution;
         break;
     }
     case MMPR_ENHANCED_PACKET_BLOCK: {

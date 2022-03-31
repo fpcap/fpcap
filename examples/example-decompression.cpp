@@ -1,5 +1,4 @@
 #include <chrono>
-#include <fmt/chrono.h>
 #include <iostream>
 #include <mmpr/ZstdPcapNgReader.h>
 
@@ -15,7 +14,7 @@ int main() {
     reader.open();
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<milliseconds>(stop - start);
-    cout << fmt::format("Open and mapped file to memory in {}", duration) << endl;
+    cout << "Open and mapped file to memory in " << duration.count() << "ms" << endl;
 
     // read all packets from the capture and measure execution time
     start = high_resolution_clock::now();
@@ -29,7 +28,8 @@ int main() {
     stop = high_resolution_clock::now();
     duration = duration_cast<milliseconds>(stop - start);
 
-    cout << fmt::format("Processed {} packets in {}", processedPackets, duration) << endl;
+    cout << "Processed " << processedPackets << " packets in " << duration.count() << "ms"
+         << endl;
 
     // close file descriptor and unmap memory
     reader.close();

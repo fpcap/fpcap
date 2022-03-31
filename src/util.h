@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <cstdio>
+#include <cmath>
 
 namespace mmpr {
 namespace util {
@@ -19,6 +20,20 @@ static void dumpMemory(const uint8_t* data, size_t length) {
     }
     putchar('\n');
 }
+
+static double fromIfTsresol(const uint8_t value) {
+    uint8_t mostSignificantBit = value & 0x80;
+    uint8_t remainingBits = value & 0x7F;
+
+    if (mostSignificantBit == 0) {
+        // most significant bit is 0, rest of bits is negative power of 10
+        return std::pow(10, remainingBits);
+    } else {
+        // most signiticant bit is 1, rest of bits is negative power of 2
+        return std::pow(2, remainingBits);
+    }
+}
+
 } // namespace util
 } // namespace mmpr
 

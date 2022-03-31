@@ -1,6 +1,7 @@
 #include <mmpr/PcapNgBlockParser.h>
 
 #include <mmpr/PcapNgBlockOptionParser.h>
+#include "util.h"
 
 namespace mmpr {
 /**
@@ -28,38 +29,34 @@ namespace mmpr {
  *    |                      Block Total Length                       |
  *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
-void PcapNgBlockParser::readSHB(const uint8_t* data,
-                                SectionHeaderBlock& sectionHeaderBlock) {
+void PcapNgBlockParser::readSHB(const uint8_t* data, SectionHeaderBlock& shb) {
     auto blockType = *(const uint32_t*)&data[0];
     MMPR_ASSERT(blockType == MMPR_SECTION_HEADER_BLOCK);
 
-    sectionHeaderBlock.blockTotalLength = *(const uint32_t*)&data[4];
+    shb.blockTotalLength = *(const uint32_t*)&data[4];
 
     auto byteOrderMagic = *(const uint32_t*)&data[8];
     MMPR_ASSERT(byteOrderMagic == 0x1A2B3C4D);
 
-    sectionHeaderBlock.majorVersion = *(const uint16_t*)&data[12];
-    sectionHeaderBlock.minorVersion = *(const uint16_t*)&data[14];
+    shb.majorVersion = *(const uint16_t*)&data[12];
+    shb.minorVersion = *(const uint16_t*)&data[14];
 
     // TODO: Also, special care should be taken in accessing this
     //      field: since the alignment of all the blocks in the file is
     //      32-bits, this field is not guaranteed to be aligned to a 64-bit
     //      boundary.  This could be a problem on 64-bit processors.
-    sectionHeaderBlock.sectionLength = *(const int64_t*)&data[16];
-    MMPR_ASSERT(sectionHeaderBlock.sectionLength != -1
-                    ? sectionHeaderBlock.sectionLength % 4 == 0
-                    : true);
+    shb.sectionLength = *(const int64_t*)&data[16];
+    MMPR_ASSERT(shb.sectionLength != -1 ? shb.sectionLength % 4 == 0 : true);
 
     MMPR_DEBUG_LOG("--- [Section Header Block %p] ---\n", (void*)data);
-    MMPR_DEBUG_LOG("[SHB] Block Total Length: %u\n", sectionHeaderBlock.blockTotalLength);
+    MMPR_DEBUG_LOG("[SHB] Block Total Length: %u\n", shb.blockTotalLength);
     MMPR_DEBUG_LOG("[SHB] Byte-Order Magic: 0x%08X\n", byteOrderMagic);
-    MMPR_DEBUG_LOG_2("[SHB] Version: %u.%u\n", sectionHeaderBlock.majorVersion,
-                     sectionHeaderBlock.minorVersion);
-    MMPR_DEBUG_LOG("[SHB] Section Length: %li\n", sectionHeaderBlock.sectionLength);
+    MMPR_DEBUG_LOG_2("[SHB] Version: %u.%u\n", shb.majorVersion, shb.minorVersion);
+    MMPR_DEBUG_LOG("[SHB] Section Length: %li\n", shb.sectionLength);
 
     // standard Section Header Block has size 28 (without any options)
-    if (sectionHeaderBlock.blockTotalLength > 28) {
-        uint32_t totalOptionsLength = sectionHeaderBlock.blockTotalLength - 28;
+    if (shb.blockTotalLength > 28) {
+        uint32_t totalOptionsLength = shb.blockTotalLength - 28;
         uint32_t readOptionsLength = 0;
         while (readOptionsLength < totalOptionsLength) {
             Option option{};
@@ -67,19 +64,16 @@ void PcapNgBlockParser::readSHB(const uint8_t* data,
             readOptionsLength += option.totalLength();
             switch (option.type) {
             case MMPR_BLOCK_OPTION_COMMENT:
-                sectionHeaderBlock.options.comment =
-                    std::string((char*)option.value, option.length);
+                shb.options.comment = std::string((char*)option.value, option.length);
                 break;
             case MMPR_BLOCK_OPTION_SHB_OS:
-                sectionHeaderBlock.options.os =
-                    std::string((char*)option.value, option.length);
+                shb.options.os = std::string((char*)option.value, option.length);
                 break;
             case MMPR_BLOCK_OPTION_SHB_HARDWARE:
-                sectionHeaderBlock.options.hardware =
-                    std::string((char*)option.value, option.length);
+                shb.options.hardware = std::string((char*)option.value, option.length);
                 break;
             case MMPR_BLOCK_OPTION_SHB_USERAPPL:
-                sectionHeaderBlock.options.userApplication =
+                shb.options.userApplication =
                     std::string((char*)option.value, option.length);
                 break;
             }
@@ -87,9 +81,8 @@ void PcapNgBlockParser::readSHB(const uint8_t* data,
     }
 
     // make sure that the block actually ends with block total length
-    auto blockTotalLength =
-        *(const uint32_t*)&data[sectionHeaderBlock.blockTotalLength - 4];
-    MMPR_ASSERT(sectionHeaderBlock.blockTotalLength == blockTotalLength);
+    auto blockTotalLength = *(const uint32_t*)&data[shb.blockTotalLength - 4];
+    MMPR_ASSERT(shb.blockTotalLength == blockTotalLength);
 }
 
 /**
@@ -135,6 +128,12 @@ void PcapNgBlockParser::readIDB(const uint8_t* data, InterfaceDescriptionBlock& 
             PcapNgBlockOptionParser::readIDBBlockOption(data, option,
                                                         16 + readOptionsLength);
             readOptionsLength += option.totalLength();
+            switch (option.type) {
+            case MMPR_BLOCK_OPTION_IDB_TSRESOL:
+                MMPR_ASSERT(option.length == 1);
+                idb.options.timestampResolution = util::fromIfTsresol(*option.value);
+                break;
+            }
         }
     }
 

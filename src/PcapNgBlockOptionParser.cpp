@@ -1,5 +1,8 @@
 #include <mmpr/PcapNgBlockOptionParser.h>
 
+#include "util.h"
+#include <cmath>
+
 namespace mmpr {
 /**
  *                      1                   2                   3
@@ -34,14 +37,12 @@ void PcapNgBlockOptionParser::readSHBOption(const uint8_t* data,
     case MMPR_BLOCK_OPTION_COMMENT:
         // opt_comment
         // TODO parse as UTF-8 string (not zero-terminated)
-        MMPR_DEBUG_LOG_2("[SHB][OPT] Comment: %.*s\n", option.length,
-                         option.value);
+        MMPR_DEBUG_LOG_2("[SHB][OPT] Comment: %.*s\n", option.length, option.value);
         return;
     case MMPR_BLOCK_OPTION_SHB_HARDWARE:
         // shb_hardware
         // TODO parse as UTF-8 string (not zero-terminated)
-        MMPR_DEBUG_LOG_2("[SHB][OPT] Hardware: %.*s\n", option.length,
-                    option.value);
+        MMPR_DEBUG_LOG_2("[SHB][OPT] Hardware: %.*s\n", option.length, option.value);
         return;
     case MMPR_BLOCK_OPTION_SHB_OS:
         // shb_os
@@ -52,7 +53,7 @@ void PcapNgBlockOptionParser::readSHBOption(const uint8_t* data,
         // shb_userappl
         // TODO parse as UTF-8 string (not zero-terminated)
         MMPR_DEBUG_LOG_2("[SHB][OPT] User Application: %.*s\n", option.length,
-                    option.value);
+                         option.value);
         return;
     default: {
         // custom option
@@ -73,15 +74,14 @@ void PcapNgBlockOptionParser::readIDBBlockOption(const uint8_t* data,
     case 2: {
         // if_name: name of the device used to capture data
         // TODO parse if_name as UTF-8 string (not zero-terminated)
-        MMPR_DEBUG_LOG_2("[IDB][OPT] Device Name: %.*s\n", option.length,
-                    option.value);
+        MMPR_DEBUG_LOG_2("[IDB][OPT] Device Name: %.*s\n", option.length, option.value);
         return;
     }
     case 3: {
         // if_description: description of the device used to capture data
         // TODO parse if_description as UTF-8 string (not zero-terminated)
         MMPR_DEBUG_LOG_2("[IDB][OPT] Device Description: %.*s\n", option.length,
-                    option.value);
+                         option.value);
         return;
     }
     case 4: {
@@ -108,12 +108,25 @@ void PcapNgBlockOptionParser::readIDBBlockOption(const uint8_t* data,
         // if_speed: interface speed, in bits per second
         const uint64_t speed = *(const uint64_t*)option.value;
         MMPR_UNUSED(speed);
-        MMPR_DEBUG_LOG("[IDB][OPT] Interface Speed: %lu bits/s\n", speed) return;
+        MMPR_DEBUG_LOG("[IDB][OPT] Interface Speed: %lu bits/s\n", speed);
+        return;
     }
     case 9: {
-        // if_tsresol: resolution of timestamps
-        // TODO parse if_tsresol
-        break;
+        /* if_tsresol: resolution of timestamps
+         *
+         * The if_tsresol option identifies the resolution of timestamps. If the Most
+         * Significant Bit is equal to zero, the remaining bits indicates the resolution
+         * of the timestamp as a negative power of 10 (e.g. 6 means microsecond
+         * resolution, timestamps are the number of microseconds since 1970-01-01 00:00:00
+         * UTC). If the Most Significant Bit is equal to one, the remaining bits indicates
+         * the resolution as negative power of 2 (e.g. 10 means 1/1024 of second). If this
+         * option is not present, a resolution of 10^-6 is assumed (i.e. timestamps have
+         * the same resolution of the standard 'libpcap' timestamps).
+         */
+        auto tsresol = util::fromIfTsresol(*option.value);
+        MMPR_UNUSED(tsresol);
+        MMPR_DEBUG_LOG("[IDB][OPT] Timestamp resolution: %f\n", tsresol);
+        return;
     }
     case 10: {
         // if_tzone: time zone for GMT support
@@ -150,8 +163,7 @@ void PcapNgBlockOptionParser::readIDBBlockOption(const uint8_t* data,
     case 15: {
         // if_hardware: description of the interface hardware
         // TODO parse as UTF-8 string (not zero-terminated)
-        MMPR_DEBUG_LOG_2("[IDB][OPT] Hardware: %.*s\n", option.length,
-                    option.value);
+        MMPR_DEBUG_LOG_2("[IDB][OPT] Hardware: %.*s\n", option.length, option.value);
         return;
     }
     case 16: {

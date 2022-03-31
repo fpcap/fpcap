@@ -43,19 +43,21 @@
 #define MMPR_BLOCK_OPTION_SHB_OS 3
 #define MMPR_BLOCK_OPTION_SHB_USERAPPL 4
 
+#define MMPR_BLOCK_OPTION_IDB_TSRESOL 9
+
 namespace mmpr {
 struct Packet {
-    uint32_t timestampHigh;
-    uint32_t timestampLow;
-    uint32_t captureLength;
-    uint32_t length;
-    const uint8_t* data;
+    uint32_t timestampHigh{0};
+    uint32_t timestampLow{0};
+    uint32_t captureLength{0};
+    uint32_t length{0};
+    const uint8_t* data{nullptr};
 };
 
 struct Option {
-    uint16_t type;
-    uint16_t length;
-    const uint8_t* value;
+    uint16_t type{0};
+    uint16_t length{0};
+    const uint8_t* value{nullptr};
 
     /**
      * Calculates the total size of an option including padding (option values can have
@@ -67,10 +69,10 @@ struct Option {
 };
 
 struct SectionHeaderBlock {
-    uint32_t blockTotalLength;
-    uint16_t majorVersion;
-    uint16_t minorVersion;
-    int64_t sectionLength;
+    uint32_t blockTotalLength{0};
+    uint16_t majorVersion{0};
+    uint16_t minorVersion{0};
+    int64_t sectionLength{0};
     struct Options {
         std::string comment;
         std::string os;
@@ -80,26 +82,29 @@ struct SectionHeaderBlock {
 };
 
 struct InterfaceDescriptionBlock {
-    uint32_t blockTotalLength;
-    uint16_t linkType;
-    uint32_t snapLen;
+    uint32_t blockTotalLength{0};
+    uint16_t linkType{0};
+    uint32_t snapLen{0};
+    struct Options {
+        double timestampResolution{0.000001 /* 10^-6 */};
+    } options{};
 };
 
 struct EnhancedPacketBlock {
-    uint32_t blockTotalLength;
-    uint32_t interfaceId;
-    uint32_t timestampHigh;
-    uint32_t timestampLow;
-    uint32_t capturePacketLength;
-    uint32_t originalPacketLength;
-    const uint8_t* packetData;
+    uint32_t blockTotalLength{0};
+    uint32_t interfaceId{0};
+    uint32_t timestampHigh{0};
+    uint32_t timestampLow{0};
+    uint32_t capturePacketLength{0};
+    uint32_t originalPacketLength{0};
+    const uint8_t* packetData{nullptr};
 };
 
 struct InterfaceStatisticsBlock {
-    uint32_t blockTotalLength;
-    uint32_t interfaceId;
-    uint32_t timestampHigh;
-    uint32_t timestampLow;
+    uint32_t blockTotalLength{0};
+    uint32_t interfaceId{0};
+    uint32_t timestampHigh{0};
+    uint32_t timestampLow{0};
 };
 
 class PcapNgReader {
@@ -128,6 +133,8 @@ public:
     virtual std::string getOS() const  { return mMetadata.os; };
     virtual std::string getHardware() const  { return mMetadata.hardware; };
     virtual std::string getUserApplication() const  { return mMetadata.userApplication; };
+    // TODO support if_tsresol per interface
+    virtual double getTimestampResolution() const  { return mMetadata.timestampResolution; };
 
 protected:
     std::string mFilepath;
@@ -136,6 +143,8 @@ protected:
         std::string os;
         std::string hardware;
         std::string userApplication;
+        // TODO support if_tsresol per interface
+        double timestampResolution{0.000001 /* 10^-6 */};
     } mMetadata{};
 };
 

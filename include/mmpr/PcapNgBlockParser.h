@@ -6,7 +6,7 @@
 namespace mmpr {
 class PcapNgBlockParser {
 public:
-    static void readSHB(const uint8_t* data, SectionHeaderBlock& sectionHeaderBlock);
+    static void readSHB(const uint8_t* data, SectionHeaderBlock& shb);
     static void readIDB(const uint8_t* data, InterfaceDescriptionBlock& idb);
     static void readEPB(const uint8_t* data, EnhancedPacketBlock& epb);
     static void readISB(const uint8_t* data, InterfaceStatisticsBlock& isb);
