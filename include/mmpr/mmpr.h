@@ -86,7 +86,7 @@ struct InterfaceDescriptionBlock {
     uint16_t linkType{0};
     uint32_t snapLen{0};
     struct Options {
-        double timestampResolution{0.000001 /* 10^-6 */};
+        uint32_t timestampResolution{1000000 /* 10^6 */};
     } options{};
 };
 
