@@ -123,7 +123,7 @@ void PcapNgBlockOptionParser::readIDBBlockOption(const uint8_t* data,
          * option is not present, a resolution of 10^-6 is assumed (i.e. timestamps have
          * the same resolution of the standard 'libpcap' timestamps).
          */
-        auto tsresol = util::fromIfTsresol(*option.value);
+        auto tsresol = util::fromIfTsresolDouble(*option.value);
         MMPR_UNUSED(tsresol);
         MMPR_DEBUG_LOG("[IDB][OPT] Timestamp resolution: %f\n", tsresol);
         return;

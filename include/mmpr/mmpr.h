@@ -47,8 +47,8 @@
 
 namespace mmpr {
 struct Packet {
-    uint32_t timestampHigh{0};
-    uint32_t timestampLow{0};
+    uint32_t timestampSeconds{0};
+    uint32_t timestampMicroseconds{0};
     uint32_t captureLength{0};
     uint32_t length{0};
     const uint8_t* data{nullptr};
@@ -133,8 +133,6 @@ public:
     virtual std::string getOS() const  { return mMetadata.os; };
     virtual std::string getHardware() const  { return mMetadata.hardware; };
     virtual std::string getUserApplication() const  { return mMetadata.userApplication; };
-    // TODO support if_tsresol per interface
-    virtual double getTimestampResolution() const  { return mMetadata.timestampResolution; };
 
 protected:
     std::string mFilepath;
@@ -144,7 +142,7 @@ protected:
         std::string hardware;
         std::string userApplication;
         // TODO support if_tsresol per interface
-        double timestampResolution{0.000001 /* 10^-6 */};
+        uint32_t timestampResolution{1000000 /* 10^6 */};
     } mMetadata{};
 };
 

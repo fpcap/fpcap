@@ -131,7 +131,7 @@ void PcapNgBlockParser::readIDB(const uint8_t* data, InterfaceDescriptionBlock& 
             switch (option.type) {
             case MMPR_BLOCK_OPTION_IDB_TSRESOL:
                 MMPR_ASSERT(option.length == 1);
-                idb.options.timestampResolution = util::fromIfTsresol(*option.value);
+                idb.options.timestampResolution = util::fromIfTsresolUInt(*option.value);
                 break;
             }
         }

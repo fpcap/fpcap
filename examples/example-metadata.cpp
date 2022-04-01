@@ -19,14 +19,10 @@ int main() {
             }
         }
 
-        cout << "Metadata.Comment:             \"" << reader.getComment() << "\"" << endl;
-        cout << "Metadata.OS:                  \"" << reader.getOS() << "\"" << endl;
-        cout << "Metadata.Hardware:            \"" << reader.getHardware() << "\""
-             << endl;
-        cout << "Metadata.UserAppl:            \"" << reader.getUserApplication() << "\""
-             << endl;
-        cout << "Metadata.TimestampResolution: " << reader.getTimestampResolution()
-             << endl;
+        cout << "Metadata.Comment:  \"" << reader.getComment() << "\"" << endl;
+        cout << "Metadata.OS:       \"" << reader.getOS() << "\"" << endl;
+        cout << "Metadata.Hardware: \"" << reader.getHardware() << "\"" << endl;
+        cout << "Metadata.UserAppl: \"" << reader.getUserApplication() << "\"" << endl;
 
         // close file descriptor and unmap memory
         reader.close();

@@ -1,5 +1,6 @@
 #include <mmpr/MMPcapNgReader.h>
 
+#include "util.h"
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/filesystem.hpp>
 #include <cerrno>
@@ -102,8 +103,9 @@ bool MMPcapNgReader::readNextPacket(Packet& packet) {
 
     EnhancedPacketBlock epb{};
     PcapNgBlockParser::readEPB(&mMappedMemory[mOffset], epb);
-    packet.timestampLow = epb.timestampLow;
-    packet.timestampHigh = epb.timestampHigh;
+    util::calculateTimestamps(mMetadata.timestampResolution, epb.timestampHigh,
+                              epb.timestampLow, &(packet.timestampSeconds),
+                              &(packet.timestampMicroseconds));
     packet.captureLength = epb.capturePacketLength;
     packet.length = epb.originalPacketLength;
     packet.data = epb.packetData;
