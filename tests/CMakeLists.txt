@@ -10,7 +10,8 @@ endif()
 # Now simply link against gtest as needed. Eg
 add_executable(mmpr_test
     src/main.cpp
-    src/testPcapNgReader.cpp
+    src/testMMPcapNgReader.cpp
+    src/testZstdPcapNgReader.cpp
 )
 target_compile_features(mmpr_test PRIVATE cxx_std_11)
 target_link_libraries(mmpr_test gtest_main mmpr::mmpr)

@@ -1,10 +1,10 @@
 #ifndef MMPR_MMPR_H
 #define MMPR_MMPR_H
 
+#include <boost/filesystem.hpp>
 #include <cassert>
 #include <cstdint>
 #include <cstdio>
-#include <boost/filesystem.hpp>
 
 #if DEBUG
 #define MMPR_DEBUG_LOG(format, val) printf(format, val);
@@ -127,12 +127,13 @@ public:
     virtual void close() = 0;
 
     virtual size_t getFileSize() const = 0;
+    virtual std::string getFilepath() const { return mFilepath; }
     virtual size_t getCurrentOffset() const = 0;
     virtual int getDataLinkType() const = 0;
-    virtual std::string getComment() const  { return mMetadata.comment; };
-    virtual std::string getOS() const  { return mMetadata.os; };
-    virtual std::string getHardware() const  { return mMetadata.hardware; };
-    virtual std::string getUserApplication() const  { return mMetadata.userApplication; };
+    virtual std::string getComment() const { return mMetadata.comment; };
+    virtual std::string getOS() const { return mMetadata.os; };
+    virtual std::string getHardware() const { return mMetadata.hardware; };
+    virtual std::string getUserApplication() const { return mMetadata.userApplication; };
 
 protected:
     std::string mFilepath;
