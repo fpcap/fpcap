@@ -4,26 +4,16 @@ jobs:
   debian-11-build:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - uses: ./.github/actions/debian-11-docker-action
   ubuntu-latest-build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install C++ build environment
         run: |
           sudo apt update
           sudo apt install -y build-essential gcc libssl-dev cmake gdb g++ make libc6-dev
-      - name: Check build tool versions
-        shell: bash
-        run: |
-          echo "make --version"
-          make --version
-          echo "cmake --version"
-          cmake --version
-          echo "gcc --version"
-          gcc --version
-          echo "g++ --version"
-          g++ --version
       - name: Install libpcap
         run: sudo apt install -y libpcap-dev
       - name: Install boost
