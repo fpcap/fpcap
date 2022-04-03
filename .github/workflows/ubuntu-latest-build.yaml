@@ -1,9 +1,0 @@
-name: mmpr-debian-11-build
-on: [push]
-jobs:
-  ubuntu-latest-build-debug:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: johelegp/gcc-snapshot@v1
-      - uses: actions/checkout@v2
-      - uses: johelegp/modern-cmake-buildsystem@v1

@@ -1,0 +1,33 @@
+name: linux-build
+on: [push]
+jobs:
+  debian-11-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ./.github/actions/debian-11-docker-action
+  ubuntu-latest-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install C++ build environment
+        run: |
+          apt update
+          apt install -y build-essential gcc libssl-dev cmake gdb g++ make libc6-dev            
+          make --version
+          cmake --version
+          gcc --version
+          g++ --version
+      - name: Install libpcap
+        run: apt install -y libpcap-dev
+      - name: Install boost
+        run: apt install -y libboost-all-dev
+      - name: Install zstd compression library
+        run: apt install -y zstd libzstd-dev
+      - name: Configure
+        shell: bash
+        run: |
+          mkdir build
+          cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=make -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -G "CodeBlocks - Unix Makefiles" -B build .
+      - name: Build
+        shell: bash
+        run: cmake --build ./build --target all -- -j 9
