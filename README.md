@@ -1,5 +1,7 @@
 # MMPR - Memory Mapping PcapNg Reader
 
+[![linux-build](https://github.com/Schwaggot/mmpr/actions/workflows/linux-build.yml/badge.svg)](https://github.com/Schwaggot/mmpr/actions/workflows/linux-build.yml)
+
 ## Features
 
 - Memory-mapping PcapNg reading
