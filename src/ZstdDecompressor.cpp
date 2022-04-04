@@ -20,7 +20,7 @@ void* ZstdDecompressor::decompressFileInMemory(const std::string& fname,
                                                size_t& decompressedSize) {
     int fd = ::open(fname.c_str(), O_RDONLY, 0);
     if (fd < 0) {
-        throw runtime_error("Error while reading file " + canonical(fname).string() +
+        throw runtime_error("Error while reading file " + absolute(fname).string() +
                             ": " + strerror(errno));
     }
 
@@ -30,7 +30,7 @@ void* ZstdDecompressor::decompressFileInMemory(const std::string& fname,
     void* const compressedData = mmap(nullptr, mappedSize, PROT_READ, MAP_SHARED, fd, 0);
     if (compressedData == MAP_FAILED) {
         ::close(fd);
-        throw runtime_error("Error while mapping file " + canonical(fname).string() +
+        throw runtime_error("Error while mapping file " + absolute(fname).string() +
                             ": " + strerror(errno));
     }
 
