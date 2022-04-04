@@ -47,8 +47,8 @@ public:
                        fh.timestampFormat == FileHeader::MICROSECONDS ? "MICROSECONDS"
                                                                       : "NANOSECONDS");
         MMPR_DEBUG_LOG_2("[FH] Version: %u.%u\n", fh.majorVersion, fh.minorVersion);
-        MMPR_DEBUG_LOG("[FH] Snap Length: %li\n", fh.snapLength);
-        MMPR_DEBUG_LOG("[FH] Link Type: %li\n", fh.linkType);
+        MMPR_DEBUG_LOG("[FH] Snap Length: %u\n", fh.snapLength);
+        MMPR_DEBUG_LOG("[FH] Link Type: %u\n", fh.linkType);
     }
 
     /**
