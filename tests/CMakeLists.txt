@@ -11,6 +11,7 @@ endif()
 add_executable(mmpr_test
     src/main.cpp
     src/testMMPcapNgReader.cpp
+    src/testMMPcapReader.cpp
     src/testZstdPcapNgReader.cpp
 )
 target_compile_features(mmpr_test PRIVATE cxx_std_11)
