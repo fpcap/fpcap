@@ -9,3 +9,6 @@ target_link_libraries(mmpr-example-decompression PRIVATE mmpr ZSTD::ZSTD)
 
 add_executable(mmpr-example-metadata example-metadata.cpp)
 target_link_libraries(mmpr-example-metadata PRIVATE mmpr)
+
+add_executable(mmpr-example-pcap-simple example-pcap-simple.cpp)
+target_link_libraries(mmpr-example-pcap-simple PRIVATE mmpr)

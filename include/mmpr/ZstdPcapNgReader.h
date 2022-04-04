@@ -20,13 +20,13 @@ public:
 
     size_t getFileSize() const override { return mFileSize; };
     size_t getCurrentOffset() const override { return mOffset; };
-    int getDataLinkType() const override { return mDataLinkType; };
+    uint16_t getDataLinkType() const override { return mDataLinkType; };
 
 private:
     size_t mFileSize{0};
     const uint8_t* mData{nullptr};
     size_t mOffset{0};
-    int mDataLinkType{-1};
+    uint16_t mDataLinkType{0};
 };
 } // namespace mmpr
 

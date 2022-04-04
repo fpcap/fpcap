@@ -1,5 +1,5 @@
-#ifndef MMPR_MMPCAPNGREADER_H
-#define MMPR_MMPCAPNGREADER_H
+#ifndef MMPR_MMPCAPREADER_H
+#define MMPR_MMPCAPREADER_H
 
 #include <mmpr/mmpr.h>
 #include <sstream>
@@ -8,19 +8,17 @@
 #include <utility>
 
 namespace mmpr {
-class MMPcapNgReader : public PcapNgReader {
+class MMPcapReader : public PcapReader {
 public:
-    explicit MMPcapNgReader(const std::string& filepath);
+    explicit MMPcapReader(const std::string& filepath);
 
     void open() override;
     bool isExhausted() const override;
     bool readNextPacket(Packet& packet) override;
-    uint32_t readBlock() override;
     void close() override;
 
     size_t getFileSize() const override { return mFileSize; }
     size_t getCurrentOffset() const override { return mOffset; }
-    uint16_t getDataLinkType() const override { return mDataLinkType; }
 
 private:
     int mFileDescriptor{0};
@@ -28,8 +26,8 @@ private:
     size_t mMappedSize{0};
     const uint8_t* mMappedMemory{nullptr};
     size_t mOffset{0};
-    int mDataLinkType{0};
+    FileHeader::TimestampFormat mTimestampFormat{FileHeader::MICROSECONDS};
 };
 } // namespace mmpr
 
-#endif // MMPR_MMPCAPNGREADER_H
+#endif // MMPR_MMPCAPREADER_H

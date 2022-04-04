@@ -129,7 +129,7 @@ public:
     virtual size_t getFileSize() const = 0;
     virtual std::string getFilepath() const { return mFilepath; }
     virtual size_t getCurrentOffset() const = 0;
-    virtual int getDataLinkType() const = 0;
+    virtual uint16_t getDataLinkType() const = 0;
     virtual std::string getComment() const { return mMetadata.comment; };
     virtual std::string getOS() const { return mMetadata.os; };
     virtual std::string getHardware() const { return mMetadata.hardware; };
@@ -145,6 +145,53 @@ protected:
         // TODO support if_tsresol per interface
         uint32_t timestampResolution{1000000 /* 10^6 */};
     } mMetadata{};
+};
+
+struct FileHeader {
+    enum TimestampFormat {
+        MICROSECONDS, NANOSECONDS
+    } timestampFormat{MICROSECONDS};
+    uint16_t majorVersion{0};
+    uint16_t minorVersion{0};
+    uint32_t snapLength{0};
+    uint16_t linkType{0};
+    uint16_t fcsSequence{0};
+};
+
+struct PacketRecord {
+    uint32_t timestampSeconds{0};
+    uint32_t timestampSubSeconds{0};
+    uint32_t captureLength{0};
+    uint32_t length{0};
+    const uint8_t* data{nullptr};
+};
+
+class PcapReader {
+public:
+    explicit PcapReader(const std::string& filepath) : mFilepath(filepath) {
+        if (filepath.empty()) {
+            throw std::runtime_error("Cannot read empty filepath");
+        }
+
+        if (!boost::filesystem::exists(filepath)) {
+            throw std::runtime_error("Cannot find file " +
+                                     boost::filesystem::canonical(filepath).string());
+        }
+    };
+
+    virtual void open() = 0;
+    virtual bool isExhausted() const = 0;
+    virtual bool readNextPacket(Packet& packet) = 0;
+    virtual void close() = 0;
+
+    virtual size_t getFileSize() const = 0;
+    virtual std::string getFilepath() const { return mFilepath; }
+    virtual size_t getCurrentOffset() const = 0;
+    virtual uint16_t getDataLinkType() const { return mDataLinkType; };
+
+protected:
+    std::string mFilepath;
+    uint16_t mDataLinkType{0};
 };
 
 } // namespace mmpr
