@@ -1,11 +1,11 @@
-# MMPR - Memory Mapping PcapNg Reader
+# MMPR - Memory-mapping Pcap & PcapNG reader
 
 [![linux-build](https://github.com/Schwaggot/mmpr/actions/workflows/linux-build.yml/badge.svg)](https://github.com/Schwaggot/mmpr/actions/workflows/linux-build.yml)
 
 ## Features
 
-- Memory-mapping PcapNg reading
-- Supported PcapNg block types:
+- Memory-mapping Pcap & PcapNG reading
+- Supported PcapNG block types:
     - Section Header Block
     - Interface Description Block
     - Enhanced Packet Block
