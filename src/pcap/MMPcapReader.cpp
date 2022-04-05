@@ -1,4 +1,4 @@
-#include <mmpr/MMPcapReader.h>
+#include <mmpr/pcap/MMPcapReader.h>
 
 #include "util.h"
 #include <boost/algorithm/string/predicate.hpp>
@@ -6,7 +6,7 @@
 #include <cerrno>
 #include <cstring>
 #include <fcntl.h>
-#include <mmpr/PcapParser.h>
+#include <mmpr/pcap/PcapParser.h>
 #include <stdexcept>
 #include <sys/mman.h>
 #include <unistd.h>

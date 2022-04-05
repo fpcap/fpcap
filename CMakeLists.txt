@@ -25,13 +25,14 @@ find_package(ZSTD ${MIN_ZSTD_VERSION} REQUIRED MODULE)
 
 # mmpr library target
 add_library(mmpr
-    src/MMPcapNgReader.cpp
-    src/PcapNgBlockOptionParser.cpp
-    src/PcapNgBlockParser.cpp
+    src/pcap/MMPcapReader.cpp
+    src/pcapng/MMPcapNgReader.cpp
+    src/pcapng/PcapNgBlockOptionParser.cpp
+    src/pcapng/PcapNgBlockParser.cpp
+    src/pcapng/PcapNgReader.cpp
+    src/pcapng/ZstdPcapNgReader.cpp
     src/util.h
     src/ZstdDecompressor.cpp
-    src/ZstdPcapNgReader.cpp
-    src/MMPcapReader.cpp
 )
 
 add_library(mmpr::mmpr ALIAS mmpr)
@@ -39,7 +40,11 @@ add_library(mmpr::mmpr ALIAS mmpr)
 target_include_directories(mmpr
     PUBLIC
         $<INSTALL_INTERFACE:include>
+        $<INSTALL_INTERFACE:include/pcap>
+        $<INSTALL_INTERFACE:include/pcapng>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/pcap>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/pcapng>
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )

@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <string>
 #include <utility>
+#include <mmpr/pcap/PcapReader.h>
 
 namespace mmpr {
 class MMPcapReader : public PcapReader {

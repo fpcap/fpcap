@@ -1,6 +1,6 @@
 #include <chrono>
 #include <iostream>
-#include <mmpr/MMPcapNgReader.h>
+#include <mmpr/pcapng/MMPcapNgReader.h>
 
 using namespace std;
 using namespace std::chrono;

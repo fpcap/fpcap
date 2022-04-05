@@ -1,14 +1,14 @@
-add_executable(mmpr-example-simple example-simple.cpp)
-target_link_libraries(mmpr-example-simple PRIVATE mmpr)
+add_executable(mmpr_example_pcapng_simple pcapng_simple.cpp)
+target_link_libraries(mmpr_example_pcapng_simple PRIVATE mmpr)
 
-add_executable(mmpr-example-block example-block.cpp)
-target_link_libraries(mmpr-example-block PRIVATE mmpr)
+add_executable(mmpr_example_pcapng_block_parser pcapng_block_parser.cpp)
+target_link_libraries(mmpr_example_pcapng_block_parser PRIVATE mmpr)
 
-add_executable(mmpr-example-decompression example-decompression.cpp)
-target_link_libraries(mmpr-example-decompression PRIVATE mmpr ZSTD::ZSTD)
+add_executable(mmpr_example_pcapng_decompression pcapng_decompression.cpp)
+target_link_libraries(mmpr_example_pcapng_decompression PRIVATE mmpr ZSTD::ZSTD)
 
-add_executable(mmpr-example-metadata example-metadata.cpp)
-target_link_libraries(mmpr-example-metadata PRIVATE mmpr)
+add_executable(mmpr_example_pcapng_metadata pcapng_metadata.cpp)
+target_link_libraries(mmpr_example_pcapng_metadata PRIVATE mmpr)
 
-add_executable(mmpr-example-pcap-simple example-pcap-simple.cpp)
-target_link_libraries(mmpr-example-pcap-simple PRIVATE mmpr)
+add_executable(mmpr_example_pcap_simple pcap_simple.cpp)
+target_link_libraries(mmpr_example_pcap_simple PRIVATE mmpr)

@@ -7,6 +7,7 @@
 
 namespace mmpr {
 namespace util {
+
 static void dumpMemory(const uint8_t* data, size_t length) {
     for (size_t i = 1; i <= length; i++) {
         printf("%02hhx", data[i - 1]);

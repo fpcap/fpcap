@@ -1,16 +1,16 @@
 #include <chrono>
 #include <iostream>
-#include <mmpr/MMPcapNgReader.h>
+#include <mmpr/pcapng/ZstdPcapNgReader.h>
 
 using namespace std;
 using namespace std::chrono;
 
 int main() {
-    string filepath = "tracefiles/pcapng-example.pcapng";
+    string filepath = "tracefiles/pcapng-example.pcapng.zst";
 
     // open file, map to memory and measure execution time
     auto start = high_resolution_clock::now();
-    mmpr::MMPcapNgReader reader(filepath);
+    mmpr::ZstdPcapNgReader reader(filepath);
     reader.open();
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<milliseconds>(stop - start);

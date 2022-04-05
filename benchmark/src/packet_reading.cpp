@@ -1,9 +1,9 @@
 #include <benchmark/benchmark.h>
 
 #include <PcapFileDevice.h>
-#include <mmpr/MMPcapNgReader.h>
-#include <mmpr/MMPcapReader.h>
-#include <mmpr/ZstdPcapNgReader.h>
+#include <mmpr/pcap/MMPcapReader.h>
+#include <mmpr/pcapng/MMPcapNgReader.h>
+#include <mmpr/pcapng/ZstdPcapNgReader.h>
 #include <pcap.h>
 
 #define SAMPLE_PCAPNG_FILE tracefiles/pcapng-example.pcapng
@@ -119,8 +119,7 @@ static void bmLibpcapPcap(benchmark::State& state) {
     const std::uint8_t* packet;
     for (auto _ : state) {
         char errBuf[PCAP_ERRBUF_SIZE];
-        pcap_t* pcapHandle =
-            pcap_open_offline(QUOTE(SAMPLE_PCAP_FILE), errBuf);
+        pcap_t* pcapHandle = pcap_open_offline(QUOTE(SAMPLE_PCAP_FILE), errBuf);
 
         uint64_t packetCount{0};
         pcap_pkthdr header;
@@ -137,8 +136,7 @@ static void bmLibpcapPcapNG(benchmark::State& state) {
     const std::uint8_t* packet;
     for (auto _ : state) {
         char errBuf[PCAP_ERRBUF_SIZE];
-        pcap_t* pcapHandle =
-            pcap_open_offline(QUOTE(SAMPLE_PCAPNG_FILE), errBuf);
+        pcap_t* pcapHandle = pcap_open_offline(QUOTE(SAMPLE_PCAPNG_FILE), errBuf);
 
         uint64_t packetCount{0};
         pcap_pkthdr header;

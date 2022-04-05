@@ -1,14 +1,9 @@
 #include <mmpr/ZstdDecompressor.h>
 
 #include <boost/filesystem.hpp>
-#include <errno.h>
 #include <fcntl.h>
-#include <mmpr/PcapNgBlockParser.h>
-#include <stdexcept>
-#include <stdlib.h>
-#include <string.h>
+#include <mmpr/pcapng/PcapNgBlockParser.h>
 #include <sys/mman.h>
-#include <unistd.h>
 #include <zstd.h>
 
 using namespace std;
@@ -52,7 +47,7 @@ void* ZstdDecompressor::decompressFileInMemory(const std::string& fname,
     void* const decompressedData = malloc(decompressedFileSize);
     if (!decompressedData) {
         throw runtime_error("Unable to malloc " + to_string(decompressedFileSize) +
-                                " for decompressed file");
+                            " for decompressed file");
     }
 
     /* Decompress.

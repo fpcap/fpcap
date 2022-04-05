@@ -1,37 +1,13 @@
-#include <mmpr/ZstdPcapNgReader.h>
+#include <mmpr/pcapng/PcapNgReader.h>
 
+#include <mmpr/pcapng/PcapNgBlockParser.h>
 #include "util.h"
-#include <boost/algorithm/string/predicate.hpp>
-#include <boost/filesystem.hpp>
-#include <mmpr/PcapNgBlockParser.h>
-#include <mmpr/ZstdDecompressor.h>
-#include <stdexcept>
-#include <sys/mman.h>
 
 using namespace std;
-using namespace boost::filesystem;
-using namespace boost::algorithm;
 
 namespace mmpr {
-ZstdPcapNgReader::ZstdPcapNgReader(const std::string& filepath) : PcapNgReader(filepath) {
-    // TODO determine by file header or similar
-    if (!ends_with(filepath, ".zst") && !ends_with(filepath, ".zstd")) {
-        throw runtime_error(
-            "ZstdPcapNgReader only supports files with .zst or .zstd endings");
-    }
-}
 
-void ZstdPcapNgReader::open() {
-    mData = reinterpret_cast<const uint8_t*>(
-        ZstdDecompressor::decompressFileInMemory(mFilepath, mFileSize));
-    assert(mFileSize > 0);
-}
-
-bool ZstdPcapNgReader::isExhausted() const {
-    return mOffset >= mFileSize;
-}
-
-bool ZstdPcapNgReader::readNextPacket(Packet& packet) {
+bool PcapNgReader::readNextPacket(Packet& packet) {
     if (isExhausted()) {
         // nothing more to read
         return false;
@@ -97,10 +73,6 @@ bool ZstdPcapNgReader::readNextPacket(Packet& packet) {
     return true;
 }
 
-void ZstdPcapNgReader::close() {
-    free((void*)mData);
-}
-
 /**
  * 3.1.  General Block Structure
  *
@@ -117,7 +89,7 @@ void ZstdPcapNgReader::close() {
  *   |                      Block Total Length                       |
  *   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
-uint32_t ZstdPcapNgReader::readBlock() {
+uint32_t PcapNgReader::readBlock() {
     const auto blockType = *(const uint32_t*)&mData[mOffset];
     const auto blockTotalLength = *(const uint32_t*)&mData[mOffset + 4];
 
