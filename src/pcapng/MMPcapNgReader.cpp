@@ -27,7 +27,7 @@ MMPcapNgReader::MMPcapNgReader(const string& filepath) : PcapNgReader(filepath) 
 void MMPcapNgReader::open() {
     mFileDescriptor = ::open(mFilepath.c_str(), O_RDONLY, 0);
     if (mFileDescriptor < 0) {
-        throw runtime_error("Error while reading file " + canonical(mFilepath).string() +
+        throw runtime_error("Error while reading file " + absolute(mFilepath).string() +
                             ": " + strerror(errno));
     }
 
@@ -38,7 +38,7 @@ void MMPcapNgReader::open() {
         mmap(nullptr, mMappedSize, PROT_READ, MAP_SHARED, mFileDescriptor, 0);
     if (mmapResult == MAP_FAILED) {
         ::close(mFileDescriptor);
-        throw runtime_error("Error while mapping file " + canonical(mFilepath).string() +
+        throw runtime_error("Error while mapping file " + absolute(mFilepath).string() +
                             ": " + strerror(errno));
     }
 

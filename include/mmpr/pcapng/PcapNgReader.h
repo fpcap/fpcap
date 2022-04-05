@@ -15,7 +15,7 @@ public:
 
         if (!boost::filesystem::exists(filepath)) {
             throw std::runtime_error("Cannot find file " +
-                                     boost::filesystem::canonical(filepath).string());
+                                     boost::filesystem::absolute(filepath).string());
         }
     };
 
