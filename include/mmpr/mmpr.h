@@ -1,8 +1,8 @@
 #ifndef MMPR_MMPR_H
 #define MMPR_MMPR_H
 
-#include <cstdint>
 #include <cassert>
+#include <cstdint>
 #include <mmpr/pcap.h>
 #include <mmpr/pcapng.h>
 
@@ -29,6 +29,24 @@ struct Packet {
     uint32_t captureLength{0};
     uint32_t length{0};
     const uint8_t* data{nullptr};
+};
+
+class FileReader {
+protected:
+    std::string mFilepath;
+
+    FileReader(const std::string& filepath);
+public:
+    virtual void open() = 0;
+    virtual void close() = 0;
+    virtual bool isExhausted() const = 0;
+    virtual bool readNextPacket(Packet& packet) = 0;
+    virtual size_t getFileSize() const = 0;
+    virtual std::string getFilepath() const = 0;
+    virtual size_t getCurrentOffset() const = 0;
+    virtual uint16_t getDataLinkType() const = 0;
+
+    static FileReader* getReader(const std::string& filepath);
 };
 
 } // namespace mmpr

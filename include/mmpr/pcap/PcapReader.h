@@ -6,11 +6,9 @@
 
 namespace mmpr {
 
-
-
-class PcapReader {
+class PcapReader : public FileReader {
 public:
-    explicit PcapReader(const std::string& filepath) : mFilepath(filepath) {
+    explicit PcapReader(const std::string& filepath) : FileReader(filepath) {
         if (filepath.empty()) {
             throw std::runtime_error("Cannot read empty filepath");
         }
@@ -32,7 +30,6 @@ public:
     virtual uint16_t getDataLinkType() const { return mDataLinkType; };
 
 protected:
-    std::string mFilepath;
     uint16_t mDataLinkType{0};
 };
 

@@ -6,9 +6,9 @@
 
 namespace mmpr {
 
-class PcapNgReader {
+class PcapNgReader : public FileReader {
 public:
-    explicit PcapNgReader(const std::string& filepath) : mFilepath(filepath) {
+    explicit PcapNgReader(const std::string& filepath) : FileReader(filepath) {
         if (filepath.empty()) {
             throw std::runtime_error("Cannot read empty filepath");
         }
@@ -36,7 +36,6 @@ public:
     virtual std::string getUserApplication() const { return mMetadata.userApplication; };
 
 protected:
-    std::string mFilepath;
     size_t mFileSize{0};
     size_t mOffset{0};
     const uint8_t* mData{nullptr};

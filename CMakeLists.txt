@@ -17,7 +17,7 @@ endif()
 
 # Add Boost (target Boost::boost)
 set(MIN_BOOST_VERSION 1.71)
-find_package(Boost ${MIN_BOOST_VERSION} REQUIRED COMPONENTS filesystem)
+find_package(Boost ${MIN_BOOST_VERSION} REQUIRED COMPONENTS filesystem program_options)
 
 # Add Zstd compression library
 set(MIN_ZSTD_VERSION 1.4)
@@ -31,6 +31,7 @@ add_library(mmpr
     src/pcapng/PcapNgBlockParser.cpp
     src/pcapng/PcapNgReader.cpp
     src/pcapng/ZstdPcapNgReader.cpp
+    src/Reader.cpp
     src/util.h
     src/ZstdDecompressor.cpp
 )

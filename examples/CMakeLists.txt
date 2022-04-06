@@ -12,3 +12,6 @@ target_link_libraries(mmpr_example_pcapng_metadata PRIVATE mmpr)
 
 add_executable(mmpr_example_pcap_simple pcap_simple.cpp)
 target_link_libraries(mmpr_example_pcap_simple PRIVATE mmpr)
+
+add_executable(mmpr_statistics_cli statistics_cli.cpp)
+target_link_libraries(mmpr_statistics_cli PRIVATE mmpr Boost::program_options)
