@@ -29,7 +29,7 @@ public:
     virtual size_t getFileSize() const { return mFileSize; };
     virtual std::string getFilepath() const { return mFilepath; }
     virtual size_t getCurrentOffset() const { return mOffset; };
-    virtual uint16_t getDataLinkType() const { return mOffset >= mFileSize; };
+    virtual uint16_t getDataLinkType() const { return mDataLinkType; };
     virtual std::string getComment() const { return mMetadata.comment; };
     virtual std::string getOS() const { return mMetadata.os; };
     virtual std::string getHardware() const { return mMetadata.hardware; };
