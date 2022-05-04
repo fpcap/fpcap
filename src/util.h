@@ -8,7 +8,7 @@
 namespace mmpr {
 namespace util {
 
-static void dumpMemory(const uint8_t* data, size_t length) {
+__attribute__((unused)) static void dumpMemory(const uint8_t* data, size_t length) {
     for (size_t i = 1; i <= length; i++) {
         printf("%02hhx", data[i - 1]);
         if (i % 16 == 0) {
@@ -22,7 +22,7 @@ static void dumpMemory(const uint8_t* data, size_t length) {
     putchar('\n');
 }
 
-static double fromIfTsresolDouble(const uint8_t value) {
+__attribute__((unused)) static double fromIfTsresolDouble(const uint8_t value) {
     uint8_t mostSignificantBit = value & 0x80;
     uint8_t remainingBits = value & 0x7F;
 
@@ -35,7 +35,7 @@ static double fromIfTsresolDouble(const uint8_t value) {
     }
 }
 
-static uint32_t fromIfTsresolUInt(const uint8_t value) {
+__attribute__((unused)) static uint32_t fromIfTsresolUInt(const uint8_t value) {
     uint8_t mostSignificantBit = value & 0x80;
     uint8_t remainingBits = value & 0x7F;
 
