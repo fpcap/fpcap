@@ -9,4 +9,4 @@
 [submodule "benchmark/libs/PcapPlusPlus"]
 	path = benchmark/libs/PcapPlusPlus
 	url = https://github.com/clementperon/PcapPlusPlus.git
-	branch = b785c9a65773033430a15194209cf784e6bc2aac
+	branch = a7326003891b3d82fabe2b84c98ccf5ba442b4f3
