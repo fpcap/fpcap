@@ -1,6 +1,7 @@
 #include <mmpr/mmpr.h>
 
-#include <boost/algorithm/string/predicate.hpp>
+#include "util.h"
+#include <iostream>
 #include <mmpr/pcap/MMPcapReader.h>
 #include <mmpr/pcapng/MMPcapNgReader.h>
 #include <mmpr/pcapng/ZstdPcapNgReader.h>
@@ -10,23 +11,21 @@ namespace mmpr {
 FileReader::FileReader(const std::string& filepath) : mFilepath(filepath) {}
 
 FileReader* FileReader::getReader(const std::string& filepath) {
-    if (boost::algorithm::ends_with(filepath, ".pcap") ||
-        boost::algorithm::ends_with(filepath, ".cap")) {
+    if (!boost::filesystem::exists(filepath)) {
+        throw std::runtime_error("FileReader: could not find file \"" + filepath + "\"");
+    }
+
+    uint32_t magicNumber = util::read32bitsFromFile(filepath);
+    switch (magicNumber) {
+    case MMPR_MAGIC_NUMBER_PCAP_MICROSECONDS:
+    case MMPR_MAGIC_NUMBER_PCAP_NANOSECONDS:
         return new MMPcapReader(filepath);
-    } else if (boost::algorithm::ends_with(filepath, ".pcap.zst") ||
-               boost::algorithm::ends_with(filepath, ".pcap.zstd")) {
-        // TODO implement
-        // return ZstdPcapReader();
-        throw std::runtime_error("not yet implemented");
-    } else if (boost::algorithm::ends_with(filepath, ".pcapng")) {
+    case MMPR_MAGIC_NUMBER_PCAPNG:
         return new MMPcapNgReader(filepath);
-    } else if (boost::algorithm::ends_with(filepath, ".pcapng.zst") ||
-               boost::algorithm::ends_with(filepath, ".pcapng.zstd")) {
+    case MMPR_MAGIC_NUMBER_ZSTD:
         return new ZstdPcapNgReader(filepath);
-    } else {
-        throw std::runtime_error(
-            "Currently only supporting the following file endings: .pcap, .cap, "
-            ".pcapng, .zst and .zstd");
+    default:
+        throw std::runtime_error("Failed to determine file type based on first 32 bits");
     }
 }
 

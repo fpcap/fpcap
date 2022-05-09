@@ -1,7 +1,6 @@
 #include <mmpr/pcap/MMPcapReader.h>
 
 #include "util.h"
-#include <boost/algorithm/string/predicate.hpp>
 #include <boost/filesystem.hpp>
 #include <cerrno>
 #include <cstring>
@@ -17,10 +16,16 @@ using namespace boost::algorithm;
 
 namespace mmpr {
 MMPcapReader::MMPcapReader(const string& filepath) : PcapReader(filepath) {
-    // TODO determine by file header or similar
-    if (!ends_with(filepath, ".pcap") && !ends_with(filepath, ".cap")) {
-        throw runtime_error(
-            "MMPcapReader only supports files with .pcap or .cap endings");
+    uint32_t magicNumber = util::read32bitsFromFile(filepath);
+    if (magicNumber != MMPR_MAGIC_NUMBER_PCAP_MICROSECONDS &&
+        magicNumber != MMPR_MAGIC_NUMBER_PCAP_NANOSECONDS) {
+        stringstream sstream;
+        sstream << std::hex << magicNumber;
+        string hex = sstream.str();
+        boost::to_upper(hex);
+        throw std::runtime_error("Expected PCAP format to start with appropriate magic "
+                                 "numbers, instead got: 0x" +
+                                 hex);
     }
 }
 

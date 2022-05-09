@@ -1,6 +1,7 @@
 #ifndef MMPR_PCAPPARSER_H
 #define MMPR_PCAPPARSER_H
 
+#include <boost/algorithm/string.hpp>
 #include <mmpr/mmpr.h>
 
 namespace mmpr {
@@ -27,7 +28,15 @@ public:
      */
     static void readFileHeader(const uint8_t* data, FileHeader& fh) {
         auto magicNumber = *(const uint32_t*)&data[0];
-        MMPR_ASSERT(magicNumber == 0xA1B2C3D4 || magicNumber == 0xA1B23C4D);
+        if (magicNumber != 0xA1B2C3D4 && magicNumber != 0xA1B23C4D) {
+            std::stringstream sstream;
+            sstream << std::hex << magicNumber;
+            std::string hex = sstream.str();
+            boost::to_upper(hex);
+            throw std::runtime_error(
+                "Expected PCAP file header to start with magic numbers 0xA1B2C3D4 or "
+                "0xA1B23C4D, but instead got: 0x" + hex);
+        }
 
         if (magicNumber == 0xA1B2C3D4) {
             fh.timestampFormat = FileHeader::MICROSECONDS;

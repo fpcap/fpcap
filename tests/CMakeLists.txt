@@ -14,6 +14,7 @@ add_executable(mmpr_test
     src/pcapng/testTraceInterfaces.cpp
     src/pcapng/testZstdPcapNgReader.cpp
     src/main.cpp
+    src/testFileReader.cpp
 )
 target_compile_features(mmpr_test PRIVATE cxx_std_11)
 target_link_libraries(mmpr_test gtest_main mmpr::mmpr)

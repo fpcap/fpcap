@@ -4,9 +4,26 @@
 #include <cmath>
 #include <cstdint>
 #include <cstdio>
+#include <fstream>
 
 namespace mmpr {
 namespace util {
+
+/**
+ * Reads first 32 bits from a file to determine the magic number / file format.
+ * @param filepath Path to the file as string
+ * @return The first 32 bits as unsigned
+ */
+__attribute__((unused)) static uint32_t read32bitsFromFile(const std::string& filepath) {
+    uint32_t magicNumber;
+    std::ifstream file(filepath, std::ios::in | std::ios::binary);
+    if (file.is_open()) {
+        file.read((char*)&magicNumber, sizeof(magicNumber));
+    } else {
+        throw std::runtime_error("Failed opening file to read first 32 bits");
+    }
+    return magicNumber;
+}
 
 /**
  * Parses a non zero terminated string from the option at option.value with length

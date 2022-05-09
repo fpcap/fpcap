@@ -1,12 +1,13 @@
 #include <mmpr/pcapng/MMPcapNgReader.h>
 
 #include "util.h"
-#include <boost/algorithm/string/predicate.hpp>
+#include <boost/algorithm/string/case_conv.hpp>
 #include <boost/filesystem.hpp>
 #include <cerrno>
 #include <cstring>
 #include <fcntl.h>
 #include <mmpr/pcapng/PcapNgBlockParser.h>
+#include <sstream>
 #include <stdexcept>
 #include <sys/mman.h>
 #include <unistd.h>
@@ -18,9 +19,15 @@ using namespace boost::algorithm;
 namespace mmpr {
 
 MMPcapNgReader::MMPcapNgReader(const string& filepath) : PcapNgReader(filepath) {
-    // TODO determine by file header or similar
-    if (!ends_with(filepath, ".pcapng")) {
-        throw runtime_error("MMPcapNgReader only supports files with .pcapng endings");
+    uint32_t magicNumber = util::read32bitsFromFile(filepath);
+    if (magicNumber != MMPR_MAGIC_NUMBER_PCAPNG) {
+        stringstream sstream;
+        sstream << std::hex << magicNumber;
+        string hex = sstream.str();
+        boost::to_upper(hex);
+        throw std::runtime_error("Expected PcapNG format to start with appropriate magic "
+                                 "number, instead got: 0x" +
+                                 hex);
     }
 }
 
