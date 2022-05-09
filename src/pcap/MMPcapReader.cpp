@@ -18,8 +18,9 @@ using namespace boost::algorithm;
 namespace mmpr {
 MMPcapReader::MMPcapReader(const string& filepath) : PcapReader(filepath) {
     // TODO determine by file header or similar
-    if (!ends_with(filepath, ".pcap")) {
-        throw runtime_error("MMPcapReader only supports files with .pcap endings");
+    if (!ends_with(filepath, ".pcap") && !ends_with(filepath, ".cap")) {
+        throw runtime_error(
+            "MMPcapReader only supports files with .pcap or .cap endings");
     }
 }
 
