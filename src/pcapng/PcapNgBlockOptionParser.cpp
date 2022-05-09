@@ -1,8 +1,8 @@
 #include <mmpr/pcapng/PcapNgBlockOptionParser.h>
 
-#include <mmpr/mmpr.h>
 #include "util.h"
 #include <cmath>
+#include <mmpr/mmpr.h>
 
 namespace mmpr {
 /**
@@ -72,17 +72,18 @@ void PcapNgBlockOptionParser::readIDBBlockOption(const uint8_t* data,
 
     // TODO check if pre-defined options have the correct length, e.g., uint32_t = 4
     switch (option.type) {
-    case 2: {
+    case MMPR_BLOCK_OPTION_IDB_NAME: {
         // if_name: name of the device used to capture data
-        // TODO parse if_name as UTF-8 string (not zero-terminated)
-        MMPR_DEBUG_LOG_2("[IDB][OPT] Device Name: %.*s\n", option.length, option.value);
+        std::string name = util::parseUTF8(option);
+        MMPR_UNUSED(name);
+        MMPR_DEBUG_LOG("[IDB][OPT] Device Name: %s\n", name.c_str());
         return;
     }
-    case 3: {
+    case MMPR_BLOCK_OPTION_IDB_DESCRIPTION: {
         // if_description: description of the device used to capture data
-        // TODO parse if_description as UTF-8 string (not zero-terminated)
-        MMPR_DEBUG_LOG_2("[IDB][OPT] Device Description: %.*s\n", option.length,
-                         option.value);
+        std::string description = util::parseUTF8(option);
+        MMPR_UNUSED(description);
+        MMPR_DEBUG_LOG("[IDB][OPT] Device Description: %s\n", description.c_str());
         return;
     }
     case 4: {
@@ -112,7 +113,7 @@ void PcapNgBlockOptionParser::readIDBBlockOption(const uint8_t* data,
         MMPR_DEBUG_LOG("[IDB][OPT] Interface Speed: %lu bits/s\n", speed);
         return;
     }
-    case 9: {
+    case MMPR_BLOCK_OPTION_IDB_TSRESOL: {
         /* if_tsresol: resolution of timestamps
          *
          * The if_tsresol option identifies the resolution of timestamps. If the Most
@@ -134,16 +135,25 @@ void PcapNgBlockOptionParser::readIDBBlockOption(const uint8_t* data,
         // TODO parse if_tzone
         break;
     }
-    case 11: {
-        // if_filter: filter (e.g. "capture only TCP traffic") used to capture traffic
-        // TODO parse if_filter
-        break;
+    case MMPR_BLOCK_OPTION_IDB_FILTER: {
+        /* if_filter: filter (e.g. "capture only TCP traffic") used to capture traffic
+         *
+         * The first octet of the Option Data keeps a code of the filter used (e.g. if
+         * this is a libpcap string, or BPF bytecode, and more).
+         */
+        // skip first octet (filter code), interpret rest as string, cf. util::fromUTF8()
+        std::string filter = std::string(reinterpret_cast<const char*>(&option.value[1]),
+                                         option.length - 1);
+        MMPR_UNUSED(filter);
+        MMPR_DEBUG_LOG("[IDB][OPT] Filter: %s\n", filter.c_str());
+        return;
     }
-    case 12: {
+    case MMPR_BLOCK_OPTION_IDB_OS: {
         // if_os: name of the operating system of the machine in which this interface is
         // installed
-        // TODO parse as UTF-8 string (not zero-terminated)
-        MMPR_DEBUG_LOG_2("[IDB][OPT] OS: %.*s\n", option.length, option.value);
+        std::string os = util::parseUTF8(option);
+        MMPR_UNUSED(os);
+        MMPR_DEBUG_LOG("[IDB][OPT] OS: %s\n", os.c_str());
         return;
     }
     case 13: {

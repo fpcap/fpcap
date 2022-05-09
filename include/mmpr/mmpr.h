@@ -28,6 +28,7 @@ struct Packet {
     uint32_t timestampMicroseconds{0};
     uint32_t captureLength{0};
     uint32_t length{0};
+    int interfaceIndex{-1};
     const uint8_t* data{nullptr};
 };
 
@@ -36,6 +37,7 @@ protected:
     std::string mFilepath;
 
     FileReader(const std::string& filepath);
+
 public:
     virtual void open() = 0;
     virtual void close() = 0;

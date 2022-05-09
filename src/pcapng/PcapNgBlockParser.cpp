@@ -1,8 +1,8 @@
 #include <mmpr/pcapng/PcapNgBlockParser.h>
 
+#include "util.h"
 #include <mmpr/mmpr.h>
 #include <mmpr/pcapng/PcapNgBlockOptionParser.h>
-#include "util.h"
 
 namespace mmpr {
 /**
@@ -133,6 +133,20 @@ void PcapNgBlockParser::readIDB(const uint8_t* data, InterfaceDescriptionBlock& 
             case MMPR_BLOCK_OPTION_IDB_TSRESOL:
                 MMPR_ASSERT(option.length == 1);
                 idb.options.timestampResolution = util::fromIfTsresolUInt(*option.value);
+                break;
+            case MMPR_BLOCK_OPTION_IDB_NAME:
+                idb.options.name = util::parseUTF8(option);
+                break;
+            case MMPR_BLOCK_OPTION_IDB_DESCRIPTION:
+                idb.options.description = util::parseUTF8(option);
+                break;
+            case MMPR_BLOCK_OPTION_IDB_FILTER:
+                // skip first octet (filter code), interpret rest as string
+                idb.options.filter = std::string(
+                    reinterpret_cast<const char*>(&option.value[1]), option.length - 1);
+                break;
+            case MMPR_BLOCK_OPTION_IDB_OS:
+                idb.options.os = util::parseUTF8(option);
                 break;
             }
         }

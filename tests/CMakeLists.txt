@@ -11,6 +11,7 @@ endif()
 add_executable(mmpr_test
     src/pcap/testMMPcapReader.cpp
     src/pcapng/testMMPcapNgReader.cpp
+    src/pcapng/testTraceInterfaces.cpp
     src/pcapng/testZstdPcapNgReader.cpp
     src/main.cpp
 )

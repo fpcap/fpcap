@@ -1,6 +1,7 @@
 #ifndef MMPR_PCAPNG_H
 #define MMPR_PCAPNG_H
 
+#include <boost/optional.hpp>
 #include <string>
 
 /**
@@ -25,7 +26,11 @@
 #define MMPR_BLOCK_OPTION_SHB_OS 3
 #define MMPR_BLOCK_OPTION_SHB_USERAPPL 4
 
+#define MMPR_BLOCK_OPTION_IDB_NAME 2
+#define MMPR_BLOCK_OPTION_IDB_DESCRIPTION 3
 #define MMPR_BLOCK_OPTION_IDB_TSRESOL 9
+#define MMPR_BLOCK_OPTION_IDB_FILTER 11
+#define MMPR_BLOCK_OPTION_IDB_OS 12
 
 namespace mmpr {
 
@@ -62,6 +67,10 @@ struct InterfaceDescriptionBlock {
     uint32_t snapLen{0};
     struct Options {
         uint32_t timestampResolution{1000000 /* 10^6 */};
+        boost::optional<std::string> name{boost::none};
+        boost::optional<std::string> description{boost::none};
+        boost::optional<std::string> filter{boost::none};
+        boost::optional<std::string> os{boost::none};
     } options{};
 };
 
@@ -80,6 +89,19 @@ struct InterfaceStatisticsBlock {
     uint32_t interfaceId{0};
     uint32_t timestampHigh{0};
     uint32_t timestampLow{0};
+};
+
+struct TraceInterface {
+    TraceInterface(boost::optional<std::string> name,
+                   boost::optional<std::string> description,
+                   boost::optional<std::string> filter,
+                   boost::optional<std::string> os)
+        : name(name), description(description), filter(filter), os(os) {}
+
+    boost::optional<std::string> name{boost::none};
+    boost::optional<std::string> description{boost::none};
+    boost::optional<std::string> filter{boost::none};
+    boost::optional<std::string> os{boost::none};
 };
 
 } // namespace mmpr

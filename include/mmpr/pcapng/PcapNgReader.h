@@ -34,12 +34,16 @@ public:
     virtual std::string getOS() const { return mMetadata.os; };
     virtual std::string getHardware() const { return mMetadata.hardware; };
     virtual std::string getUserApplication() const { return mMetadata.userApplication; };
+    virtual std::vector<TraceInterface> getTraceInterfaces() const {
+        return mTraceInterfaces;
+    };
 
 protected:
     size_t mFileSize{0};
     size_t mOffset{0};
     const uint8_t* mData{nullptr};
     uint16_t mDataLinkType{0};
+    std::vector<TraceInterface> mTraceInterfaces;
 
     struct PcapNgMetadata {
         std::string comment;

@@ -1,7 +1,7 @@
 #include <mmpr/pcapng/PcapNgReader.h>
 
-#include <mmpr/pcapng/PcapNgBlockParser.h>
 #include "util.h"
+#include <mmpr/pcapng/PcapNgBlockParser.h>
 
 using namespace std;
 
@@ -37,6 +37,8 @@ bool PcapNgReader::readNextPacket(Packet& packet) {
             PcapNgBlockParser::readIDB(&mData[mOffset], idb);
             mDataLinkType = idb.linkType;
             mMetadata.timestampResolution = idb.options.timestampResolution;
+            mTraceInterfaces.emplace_back(idb.options.name, idb.options.description,
+                                          idb.options.filter, idb.options.os);
         }
 
         mOffset += blockTotalLength;
@@ -67,6 +69,7 @@ bool PcapNgReader::readNextPacket(Packet& packet) {
     packet.captureLength = epb.capturePacketLength;
     packet.length = epb.originalPacketLength;
     packet.data = epb.packetData;
+    packet.interfaceIndex = epb.interfaceId;
 
     mOffset += epb.blockTotalLength;
 
@@ -108,6 +111,8 @@ uint32_t PcapNgReader::readBlock() {
         PcapNgBlockParser::readIDB(&mData[mOffset], idb);
         mDataLinkType = idb.linkType;
         mMetadata.timestampResolution = idb.options.timestampResolution;
+        mTraceInterfaces.emplace_back(idb.options.name, idb.options.description,
+                                      idb.options.filter, idb.options.os);
         break;
     }
     case MMPR_ENHANCED_PACKET_BLOCK: {

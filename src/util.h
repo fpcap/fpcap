@@ -8,6 +8,16 @@
 namespace mmpr {
 namespace util {
 
+/**
+ * Parses a non zero terminated string from the option at option.value with length
+ * option.length.
+ * @param option the option containing the string value
+ * @return string value
+ */
+__attribute__((unused)) static std::string parseUTF8(const Option& option) {
+    return std::string(reinterpret_cast<const char*>(option.value), option.length);
+}
+
 __attribute__((unused)) static void dumpMemory(const uint8_t* data, size_t length) {
     for (size_t i = 1; i <= length; i++) {
         printf("%02hhx", data[i - 1]);
