@@ -10,7 +10,8 @@ namespace mmpr {
 FileReader::FileReader(const std::string& filepath) : mFilepath(filepath) {}
 
 FileReader* FileReader::getReader(const std::string& filepath) {
-    if (boost::algorithm::ends_with(filepath, ".pcap")) {
+    if (boost::algorithm::ends_with(filepath, ".pcap") ||
+        boost::algorithm::ends_with(filepath, ".cap")) {
         return new MMPcapReader(filepath);
     } else if (boost::algorithm::ends_with(filepath, ".pcap.zst") ||
                boost::algorithm::ends_with(filepath, ".pcap.zstd")) {
@@ -24,7 +25,7 @@ FileReader* FileReader::getReader(const std::string& filepath) {
         return new ZstdPcapNgReader(filepath);
     } else {
         throw std::runtime_error(
-            "Currently only supporting the following file endings: .pcap, "
+            "Currently only supporting the following file endings: .pcap, .cap, "
             ".pcapng, .zst and .zstd");
     }
 }
