@@ -48,8 +48,8 @@ public:
         fh.minorVersion = *(const uint16_t*)&data[6];
 
         fh.snapLength = *(const uint32_t*)&data[16];
-        fh.fcsSequence = *(const uint16_t*)&data[20];
-        fh.linkType = *(const uint16_t*)&data[22];
+        fh.linkType = *(const uint16_t*)&data[20];
+        fh.fcsSequence = *(const uint16_t*)&data[22];
 
         MMPR_DEBUG_LOG("--- [File Header %p] ---\n", (void*)data);
         MMPR_DEBUG_LOG("[FH] Timestamp Format: %s\n",
@@ -57,6 +57,7 @@ public:
                                                                       : "NANOSECONDS");
         MMPR_DEBUG_LOG_2("[FH] Version: %u.%u\n", fh.majorVersion, fh.minorVersion);
         MMPR_DEBUG_LOG("[FH] Snap Length: %u\n", fh.snapLength);
+        MMPR_DEBUG_LOG("[FH] FCS Sequence: %u\n", fh.fcsSequence);
         MMPR_DEBUG_LOG("[FH] Link Type: %u\n", fh.linkType);
     }
 
