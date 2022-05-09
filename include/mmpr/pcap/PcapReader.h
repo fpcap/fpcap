@@ -25,9 +25,12 @@ public:
     virtual void close() = 0;
 
     virtual size_t getFileSize() const = 0;
-    virtual std::string getFilepath() const { return mFilepath; }
+    virtual std::string getFilepath() const override { return mFilepath; }
     virtual size_t getCurrentOffset() const = 0;
-    virtual uint16_t getDataLinkType() const { return mDataLinkType; };
+    virtual uint16_t getDataLinkType() const override { return mDataLinkType; };
+    std::vector<TraceInterface> getTraceInterfaces() const override {
+        return std::vector<TraceInterface>();
+    }
 
 protected:
     uint16_t mDataLinkType{0};

@@ -34,9 +34,9 @@ public:
     virtual std::string getOS() const { return mMetadata.os; };
     virtual std::string getHardware() const { return mMetadata.hardware; };
     virtual std::string getUserApplication() const { return mMetadata.userApplication; };
-    virtual std::vector<TraceInterface> getTraceInterfaces() const {
+    std::vector<TraceInterface> getTraceInterfaces() const override {
         return mTraceInterfaces;
-    };
+    }
 
 protected:
     size_t mFileSize{0};

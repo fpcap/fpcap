@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <mmpr/pcap.h>
 #include <mmpr/pcapng.h>
+#include <vector>
 
 #if DEBUG
 #define MMPR_DEBUG_LOG(format, val) printf(format, val);
@@ -32,6 +33,19 @@ struct Packet {
     const uint8_t* data{nullptr};
 };
 
+struct TraceInterface {
+    TraceInterface(boost::optional<std::string> name,
+                   boost::optional<std::string> description,
+                   boost::optional<std::string> filter,
+                   boost::optional<std::string> os)
+        : name(name), description(description), filter(filter), os(os) {}
+
+    boost::optional<std::string> name{boost::none};
+    boost::optional<std::string> description{boost::none};
+    boost::optional<std::string> filter{boost::none};
+    boost::optional<std::string> os{boost::none};
+};
+
 class FileReader {
 protected:
     std::string mFilepath;
@@ -47,6 +61,7 @@ public:
     virtual std::string getFilepath() const = 0;
     virtual size_t getCurrentOffset() const = 0;
     virtual uint16_t getDataLinkType() const = 0;
+    virtual std::vector<TraceInterface> getTraceInterfaces() const = 0;
 
     static FileReader* getReader(const std::string& filepath);
 };

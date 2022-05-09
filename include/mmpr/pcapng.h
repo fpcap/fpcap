@@ -91,19 +91,6 @@ struct InterfaceStatisticsBlock {
     uint32_t timestampLow{0};
 };
 
-struct TraceInterface {
-    TraceInterface(boost::optional<std::string> name,
-                   boost::optional<std::string> description,
-                   boost::optional<std::string> filter,
-                   boost::optional<std::string> os)
-        : name(name), description(description), filter(filter), os(os) {}
-
-    boost::optional<std::string> name{boost::none};
-    boost::optional<std::string> description{boost::none};
-    boost::optional<std::string> filter{boost::none};
-    boost::optional<std::string> os{boost::none};
-};
-
 } // namespace mmpr
 
 #endif // MMPR_PCAPNG_H
