@@ -39,8 +39,8 @@ public:
     }
     TraceInterface getTraceInterface(size_t id) const override {
         if (id >= mTraceInterfaces.size()) {
-            throw std::runtime_error("Illegal access, trace interface index " +
-                                     std::to_string(id) + " is out of range");
+            throw std::out_of_range("Trace interface index " + std::to_string(id) +
+                                    " is out of range");
         }
         return mTraceInterfaces[id];
     }
