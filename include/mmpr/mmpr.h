@@ -25,7 +25,7 @@
 #define MMPR_MAGIC_NUMBER_PCAP_MICROSECONDS 0xA1B2C3D4
 #define MMPR_MAGIC_NUMBER_PCAP_NANOSECONDS 0xA1B23C4D
 #define MMPR_MAGIC_NUMBER_PCAPNG 0x0A0D0D0A
-#define MMPR_MAGIC_NUMBER_ZSTD  0xFD2FB528
+#define MMPR_MAGIC_NUMBER_ZSTD 0xFD2FB528
 
 namespace mmpr {
 
@@ -39,6 +39,7 @@ struct Packet {
 };
 
 struct TraceInterface {
+    TraceInterface(){};
     TraceInterface(boost::optional<std::string> name,
                    boost::optional<std::string> description,
                    boost::optional<std::string> filter,
@@ -67,6 +68,7 @@ public:
     virtual size_t getCurrentOffset() const = 0;
     virtual uint16_t getDataLinkType() const = 0;
     virtual std::vector<TraceInterface> getTraceInterfaces() const = 0;
+    virtual TraceInterface getTraceInterface(size_t id) const = 0;
 
     static FileReader* getReader(const std::string& filepath);
 };

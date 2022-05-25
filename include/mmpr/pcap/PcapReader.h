@@ -31,6 +31,9 @@ public:
     std::vector<TraceInterface> getTraceInterfaces() const override {
         return std::vector<TraceInterface>();
     }
+    TraceInterface getTraceInterface(size_t id) const override {
+        return {};
+    }
 
 protected:
     uint16_t mDataLinkType{0};

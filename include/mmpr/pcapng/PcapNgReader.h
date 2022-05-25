@@ -37,6 +37,13 @@ public:
     std::vector<TraceInterface> getTraceInterfaces() const override {
         return mTraceInterfaces;
     }
+    TraceInterface getTraceInterface(size_t id) const override {
+        if (id >= mTraceInterfaces.size()) {
+            throw std::runtime_error("Illegal access, trace interface index " +
+                                     std::to_string(id) + " is out of range");
+        }
+        return mTraceInterfaces[id];
+    }
 
 protected:
     size_t mFileSize{0};
