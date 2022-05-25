@@ -25,7 +25,7 @@ MMPcapReader::MMPcapReader(const string& filepath) : PcapReader(filepath) {
         boost::to_upper(hex);
         throw std::runtime_error("Expected PCAP format to start with appropriate magic "
                                  "numbers, instead got: 0x" +
-                                 hex);
+                                 hex + ", possibly little/big endian issue");
     }
 }
 

@@ -27,7 +27,7 @@ MMPcapNgReader::MMPcapNgReader(const string& filepath) : PcapNgReader(filepath) 
         boost::to_upper(hex);
         throw std::runtime_error("Expected PcapNG format to start with appropriate magic "
                                  "number, instead got: 0x" +
-                                 hex);
+                                 hex + ", possibly little/big endian issue");
     }
 }
 

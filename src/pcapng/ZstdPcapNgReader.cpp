@@ -19,9 +19,9 @@ ZstdPcapNgReader::ZstdPcapNgReader(const std::string& filepath) : PcapNgReader(f
         sstream << std::hex << magicNumber;
         string hex = sstream.str();
         boost::to_upper(hex);
-        throw std::runtime_error("Expected PcapNG format to start with appropriate magic "
+        throw std::runtime_error("Expected ZSTD format to start with appropriate magic "
                                  "number, instead got: 0x" +
-                                 hex);
+                                 hex + ", possibly little/big endian issue");
     }
 }
 
