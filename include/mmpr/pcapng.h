@@ -9,10 +9,11 @@
  */
 #define MMPR_SECTION_HEADER_BLOCK 0x0A0D0D0A
 #define MMPR_INTERFACE_DESCRIPTION_BLOCK 1
-#define MMPR_ENHANCED_PACKET_BLOCK 6
+#define MMPR_PACKET_BLOCK 2  // deprecated in newer PcapNG versions
 #define MMPR_SIMPLE_PACKET_BLOCK 3
 #define MMPR_NAME_RESOLUTION_BLOCK 4
 #define MMPR_INTERFACE_STATISTICS_BLOCK 5
+#define MMPR_ENHANCED_PACKET_BLOCK 6
 #define MMPR_DECRYPTION_SECRETS_BLOCK 10
 #define MMPR_CUSTOM_CAN_COPY_BLOCK 0x00000BAD
 #define MMPR_CUSTOM_DO_NOT_COPY_BLOCK 0x40000BAD
@@ -77,6 +78,17 @@ struct InterfaceDescriptionBlock {
 struct EnhancedPacketBlock {
     uint32_t blockTotalLength{0};
     uint32_t interfaceId{0};
+    uint32_t timestampHigh{0};
+    uint32_t timestampLow{0};
+    uint32_t capturePacketLength{0};
+    uint32_t originalPacketLength{0};
+    const uint8_t* packetData{nullptr};
+};
+
+struct PacketBlock {
+    uint32_t blockTotalLength{0};
+    uint16_t interfaceId{0};
+    uint16_t dropsCount{0};
     uint32_t timestampHigh{0};
     uint32_t timestampLow{0};
     uint32_t capturePacketLength{0};

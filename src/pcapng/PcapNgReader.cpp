@@ -24,7 +24,7 @@ bool PcapNgReader::readNextPacket(Packet& packet) {
     uint32_t blockTotalLength = *(uint32_t*)&mData[mOffset + 4];
 
     // TODO add support for Simple Packet Blocks
-    while (blockType != MMPR_ENHANCED_PACKET_BLOCK) {
+    while (blockType != MMPR_ENHANCED_PACKET_BLOCK && blockType != MMPR_PACKET_BLOCK) {
         if (blockType == MMPR_SECTION_HEADER_BLOCK) {
             SectionHeaderBlock shb{};
             PcapNgBlockParser::readSHB(&mData[mOffset], shb);
@@ -61,17 +61,34 @@ bool PcapNgReader::readNextPacket(Packet& packet) {
         blockTotalLength = *(const uint32_t*)&mData[mOffset + 4];
     }
 
-    EnhancedPacketBlock epb{};
-    PcapNgBlockParser::readEPB(&mData[mOffset], epb);
-    util::calculateTimestamps(mMetadata.timestampResolution, epb.timestampHigh,
-                              epb.timestampLow, &(packet.timestampSeconds),
-                              &(packet.timestampMicroseconds));
-    packet.captureLength = epb.capturePacketLength;
-    packet.length = epb.originalPacketLength;
-    packet.data = epb.packetData;
-    packet.interfaceIndex = epb.interfaceId;
+    switch (blockType) {
+    case MMPR_ENHANCED_PACKET_BLOCK: {
+        EnhancedPacketBlock epb{};
+        PcapNgBlockParser::readEPB(&mData[mOffset], epb);
+        util::calculateTimestamps(mMetadata.timestampResolution, epb.timestampHigh,
+                                  epb.timestampLow, &(packet.timestampSeconds),
+                                  &(packet.timestampMicroseconds));
+        packet.captureLength = epb.capturePacketLength;
+        packet.length = epb.originalPacketLength;
+        packet.data = epb.packetData;
+        packet.interfaceIndex = epb.interfaceId;
 
-    mOffset += epb.blockTotalLength;
+        mOffset += epb.blockTotalLength;
+    }
+    case MMPR_PACKET_BLOCK: {
+        PacketBlock pb{};
+        PcapNgBlockParser::readPB(&mData[mOffset], pb);
+        util::calculateTimestamps(mMetadata.timestampResolution, pb.timestampHigh,
+                                  pb.timestampLow, &(packet.timestampSeconds),
+                                  &(packet.timestampMicroseconds));
+        packet.captureLength = pb.capturePacketLength;
+        packet.length = pb.originalPacketLength;
+        packet.data = pb.packetData;
+        packet.interfaceIndex = pb.interfaceId;
+
+        mOffset += pb.blockTotalLength;
+    }
+    }
 
     return true;
 }
@@ -120,6 +137,12 @@ uint32_t PcapNgReader::readBlock() {
         PcapNgBlockParser::readEPB(&mData[mOffset], epb);
         break;
     }
+    case MMPR_PACKET_BLOCK: {
+        // deprecated in newer versions of PcapNG
+        PacketBlock pb{};
+        PcapNgBlockParser::readPB(&mData[mOffset], pb);
+        break;
+    }
     case MMPR_SIMPLE_PACKET_BLOCK: {
         MMPR_WARN("Parsing of Simple Packet Blocks not implemented, skipping\n");
         break;
@@ -146,7 +169,7 @@ uint32_t PcapNgReader::readBlock() {
         break;
     }
     default: {
-        MMPR_WARN_1("Encountered unknown block type: %u, skipping", blockType);
+        MMPR_WARN_1("Encountered unknown block type: %u, skipping\n", blockType);
         break;
     }
     }

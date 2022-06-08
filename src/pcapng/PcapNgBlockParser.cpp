@@ -232,6 +232,82 @@ void PcapNgBlockParser::readEPB(const uint8_t* data, EnhancedPacketBlock& epb) {
 }
 
 /**
+ * Appendix A.  Packet Block (obsolete)
+ *
+ *                         1                   2                   3
+ *     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *  0 |                    Block Type = 0x00000006                    |
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *  4 |                      Block Total Length                       |
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *  8 |         Interface ID          |          Drops Count          |
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * 12 |                        Timestamp (High)                       |
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * 16 |                        Timestamp (Low)                        |
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * 20 |                    Captured Packet Length                     |
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * 24 |                    Original Packet Length                     |
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * 28 /                                                               /
+ *    /                          Packet Data                          /
+ *    /              variable length, padded to 32 bits               /
+ *    /                                                               /
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    /                                                               /
+ *    /                      Options (variable)                       /
+ *    /                                                               /
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    |                      Block Total Length                       |
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ */
+void PcapNgBlockParser::readPB(const uint8_t* data, PacketBlock& pb) {
+    auto blockType = *(const uint32_t*)&data[0];
+    MMPR_ASSERT(blockType == MMPR_PACKET_BLOCK);
+
+    pb.blockTotalLength = *(const uint32_t*)&data[4];
+    pb.interfaceId = *(const uint16_t*)&data[8];
+    pb.dropsCount = *(const uint16_t*)&data[10];
+    pb.timestampHigh = *(const uint32_t*)&data[12];
+    pb.timestampLow = *(const uint32_t*)&data[16];
+    pb.capturePacketLength = *(const uint32_t*)&data[20];
+    pb.originalPacketLength = *(const uint32_t*)&data[24];
+    pb.packetData = &data[28];
+
+    MMPR_DEBUG_LOG("--- [Packet Block @%p] ---\n", (void*)data);
+    MMPR_DEBUG_LOG("[PB] Block Total Length: %u\n", pb.blockTotalLength);
+    MMPR_DEBUG_LOG("[PB] Interface ID: 0x%04X\n", pb.interfaceId);
+    MMPR_DEBUG_LOG("[PB] Drops Count: 0x%04X\n", pb.dropsCount);
+    MMPR_DEBUG_LOG("[PB] Timestamp (High): %u\n", pb.timestampHigh);
+    MMPR_DEBUG_LOG("[PB] Timestamp (Low): %u\n", pb.timestampLow);
+    MMPR_DEBUG_LOG("[PB] Captured Packet Length: %u\n", pb.capturePacketLength);
+    MMPR_DEBUG_LOG("[PB] Original Packet Length: %u\n", pb.originalPacketLength);
+    MMPR_DEBUG_LOG("[PB] Packet Data: %p\n", (void*)pb.packetData);
+
+    // packet data is padded to 32 bits, calculate the total size in memory (including
+    // padding)
+    auto packetDataTotalLength =
+        pb.capturePacketLength + (4 - pb.capturePacketLength % 4) % 4;
+    // standard Enhanced Packet Block has size 32 (without packet data or options)
+    if (pb.blockTotalLength - 32 > packetDataTotalLength) {
+        uint32_t totalOptionsLength = pb.blockTotalLength - 32 - packetDataTotalLength;
+        uint32_t readOptionsLength = 0;
+        while (readOptionsLength < totalOptionsLength) {
+            Option option{};
+            PcapNgBlockOptionParser::readEPBOption(
+                data, option, 32 + packetDataTotalLength + readOptionsLength);
+            readOptionsLength += option.totalLength();
+        }
+    }
+
+    // make sure that the block actually ends with block total length
+    auto blockTotalLength = *(const uint32_t*)&data[pb.blockTotalLength - 4];
+    MMPR_ASSERT(pb.blockTotalLength == blockTotalLength);
+}
+
+/**
  * 4.6.  Interface Statistics Block
  *
  *                         1                   2                   3
