@@ -1,10 +1,9 @@
-# see /opt/local/share/cmake-3.16/Modules/FindGTest.cmake
-find_package(GTest QUIET)
-
-if(NOT GTEST_FOUND)
+if(CMAKE_PROJECT_NAME STREQUAL "mmpr")
     # Add googletest directly to our build. This defines
     # the gtest and gtest_main targets.
     add_subdirectory(libs/googletest EXCLUDE_FROM_ALL)
+else()
+    find_package(GTest REQUIRED)
 endif()
 
 # Now simply link against gtest as needed. Eg
