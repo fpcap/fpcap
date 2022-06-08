@@ -74,6 +74,7 @@ bool PcapNgReader::readNextPacket(Packet& packet) {
         packet.interfaceIndex = epb.interfaceId;
 
         mOffset += epb.blockTotalLength;
+        break;
     }
     case MMPR_PACKET_BLOCK: {
         PacketBlock pb{};
@@ -87,6 +88,7 @@ bool PcapNgReader::readNextPacket(Packet& packet) {
         packet.interfaceIndex = pb.interfaceId;
 
         mOffset += pb.blockTotalLength;
+        break;
     }
     }
 
