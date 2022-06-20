@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <cstdint>
+#include <memory>
 #include <mmpr/pcap.h>
 #include <mmpr/pcapng.h>
 #include <vector>
@@ -54,11 +55,13 @@ struct TraceInterface {
 
 class FileReader {
 protected:
-    std::string mFilepath;
-
     FileReader(const std::string& filepath);
 
+    std::string mFilepath;
+
 public:
+    virtual ~FileReader() = default;
+
     virtual void open() = 0;
     virtual void close() = 0;
     virtual bool isExhausted() const = 0;
@@ -70,7 +73,7 @@ public:
     virtual std::vector<TraceInterface> getTraceInterfaces() const = 0;
     virtual TraceInterface getTraceInterface(size_t id) const = 0;
 
-    static FileReader* getReader(const std::string& filepath);
+    static std::unique_ptr<FileReader> getReader(const std::string& filepath);
 };
 
 } // namespace mmpr

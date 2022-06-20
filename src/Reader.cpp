@@ -5,12 +5,13 @@
 #include <mmpr/pcap/MMPcapReader.h>
 #include <mmpr/pcapng/MMPcapNgReader.h>
 #include <mmpr/pcapng/ZstdPcapNgReader.h>
+#include <memory>
 
 namespace mmpr {
 
 FileReader::FileReader(const std::string& filepath) : mFilepath(filepath) {}
 
-FileReader* FileReader::getReader(const std::string& filepath) {
+std::unique_ptr<FileReader> FileReader::getReader(const std::string& filepath) {
     if (!boost::filesystem::exists(filepath)) {
         throw std::runtime_error("FileReader: could not find file \"" + filepath + "\"");
     }
@@ -19,11 +20,11 @@ FileReader* FileReader::getReader(const std::string& filepath) {
     switch (magicNumber) {
     case MMPR_MAGIC_NUMBER_PCAP_MICROSECONDS:
     case MMPR_MAGIC_NUMBER_PCAP_NANOSECONDS:
-        return new MMPcapReader(filepath);
+        return std::unique_ptr<MMPcapReader>(new MMPcapReader(filepath));
     case MMPR_MAGIC_NUMBER_PCAPNG:
-        return new MMPcapNgReader(filepath);
+        return std::unique_ptr<MMPcapNgReader>(new MMPcapNgReader(filepath));
     case MMPR_MAGIC_NUMBER_ZSTD:
-        return new ZstdPcapNgReader(filepath);
+        return std::unique_ptr<ZstdPcapNgReader>(new ZstdPcapNgReader(filepath));
     default:
         throw std::runtime_error("Failed to determine file type based on first 32 bits");
     }

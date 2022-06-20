@@ -36,7 +36,7 @@ int main(int argc, char** argv) {
     auto start = high_resolution_clock::now();
 
     for (const auto& pcapFile : pcapFiles) {
-        mmpr::FileReader* reader = mmpr::FileReader::getReader(pcapFile);
+        std::unique_ptr<mmpr::FileReader> reader = mmpr::FileReader::getReader(pcapFile);
         reader->open();
         totalFileSize += reader->getFileSize();
 

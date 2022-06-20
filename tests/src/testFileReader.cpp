@@ -5,7 +5,7 @@
 
 TEST(FileReader, GetReader) {
     for (auto& p : boost::filesystem::directory_iterator("tracefiles/")) {
-        mmpr::FileReader* reader = mmpr::FileReader::getReader(p.path().string());
+        auto reader = mmpr::FileReader::getReader(p.path().string());
         reader->open();
 
         mmpr::Packet packet;
