@@ -23,18 +23,8 @@ set(MIN_ZSTD_VERSION 1.4)
 find_package(ZSTD ${MIN_ZSTD_VERSION} REQUIRED MODULE)
 
 # mmpr library target
-add_library(mmpr
-    src/pcap/MMPcapReader.cpp
-    src/pcapng/MMPcapNgReader.cpp
-    src/pcapng/PcapNgBlockOptionParser.cpp
-    src/pcapng/PcapNgBlockParser.cpp
-    src/pcapng/PcapNgReader.cpp
-    src/pcapng/ZstdPcapNgReader.cpp
-    src/Reader.cpp
-    src/util.h
-    src/ZstdDecompressor.cpp
-)
-
+file(GLOB_RECURSE MMPR_SRC_FILES src/*.cpp)
+add_library(mmpr ${MMPR_SRC_FILES})
 add_library(mmpr::mmpr ALIAS mmpr)
 
 target_include_directories(mmpr
