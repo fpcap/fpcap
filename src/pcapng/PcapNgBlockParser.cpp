@@ -1,8 +1,8 @@
-#include <mmpr/pcapng/PcapNgBlockParser.h>
+#include "mmpr/pcapng/PcapNgBlockParser.h"
 
+#include "mmpr/mmpr.h"
+#include "mmpr/pcapng/PcapNgBlockOptionParser.h"
 #include "util.h"
-#include <mmpr/mmpr.h>
-#include <mmpr/pcapng/PcapNgBlockOptionParser.h>
 
 namespace mmpr {
 /**

@@ -1,8 +1,8 @@
 #ifndef MMPR_PCAPPARSER_H
 #define MMPR_PCAPPARSER_H
 
+#include "mmpr/mmpr.h"
 #include <algorithm>
-#include <mmpr/mmpr.h>
 
 namespace mmpr {
 class PcapParser {

@@ -1,6 +1,6 @@
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 
-#include <mmpr/pcapng/ZstdPcapNgReader.h>
+#include "mmpr/pcapng/ZstdPcapNgReader.h"
 
 TEST(ZstdPcapNgReader, ConstructorSimple) {
     {

@@ -1,8 +1,8 @@
 #ifndef MMPR_PCAPNGBLOCKOPTIONPARSER_H
 #define MMPR_PCAPNGBLOCKOPTIONPARSER_H
 
+#include "mmpr/mmpr.h"
 #include <cstddef>
-#include <mmpr/mmpr.h>
 
 namespace mmpr {
 class PcapNgBlockOptionParser {

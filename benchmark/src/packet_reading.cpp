@@ -1,13 +1,13 @@
 #include <benchmark/benchmark.h>
 
+#include "mmpr/pcap/MMPcapReader.h"
+#include "mmpr/pcapng/MMPcapNgReader.h"
+#include "mmpr/pcapng/ZstdPcapNgReader.h"
 #include <PcapFileDevice.h>
-#include <mmpr/pcap/MMPcapReader.h>
-#include <mmpr/pcapng/MMPcapNgReader.h>
-#include <mmpr/pcapng/ZstdPcapNgReader.h>
 #include <pcap.h>
 
-#define SAMPLE_PCAPNG_FILE tracefiles/pcapng-example.pcapng
-#define SAMPLE_PCAP_FILE tracefiles/example.pcap
+#define SAMPLE_PCAPNG_FILE tracefiles / pcapng - example.pcapng
+#define SAMPLE_PCAP_FILE tracefiles / example.pcap
 #define Q(x) #x
 #define QUOTE(x) Q(x)
 #define ZST(file) QUOTE(file.zst)

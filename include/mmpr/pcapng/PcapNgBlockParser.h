@@ -1,7 +1,7 @@
 #ifndef MMPR_PCAPNGBLOCKPARSER_H
 #define MMPR_PCAPNGBLOCKPARSER_H
 
-#include <mmpr/mmpr.h>
+#include "mmpr/mmpr.h"
 
 namespace mmpr {
 class PcapNgBlockParser {

@@ -1,7 +1,7 @@
 #ifndef MMPR_ZSTDPCAPNGREADER_H
 #define MMPR_ZSTDPCAPNGREADER_H
 
-#include <mmpr/pcapng/PcapNgReader.h>
+#include "mmpr/pcapng/PcapNgReader.h"
 
 namespace mmpr {
 

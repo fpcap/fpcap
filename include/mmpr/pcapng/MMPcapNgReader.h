@@ -1,7 +1,7 @@
 #ifndef MMPR_MMPCAPNGREADER_H
 #define MMPR_MMPCAPNGREADER_H
 
-#include <mmpr/pcapng/PcapNgReader.h>
+#include "mmpr/pcapng/PcapNgReader.h"
 
 namespace mmpr {
 class MMPcapNgReader : public PcapNgReader {

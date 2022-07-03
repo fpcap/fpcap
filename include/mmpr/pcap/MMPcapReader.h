@@ -1,12 +1,12 @@
 #ifndef MMPR_MMPCAPREADER_H
 #define MMPR_MMPCAPREADER_H
 
-#include <mmpr/mmpr.h>
+#include "mmpr/mmpr.h"
+#include "mmpr/pcap/PcapReader.h"
 #include <sstream>
 #include <stdexcept>
 #include <string>
 #include <utility>
-#include <mmpr/pcap/PcapReader.h>
 
 namespace mmpr {
 class MMPcapReader : public PcapReader {

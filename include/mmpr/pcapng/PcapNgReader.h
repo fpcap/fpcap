@@ -1,8 +1,8 @@
 #ifndef MMPR_PCAPNGREADER_H
 #define MMPR_PCAPNGREADER_H
 
+#include "mmpr/mmpr.h"
 #include <filesystem>
-#include <mmpr/mmpr.h>
 #include <stdexcept>
 
 namespace mmpr {

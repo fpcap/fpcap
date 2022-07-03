@@ -1,7 +1,7 @@
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 
+#include "mmpr/pcapng/MMPcapNgReader.h"
 #include <iostream>
-#include <mmpr/pcapng/MMPcapNgReader.h>
 
 TEST(TraceInterfaces, ReadBlock) {
     mmpr::MMPcapNgReader reader{"tracefiles/many_interfaces-1.pcapng"};

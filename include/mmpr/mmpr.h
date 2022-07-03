@@ -1,11 +1,11 @@
 #ifndef MMPR_MMPR_H
 #define MMPR_MMPR_H
 
+#include "mmpr/pcap.h"
+#include "mmpr/pcapng.h"
 #include <cassert>
 #include <cstdint>
 #include <memory>
-#include <mmpr/pcap.h>
-#include <mmpr/pcapng.h>
 #include <optional>
 #include <vector>
 

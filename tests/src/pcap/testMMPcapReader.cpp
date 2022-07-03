@@ -1,6 +1,6 @@
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 
-#include <mmpr/pcap/MMPcapReader.h>
+#include "mmpr/pcap/MMPcapReader.h"
 
 TEST(MMPcapReader, ConstructorSimple) {
     mmpr::MMPcapReader reader{"tracefiles/example.pcap"};
@@ -46,5 +46,4 @@ TEST(MMPcapReader, DLT) {
         }
         ASSERT_EQ(processedPackets, 1000);
     }
-
 }

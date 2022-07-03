@@ -1,7 +1,7 @@
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 
+#include "mmpr/mmpr.h"
 #include <filesystem>
-#include <mmpr/mmpr.h>
 
 TEST(FileReader, GetReader) {
     for (auto& p : std::filesystem::directory_iterator("tracefiles/")) {
