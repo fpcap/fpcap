@@ -4,18 +4,19 @@ project(mmpr VERSION 0.1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 
-list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-
-option(MMPR_BUILD_TESTS "Force tests to build" OFF)
-option(MMPR_BUILD_BENCHMARK "Build benchmarks" OFF)
-option(MMPR_BUILD_EXAMPLES "Build examples" OFF)
-
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
-    # Enable tests and benchmarks if building as stand-alone project
-    set(MMPR_BUILD_TESTS ON)
-    set(MMPR_BUILD_BENCHMARK ON)
-    set(MMPR_BUILD_EXAMPLES ON)
+    # in standalone set default settings to ON
+    option(MMPR_BUILD_TESTS "Force tests to build" ON)
+    option(MMPR_BUILD_BENCHMARK "Build benchmarks" ON)
+    option(MMPR_BUILD_EXAMPLES "Build examples" ON)
+else()
+    # if used as library set default settings to OFF
+    option(MMPR_BUILD_TESTS "Force tests to build" OFF)
+    option(MMPR_BUILD_BENCHMARK "Build benchmarks" OFF)
+    option(MMPR_BUILD_EXAMPLES "Build examples" OFF)
 endif()
+
+list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 # Add Zstd compression library
 set(MIN_ZSTD_VERSION 1.4)
