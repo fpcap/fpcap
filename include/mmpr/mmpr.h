@@ -6,6 +6,7 @@
 #include <memory>
 #include <mmpr/pcap.h>
 #include <mmpr/pcapng.h>
+#include <optional>
 #include <vector>
 
 #if DEBUG
@@ -41,16 +42,16 @@ struct Packet {
 
 struct TraceInterface {
     TraceInterface(){};
-    TraceInterface(boost::optional<std::string> name,
-                   boost::optional<std::string> description,
-                   boost::optional<std::string> filter,
-                   boost::optional<std::string> os)
+    TraceInterface(std::optional<std::string> name,
+                   std::optional<std::string> description,
+                   std::optional<std::string> filter,
+                   std::optional<std::string> os)
         : name(name), description(description), filter(filter), os(os) {}
 
-    boost::optional<std::string> name{boost::none};
-    boost::optional<std::string> description{boost::none};
-    boost::optional<std::string> filter{boost::none};
-    boost::optional<std::string> os{boost::none};
+    std::optional<std::string> name;
+    std::optional<std::string> description;
+    std::optional<std::string> filter;
+    std::optional<std::string> os;
 };
 
 class FileReader {

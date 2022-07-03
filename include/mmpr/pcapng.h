@@ -1,7 +1,7 @@
 #ifndef MMPR_PCAPNG_H
 #define MMPR_PCAPNG_H
 
-#include <boost/optional.hpp>
+#include <optional>
 #include <string>
 
 /**
@@ -9,7 +9,7 @@
  */
 #define MMPR_SECTION_HEADER_BLOCK 0x0A0D0D0A
 #define MMPR_INTERFACE_DESCRIPTION_BLOCK 1
-#define MMPR_PACKET_BLOCK 2  // deprecated in newer PcapNG versions
+#define MMPR_PACKET_BLOCK 2 // deprecated in newer PcapNG versions
 #define MMPR_SIMPLE_PACKET_BLOCK 3
 #define MMPR_NAME_RESOLUTION_BLOCK 4
 #define MMPR_INTERFACE_STATISTICS_BLOCK 5
@@ -68,10 +68,10 @@ struct InterfaceDescriptionBlock {
     uint32_t snapLen{0};
     struct Options {
         uint32_t timestampResolution{1000000 /* 10^6 */};
-        boost::optional<std::string> name{boost::none};
-        boost::optional<std::string> description{boost::none};
-        boost::optional<std::string> filter{boost::none};
-        boost::optional<std::string> os{boost::none};
+        std::optional<std::string> name;
+        std::optional<std::string> description;
+        std::optional<std::string> filter;
+        std::optional<std::string> os;
     } options{};
 };
 

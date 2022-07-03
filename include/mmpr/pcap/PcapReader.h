@@ -1,8 +1,9 @@
 #ifndef MMPR_PCAPREADER_H
 #define MMPR_PCAPREADER_H
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <mmpr/mmpr.h>
+#include <stdexcept>
 
 namespace mmpr {
 
@@ -13,9 +14,9 @@ public:
             throw std::runtime_error("Cannot read empty filepath");
         }
 
-        if (!boost::filesystem::exists(filepath)) {
+        if (!std::filesystem::exists(filepath)) {
             throw std::runtime_error("Cannot find file " +
-                                     boost::filesystem::absolute(filepath).string());
+                                     std::filesystem::absolute(filepath).string());
         }
     };
 

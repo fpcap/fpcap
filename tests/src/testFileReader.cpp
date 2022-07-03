@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
 
-#include <boost/filesystem/operations.hpp>
+#include <filesystem>
 #include <mmpr/mmpr.h>
 
 TEST(FileReader, GetReader) {
-    for (auto& p : boost::filesystem::directory_iterator("tracefiles/")) {
+    for (auto& p : std::filesystem::directory_iterator("tracefiles/")) {
         auto reader = mmpr::FileReader::getReader(p.path().string());
         reader->open();
 

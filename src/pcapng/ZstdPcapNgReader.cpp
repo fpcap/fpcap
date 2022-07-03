@@ -1,14 +1,11 @@
 #include <mmpr/pcapng/ZstdPcapNgReader.h>
 
 #include "util.h"
-#include <boost/algorithm/string/case_conv.hpp>
-#include <boost/filesystem.hpp>
+#include <algorithm>
 #include <mmpr/ZstdDecompressor.h>
 #include <sstream>
 
 using namespace std;
-using namespace boost::filesystem;
-using namespace boost::algorithm;
 
 namespace mmpr {
 
@@ -18,7 +15,7 @@ ZstdPcapNgReader::ZstdPcapNgReader(const std::string& filepath) : PcapNgReader(f
         stringstream sstream;
         sstream << std::hex << magicNumber;
         string hex = sstream.str();
-        boost::to_upper(hex);
+        std::transform(hex.begin(), hex.end(), hex.begin(), ::toupper);
         throw std::runtime_error("Expected ZSTD format to start with appropriate magic "
                                  "number, instead got: 0x" +
                                  hex + ", possibly little/big endian issue");

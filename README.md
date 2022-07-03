@@ -27,7 +27,6 @@ cmake --build . --target mmpr example-simple -- -j 4
 
 The following libraries need to be installed in the build environment:
 
-- Boost (with filesystem module), tested with v1.71
 - Zstd compression library (https://github.com/facebook/zstd), tested with v1.5.2
 
 ## Tests
@@ -83,3 +82,9 @@ If you find yourself doing this often, there are probably better options than ru
 approaches allow you to do this without root access, or by using a GUI, etc. The Arch
 Wiki [Cpu frequency scaling](https://wiki.archlinux.org/title/CPU_frequency_scaling) page is a good place to start
 looking for options.
+
+## Docker
+```shell
+cd docker/
+docker build -t debian11-zstd-develop .
+```
