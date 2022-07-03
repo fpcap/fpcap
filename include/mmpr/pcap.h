@@ -1,6 +1,8 @@
 #ifndef MMPR_PCAP_H
 #define MMPR_PCAP_H
 
+#include <cstdint>
+
 namespace mmpr {
 
 struct FileHeader {
