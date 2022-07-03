@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <chrono>
 #include <iostream>
 #include <mmpr/pcapng/MMPcapNgReader.h>
@@ -8,24 +9,17 @@ using namespace std::chrono;
 int main(int argc, char** argv) {
     vector<string> pcapFiles;
 
-    // TODO implement without boost program options
-    //
-    //    po::options_description desc("MMPR CLI options");
-    //    desc.add_options()("help", "produce help message");
-    //    desc.add_options()("input", po::value<vector<string>>(&pcapFiles)->multitoken(),
-    //                       "one or more files as input");
-    //    po::variables_map vm;
-    //    po::store(po::parse_command_line(argc, argv, desc), vm);
-    //    po::notify(vm);
-    //
-    //    if (pcapFiles.size() <= 0) {
-    //        cout << "Error: you have to provide at least one input file!" << endl;
-    //        cout << desc << "\n";
-    //        return 1;
-    //    }
-    //
-    //    // sort files for deterministic results
-    //    std::sort(pcapFiles.begin(), pcapFiles.end());
+    for (size_t i = 1; i < argc; ++i) {
+        pcapFiles.emplace_back(argv[i]);
+    }
+
+    if (pcapFiles.size() <= 0) {
+        cout << "Error: you have to provide at least one input file!" << endl;
+        return EXIT_FAILURE;
+    }
+
+    // sort files for deterministic results
+    std::sort(pcapFiles.begin(), pcapFiles.end());
 
     // metrics to count
     uint64_t packets = 0;
