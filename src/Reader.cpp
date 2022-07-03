@@ -1,18 +1,19 @@
 #include <mmpr/mmpr.h>
 
 #include "util.h"
+#include <filesystem>
 #include <iostream>
+#include <memory>
 #include <mmpr/pcap/MMPcapReader.h>
 #include <mmpr/pcapng/MMPcapNgReader.h>
 #include <mmpr/pcapng/ZstdPcapNgReader.h>
-#include <memory>
 
 namespace mmpr {
 
 FileReader::FileReader(const std::string& filepath) : mFilepath(filepath) {}
 
 std::unique_ptr<FileReader> FileReader::getReader(const std::string& filepath) {
-    if (!boost::filesystem::exists(filepath)) {
+    if (!std::filesystem::exists(filepath)) {
         throw std::runtime_error("FileReader: could not find file \"" + filepath + "\"");
     }
 

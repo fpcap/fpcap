@@ -6,8 +6,6 @@ list(APPEND CMAKE_MODULE_PATH ${MMPR_CMAKE_DIR})
 find_dependency(ZSTD @MIN_ZSTD_VERSION@)
 list(REMOVE_AT CMAKE_MODULE_PATH -1)
 
-find_dependency(boost_filesystem @MIN_BOOST_VERSION@)
-
 if(NOT TARGET mmpr::mmpr)
     include("${MMPR_CMAKE_DIR}/mmprTargets.cmake")
 endif()

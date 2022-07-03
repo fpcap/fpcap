@@ -1,7 +1,7 @@
 #ifndef MMPR_PCAPPARSER_H
 #define MMPR_PCAPPARSER_H
 
-#include <boost/algorithm/string.hpp>
+#include <algorithm>
 #include <mmpr/mmpr.h>
 
 namespace mmpr {
@@ -32,10 +32,11 @@ public:
             std::stringstream sstream;
             sstream << std::hex << magicNumber;
             std::string hex = sstream.str();
-            boost::to_upper(hex);
+            std::transform(hex.begin(), hex.end(), hex.begin(), ::toupper);
             throw std::runtime_error(
                 "Expected PCAP file header to start with magic numbers 0xA1B2C3D4 or "
-                "0xA1B23C4D, but instead got: 0x" + hex);
+                "0xA1B23C4D, but instead got: 0x" +
+                hex);
         }
 
         if (magicNumber == 0xA1B2C3D4) {

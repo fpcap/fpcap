@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.16)
 
 project(mmpr VERSION 0.1.0 LANGUAGES CXX)
 
+set(CMAKE_CXX_STANDARD 17)
+
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 option(MMPR_BUILD_TESTS "Force tests to build" OFF)
@@ -14,10 +16,6 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     set(MMPR_BUILD_BENCHMARK ON)
     set(MMPR_BUILD_EXAMPLES ON)
 endif()
-
-# Add Boost (target Boost::boost)
-set(MIN_BOOST_VERSION 1.71)
-find_package(Boost ${MIN_BOOST_VERSION} REQUIRED COMPONENTS filesystem program_options)
 
 # Add Zstd compression library
 set(MIN_ZSTD_VERSION 1.4)
@@ -50,7 +48,7 @@ target_include_directories(mmpr
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-target_compile_features(mmpr PRIVATE cxx_std_11)
+target_compile_features(mmpr PRIVATE cxx_std_17)
 target_compile_options(mmpr PRIVATE -static-libstdc++ -Wall -Wextra -pedantic)
 if((CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR) AND (CMAKE_BUILD_TYPE STREQUAL "Debug"))
     # If compiling as stand-alone project in debug mode set debug flag
@@ -58,8 +56,6 @@ if((CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR) AND (CMAKE_BUILD_TYPE ST
 endif()
 
 target_link_libraries(mmpr
-    PUBLIC
-        Boost::filesystem
     PRIVATE
         ZSTD::ZSTD
 )

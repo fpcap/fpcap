@@ -1,18 +1,17 @@
 #include <mmpr/pcap/MMPcapReader.h>
 
 #include "util.h"
-#include <boost/filesystem.hpp>
+#include <algorithm>
 #include <cerrno>
 #include <cstring>
 #include <fcntl.h>
+#include <filesystem>
 #include <mmpr/pcap/PcapParser.h>
 #include <stdexcept>
 #include <sys/mman.h>
 #include <unistd.h>
 
 using namespace std;
-using namespace boost::filesystem;
-using namespace boost::algorithm;
 
 namespace mmpr {
 MMPcapReader::MMPcapReader(const string& filepath) : PcapReader(filepath) {
@@ -22,7 +21,7 @@ MMPcapReader::MMPcapReader(const string& filepath) : PcapReader(filepath) {
         stringstream sstream;
         sstream << std::hex << magicNumber;
         string hex = sstream.str();
-        boost::to_upper(hex);
+        std::transform(hex.begin(), hex.end(), hex.begin(), ::toupper);
         throw std::runtime_error("Expected PCAP format to start with appropriate magic "
                                  "numbers, instead got: 0x" +
                                  hex + ", possibly little/big endian issue");
@@ -32,8 +31,9 @@ MMPcapReader::MMPcapReader(const string& filepath) : PcapReader(filepath) {
 void MMPcapReader::open() {
     mFileDescriptor = ::open(mFilepath.c_str(), O_RDONLY, 0);
     if (mFileDescriptor < 0) {
-        throw runtime_error("Error while reading file " + absolute(mFilepath).string() +
-                            ": " + strerror(errno));
+        throw runtime_error("Error while reading file " +
+                            std::filesystem::absolute(mFilepath).string() + ": " +
+                            strerror(errno));
     }
 
     mFileSize = lseek(mFileDescriptor, 0, SEEK_END);
@@ -43,8 +43,9 @@ void MMPcapReader::open() {
         mmap(nullptr, mMappedSize, PROT_READ, MAP_SHARED, mFileDescriptor, 0);
     if (mmapResult == MAP_FAILED) {
         ::close(mFileDescriptor);
-        throw runtime_error("Error while mapping file " + absolute(mFilepath).string() +
-                            ": " + strerror(errno));
+        throw runtime_error("Error while mapping file " +
+                            std::filesystem::absolute(mFilepath).string() + ": " +
+                            strerror(errno));
     }
 
     mOffset = 0;
