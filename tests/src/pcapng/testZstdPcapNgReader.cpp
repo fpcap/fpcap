@@ -1,3 +1,5 @@
+#ifdef MMPR_USE_ZSTD
+
 #include "gtest/gtest.h"
 
 #include "mmpr/pcapng/ZstdPcapNgReader.h"
@@ -28,3 +30,5 @@ TEST(ZstdPcapNgReader, FaultyConstructor) {
     EXPECT_THROW(mmpr::ZstdPcapNgReader{nullptr}, std::logic_error);
     EXPECT_THROW(mmpr::ZstdPcapNgReader{""}, std::runtime_error);
 }
+
+#endif

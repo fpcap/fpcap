@@ -4,8 +4,21 @@
 #include <filesystem>
 
 TEST(FileReader, GetReader) {
+    std::vector<std::string> files;
     for (auto& p : std::filesystem::directory_iterator("tracefiles/")) {
-        auto reader = mmpr::FileReader::getReader(p.path().string());
+        std::string file = p.path().string();
+#ifndef MMPR_USE_ZSTD
+        // do not include compressed files if built without decompression support
+        if (file.find(".zstd") != std::string::npos ||
+            file.find(".zst") != std::string::npos) {
+            continue;
+        }
+#endif
+        files.emplace_back(file);
+    }
+
+    for (std::string file : files) {
+        auto reader = mmpr::FileReader::getReader(file);
         reader->open();
 
         mmpr::Packet packet;
@@ -15,6 +28,6 @@ TEST(FileReader, GetReader) {
                 ++processedPackets;
             }
         }
-        ASSERT_GT(processedPackets, 0) << "file: " << p.path().string();
+        ASSERT_GT(processedPackets, 0) << "file: " << file;
     }
 }

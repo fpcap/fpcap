@@ -15,12 +15,7 @@ else()
     option(MMPR_BUILD_BENCHMARK "Build benchmarks" OFF)
     option(MMPR_BUILD_EXAMPLES "Build examples" OFF)
 endif()
-
-list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-
-# Add Zstd compression library
-set(MIN_ZSTD_VERSION 1.4)
-find_package(ZSTD ${MIN_ZSTD_VERSION} REQUIRED MODULE)
+option(MMPR_USE_ZSTD "Enable ZSTD decompression" ON)
 
 # mmpr library target
 file(GLOB_RECURSE MMPR_SRC_FILES src/*.cpp)
@@ -46,10 +41,17 @@ if((CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR) AND (CMAKE_BUILD_TYPE ST
     target_compile_options(mmpr PRIVATE -DDEBUG)
 endif()
 
-target_link_libraries(mmpr
-    PRIVATE
-        ZSTD::ZSTD
-)
+if(MMPR_USE_ZSTD)
+    # Add Zstd compression library
+    list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+    set(MIN_ZSTD_VERSION 1.4)
+    find_package(ZSTD ${MIN_ZSTD_VERSION} REQUIRED MODULE)
+    add_definitions(-DMMPR_USE_ZSTD=1)
+    target_link_libraries(mmpr
+        PRIVATE
+            ZSTD::ZSTD
+    )
+endif()
 
 # mmpr install instructions
 include(GNUInstallDirs)

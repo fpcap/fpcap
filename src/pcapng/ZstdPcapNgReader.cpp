@@ -1,3 +1,5 @@
+#ifdef MMPR_USE_ZSTD
+
 #include "mmpr/pcapng/ZstdPcapNgReader.h"
 
 #include "mmpr/ZstdDecompressor.h"
@@ -33,3 +35,5 @@ void ZstdPcapNgReader::close() {
 }
 
 } // namespace mmpr
+
+#endif

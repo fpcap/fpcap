@@ -1,3 +1,5 @@
+#ifdef MMPR_USE_ZSTD
+
 #include "mmpr/ZstdDecompressor.h"
 
 #include "mmpr/pcapng/PcapNgBlockParser.h"
@@ -77,3 +79,5 @@ void* ZstdDecompressor::decompressFileInMemory(const std::string& fname,
 }
 
 } // namespace mmpr
+
+#endif

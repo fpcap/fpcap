@@ -3,8 +3,10 @@ include(CMakeFindDependencyMacro)
 
 list(APPEND CMAKE_MODULE_PATH ${MMPR_CMAKE_DIR})
 # NOTE: to find FindZSTD.cmake
-find_dependency(ZSTD @MIN_ZSTD_VERSION@)
-list(REMOVE_AT CMAKE_MODULE_PATH -1)
+if(MMPR_USE_ZSTD)
+    find_dependency(ZSTD @MIN_ZSTD_VERSION@)
+    list(REMOVE_AT CMAKE_MODULE_PATH -1)
+endif()
 
 if(NOT TARGET mmpr::mmpr)
     include("${MMPR_CMAKE_DIR}/mmprTargets.cmake")
