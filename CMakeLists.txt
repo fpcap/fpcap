@@ -34,7 +34,7 @@ target_include_directories(mmpr
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-target_compile_features(mmpr PRIVATE cxx_std_17)
+target_compile_features(mmpr PUBLIC cxx_std_17)
 target_compile_options(mmpr PRIVATE -static-libstdc++ -Wall -Wextra -pedantic)
 if((CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR) AND (CMAKE_BUILD_TYPE STREQUAL "Debug"))
     # If compiling as stand-alone project in debug mode set debug flag
