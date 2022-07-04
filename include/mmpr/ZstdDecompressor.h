@@ -8,7 +8,12 @@ namespace mmpr {
 class ZstdDecompressor {
 public:
     static void* decompressFileInMemory(const std::string& filename,
-                                        size_t& decompressedSize);
+                                        size_t& decompressedSize,
+                                        bool mmap = false);
+
+private:
+    static void* decompressFileMMAP(const std::string& fname, size_t& decompressedSize);
+    static void* decompressFileFRead(const std::string& fname, size_t& decompressedSize);
 };
 
 } // namespace mmpr
