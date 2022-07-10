@@ -5,6 +5,7 @@
 #ifdef MMPR_USE_ZSTD
 #include "mmpr/pcapng/ZstdPcapNgReader.h"
 #endif
+#include "mmpr/modified_pcap/MMModifiedPcapReader.h"
 #include "util.h"
 #include <filesystem>
 #include <iostream>
@@ -30,6 +31,8 @@ std::unique_ptr<FileReader> FileReader::getReader(const std::string& filepath) {
     case MMPR_MAGIC_NUMBER_ZSTD:
         return std::unique_ptr<ZstdPcapNgReader>(new ZstdPcapNgReader(filepath));
 #endif
+    case MMPR_MAGIC_NUMBER_MODIFIED_PCAP:
+        return std::unique_ptr<MMModifiedPcapReader>(new MMModifiedPcapReader(filepath));
     default:
         throw std::runtime_error("Failed to determine file type based on first 32 bits");
     }

@@ -1,6 +1,7 @@
 #ifndef MMPR_MMPR_H
 #define MMPR_MMPR_H
 
+#include "mmpr/modified_pcap.h"
 #include "mmpr/pcap.h"
 #include "mmpr/pcapng.h"
 #include <cassert>
@@ -28,6 +29,7 @@
 #define MMPR_MAGIC_NUMBER_PCAP_NANOSECONDS 0xA1B23C4D
 #define MMPR_MAGIC_NUMBER_PCAPNG 0x0A0D0D0A
 #define MMPR_MAGIC_NUMBER_ZSTD 0xFD2FB528
+#define MMPR_MAGIC_NUMBER_MODIFIED_PCAP 0xA1B2CD34
 
 namespace mmpr {
 
