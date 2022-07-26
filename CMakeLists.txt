@@ -15,7 +15,14 @@ else()
     option(MMPR_BUILD_BENCHMARK "Build benchmarks" OFF)
     option(MMPR_BUILD_EXAMPLES "Build examples" OFF)
 endif()
+
 option(MMPR_USE_ZSTD "Enable ZSTD decompression" ON)
+if(WIN32)
+    # for now ZSTD is not supported on Windows
+    message(WARNING "Benchmark and ZSTD decompression is currently not supported on Windows")
+    set(MMPR_USE_ZSTD OFF)
+    set(MMPR_BUILD_BENCHMARK OFF)
+endif()
 
 # mmpr library target
 file(GLOB_RECURSE MMPR_SRC_FILES src/*.cpp)
@@ -37,7 +44,12 @@ target_include_directories(mmpr
 )
 
 target_compile_features(mmpr PUBLIC cxx_std_17)
-target_compile_options(mmpr PRIVATE -static-libstdc++ -Wall -Wextra -pedantic)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    target_compile_options(mmpr PRIVATE /Wall)
+else()
+    target_compile_options(mmpr PRIVATE -static-libstdc++ -Wall -Wextra -pedantic)
+endif()
+
 if((CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR) AND (CMAKE_BUILD_TYPE STREQUAL "Debug"))
     # If compiling as stand-alone project in debug mode set debug flag
     target_compile_options(mmpr PRIVATE -DDEBUG)
