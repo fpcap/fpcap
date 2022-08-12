@@ -1,5 +1,6 @@
 #include <benchmark/benchmark.h>
 
+#include "mmpr/pcap/FReadPcapReader.h"
 #include "mmpr/pcap/MMPcapReader.h"
 #include "mmpr/pcap/StreamPcapReader.h"
 #include "mmpr/pcapng/MMPcapNgReader.h"
@@ -34,6 +35,24 @@ static void bmMmprPcapStream(benchmark::State& state) {
     mmpr::Packet packet;
     for (auto _ : state) {
         mmpr::StreamPcapReader reader(inputFilePcap);
+        reader.open();
+
+        uint64_t packetCount{0};
+        while (!reader.isExhausted()) {
+            if (reader.readNextPacket(packet)) {
+                ++packetCount;
+            }
+        }
+
+        reader.close();
+    }
+    benchmark::DoNotOptimize(packet);
+}
+
+static void bmMmprPcapFRead(benchmark::State& state) {
+    mmpr::Packet packet;
+    for (auto _ : state) {
+        mmpr::FReadPcapReader reader(inputFilePcap);
         reader.open();
 
         uint64_t packetCount{0};
@@ -168,6 +187,7 @@ static void bmLibpcapPcapNG(benchmark::State& state) {
 
 BENCHMARK(bmMmprPcap)->Name("mmpr (pcap)");
 BENCHMARK(bmMmprPcapStream)->Name("mmpr-stream (pcap)");
+BENCHMARK(bmMmprPcapFRead)->Name("mmpr-fread (pcap)");
 BENCHMARK(bmMmprPcapNG)->Name("mmpr (pcapng)");
 BENCHMARK(bmMmprPcapNGZst)->Name("mmpr (pcapng.zst)");
 BENCHMARK(bmPcapPlusPlusPcap)->Name("PcapPlusPlus (pcap)");

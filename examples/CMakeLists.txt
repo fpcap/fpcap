@@ -12,6 +12,9 @@ endif()
 add_executable(mmpr_example_pcapng_metadata pcapng_metadata.cpp)
 target_link_libraries(mmpr_example_pcapng_metadata PRIVATE mmpr)
 
+add_executable(mmpr_example_pcap_simple_fread pcap_simple_fread.cpp)
+target_link_libraries(mmpr_example_pcap_simple_fread PRIVATE mmpr)
+
 add_executable(mmpr_example_pcap_simple_mm pcap_simple_mm.cpp)
 target_link_libraries(mmpr_example_pcap_simple_mm PRIVATE mmpr)
 
