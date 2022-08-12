@@ -20,6 +20,7 @@ struct PacketRecord {
     uint32_t captureLength{0};
     uint32_t length{0};
     const uint8_t* data{nullptr};
+    bool dataDynamicallyAllocated{false};
 };
 
 }

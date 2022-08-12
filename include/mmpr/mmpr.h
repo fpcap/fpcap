@@ -36,12 +36,19 @@
 namespace mmpr {
 
 struct Packet {
+    ~Packet() {
+        if (dataDynamicallyAllocated) {
+            delete[] data;
+        }
+    }
+
     uint32_t timestampSeconds{0};
     uint32_t timestampMicroseconds{0};
     uint32_t captureLength{0};
     uint32_t length{0};
     int interfaceIndex{-1};
     const uint8_t* data{nullptr};
+    bool dataDynamicallyAllocated{false};
 };
 
 struct TraceInterface {

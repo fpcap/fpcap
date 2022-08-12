@@ -1,13 +1,14 @@
 #include <benchmark/benchmark.h>
 
 #include "mmpr/pcap/MMPcapReader.h"
+#include "mmpr/pcap/StreamPcapReader.h"
 #include "mmpr/pcapng/MMPcapNgReader.h"
 #include "mmpr/pcapng/ZstdPcapNgReader.h"
 #include <PcapFileDevice.h>
 #include <pcap.h>
 
 const static std::string inputFilePcap = "tracefiles/example.pcap";
-const static std::string inputFilePcapNg = "tracefiles/pcapng-example.pcapng";
+const static std::string inputFilePcapNg = "tracefiles/example.pcapng";
 const static std::string inputFilePcapNgZst = inputFilePcapNg + ".zst";
 const static std::string inputFilePcapNgZstd = inputFilePcapNg + ".zstd";
 
@@ -15,6 +16,24 @@ static void bmMmprPcap(benchmark::State& state) {
     mmpr::Packet packet;
     for (auto _ : state) {
         mmpr::MMPcapReader reader(inputFilePcap);
+        reader.open();
+
+        uint64_t packetCount{0};
+        while (!reader.isExhausted()) {
+            if (reader.readNextPacket(packet)) {
+                ++packetCount;
+            }
+        }
+
+        reader.close();
+    }
+    benchmark::DoNotOptimize(packet);
+}
+
+static void bmMmprPcapStream(benchmark::State& state) {
+    mmpr::Packet packet;
+    for (auto _ : state) {
+        mmpr::StreamPcapReader reader(inputFilePcap);
         reader.open();
 
         uint64_t packetCount{0};
@@ -148,6 +167,7 @@ static void bmLibpcapPcapNG(benchmark::State& state) {
 }
 
 BENCHMARK(bmMmprPcap)->Name("mmpr (pcap)");
+BENCHMARK(bmMmprPcapStream)->Name("mmpr-stream (pcap)");
 BENCHMARK(bmMmprPcapNG)->Name("mmpr (pcapng)");
 BENCHMARK(bmMmprPcapNGZst)->Name("mmpr (pcapng.zst)");
 BENCHMARK(bmPcapPlusPlusPcap)->Name("PcapPlusPlus (pcap)");
