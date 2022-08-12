@@ -42,6 +42,16 @@ struct Packet {
         }
     }
 
+    void swap(Packet& other) {
+        std::swap(timestampSeconds, other.timestampSeconds);
+        std::swap(timestampMicroseconds, other.timestampMicroseconds);
+        std::swap(captureLength, other.captureLength);
+        std::swap(length, other.length);
+        std::swap(interfaceIndex, other.interfaceIndex);
+        std::swap(data, other.data);
+        std::swap(dataDynamicallyAllocated, other.dataDynamicallyAllocated);
+    }
+
     uint32_t timestampSeconds{0};
     uint32_t timestampMicroseconds{0};
     uint32_t captureLength{0};

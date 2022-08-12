@@ -66,14 +66,17 @@ bool StreamPcapReader::readNextPacket(Packet& packet) {
 
     PacketRecord packetRecord{};
     StreamPcapParser::readPacketRecord(mStream, packetRecord);
-    packet.timestampSeconds = packetRecord.timestampSeconds;
-    packet.timestampMicroseconds = mTimestampFormat == FileHeader::MICROSECONDS
+    Packet result;
+    result.timestampSeconds = packetRecord.timestampSeconds;
+    result.timestampMicroseconds = mTimestampFormat == FileHeader::MICROSECONDS
                                        ? packetRecord.timestampSubSeconds
                                        : packetRecord.timestampSubSeconds / 1000;
-    packet.captureLength = packetRecord.captureLength;
-    packet.length = packetRecord.length;
-    packet.data = packetRecord.data;
-    packet.dataDynamicallyAllocated = packetRecord.dataDynamicallyAllocated;
+    result.captureLength = packetRecord.captureLength;
+    result.length = packetRecord.length;
+    result.data = packetRecord.data;
+    result.dataDynamicallyAllocated = packetRecord.dataDynamicallyAllocated;
+
+    packet.swap(result);
 
     mOffset += 16 + packetRecord.captureLength;
 
