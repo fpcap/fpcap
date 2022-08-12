@@ -6,17 +6,15 @@
 #include <PcapFileDevice.h>
 #include <pcap.h>
 
-#define SAMPLE_PCAPNG_FILE tracefiles / pcapng - example.pcapng
-#define SAMPLE_PCAP_FILE tracefiles / example.pcap
-#define Q(x) #x
-#define QUOTE(x) Q(x)
-#define ZST(file) QUOTE(file.zst)
-#define ZSTD(file) QUOTE(file.zstd)
+const static std::string inputFilePcap = "tracefiles/example.pcap";
+const static std::string inputFilePcapNg = "tracefiles/pcapng-example.pcapng";
+const static std::string inputFilePcapNgZst = inputFilePcapNg + ".zst";
+const static std::string inputFilePcapNgZstd = inputFilePcapNg + ".zstd";
 
 static void bmMmprPcap(benchmark::State& state) {
     mmpr::Packet packet;
     for (auto _ : state) {
-        mmpr::MMPcapReader reader(QUOTE(SAMPLE_PCAP_FILE));
+        mmpr::MMPcapReader reader(inputFilePcap);
         reader.open();
 
         uint64_t packetCount{0};
@@ -34,7 +32,7 @@ static void bmMmprPcap(benchmark::State& state) {
 static void bmMmprPcapNG(benchmark::State& state) {
     mmpr::Packet packet;
     for (auto _ : state) {
-        mmpr::MMPcapNgReader reader(QUOTE(SAMPLE_PCAPNG_FILE));
+        mmpr::MMPcapNgReader reader(inputFilePcapNg);
         reader.open();
 
         uint64_t packetCount{0};
@@ -52,7 +50,7 @@ static void bmMmprPcapNG(benchmark::State& state) {
 static void bmMmprPcapNGZst(benchmark::State& state) {
     mmpr::Packet packet;
     for (auto _ : state) {
-        mmpr::ZstdPcapNgReader reader(ZST(SAMPLE_PCAPNG_FILE));
+        mmpr::ZstdPcapNgReader reader(inputFilePcapNgZst);
         reader.open();
 
         uint64_t packetCount{0};
@@ -70,7 +68,7 @@ static void bmMmprPcapNGZst(benchmark::State& state) {
 static void bmPcapPlusPlusPcap(benchmark::State& state) {
     pcpp::RawPacket packet;
     for (auto _ : state) {
-        pcpp::PcapFileReaderDevice reader(QUOTE(SAMPLE_PCAP_FILE));
+        pcpp::PcapFileReaderDevice reader(inputFilePcap);
         reader.open();
 
         uint64_t packetCount{0};
@@ -86,7 +84,7 @@ static void bmPcapPlusPlusPcap(benchmark::State& state) {
 static void bmPcapPlusPlusPcapNG(benchmark::State& state) {
     pcpp::RawPacket packet;
     for (auto _ : state) {
-        pcpp::PcapNgFileReaderDevice reader(QUOTE(SAMPLE_PCAPNG_FILE));
+        pcpp::PcapNgFileReaderDevice reader(inputFilePcapNg);
         reader.open();
 
         uint64_t packetCount{0};
@@ -102,7 +100,7 @@ static void bmPcapPlusPlusPcapNG(benchmark::State& state) {
 static void bmPcapPlusPlusPcapNGZstd(benchmark::State& state) {
     pcpp::RawPacket packet;
     for (auto _ : state) {
-        pcpp::PcapNgFileReaderDevice reader(ZSTD(SAMPLE_PCAPNG_FILE));
+        pcpp::PcapNgFileReaderDevice reader(inputFilePcapNgZstd);
         reader.open();
 
         uint64_t packetCount{0};
@@ -119,7 +117,7 @@ static void bmLibpcapPcap(benchmark::State& state) {
     const std::uint8_t* packet;
     for (auto _ : state) {
         char errBuf[PCAP_ERRBUF_SIZE];
-        pcap_t* pcapHandle = pcap_open_offline(QUOTE(SAMPLE_PCAP_FILE), errBuf);
+        pcap_t* pcapHandle = pcap_open_offline(inputFilePcap.c_str(), errBuf);
 
         uint64_t packetCount{0};
         pcap_pkthdr header;
@@ -136,7 +134,7 @@ static void bmLibpcapPcapNG(benchmark::State& state) {
     const std::uint8_t* packet;
     for (auto _ : state) {
         char errBuf[PCAP_ERRBUF_SIZE];
-        pcap_t* pcapHandle = pcap_open_offline(QUOTE(SAMPLE_PCAPNG_FILE), errBuf);
+        pcap_t* pcapHandle = pcap_open_offline(inputFilePcapNg.c_str(), errBuf);
 
         uint64_t packetCount{0};
         pcap_pkthdr header;
