@@ -44,14 +44,13 @@ void* ZstdDecompressor::decompressFileMMAP(const std::string& fname,
                             strerror(errno));
     }
 
-    /* Read the content size from the frame header. For simplicity we require
+    /* Read the content size from the frame header. For simplicity, we require
      * that it is always present. By default, zstd will write the content size
      * in the header when it is known. If you can't guarantee that the frame
      * content size is always written into the header, either use streaming
      * decompression, or ZSTD_decompressBound().
      */
-    unsigned long long const decompressedFileSize =
-        ZSTD_getFrameContentSize(compressedData, compressedSize);
+    auto decompressedFileSize = ZSTD_getFrameContentSize(compressedData, compressedSize);
     if (decompressedFileSize == ZSTD_CONTENTSIZE_ERROR) {
         throw runtime_error(fname + " is not compressed by zstd");
     }
@@ -91,29 +90,31 @@ void* ZstdDecompressor::decompressFileMMAP(const std::string& fname,
 void* ZstdDecompressor::decompressFileFRead(const std::string& fname,
                                             size_t& decompressedSize) {
     size_t compressedSize = std::filesystem::file_size(fname);
-    void* const compressedData = malloc(compressedSize);
+    char* compressedData = new char[compressedSize];
     FILE* const inFile = fopen(fname.c_str(), "rb");
     if (fread(compressedData, 1, compressedSize, inFile) != compressedSize) {
+        delete[] compressedData;
         throw runtime_error("fread error: " + std::string(strerror(errno)));
     }
     fclose(inFile);
 
-    /* Read the content size from the frame header. For simplicity we require
+    /* Read the content size from the frame header. For simplicity, we require
      * that it is always present. By default, zstd will write the content size
      * in the header when it is known. If you can't guarantee that the frame
      * content size is always written into the header, either use streaming
      * decompression, or ZSTD_decompressBound().
      */
-    unsigned long long const decompressedFileSize =
-        ZSTD_getFrameContentSize(compressedData, compressedSize);
+    auto decompressedFileSize = ZSTD_getFrameContentSize(compressedData, compressedSize);
     if (decompressedFileSize == ZSTD_CONTENTSIZE_ERROR) {
+        delete[] compressedData;
         throw runtime_error("not compressed by zstd!");
     }
     if (decompressedFileSize == ZSTD_CONTENTSIZE_UNKNOWN) {
+        delete[] compressedData;
         throw runtime_error("original size unknown!");
     }
 
-    void* const decompressedData = malloc((size_t)decompressedFileSize);
+    char* decompressedData = new char[decompressedFileSize];
 
     /* Decompress.
      * If you are doing many decompressions, you may want to reuse the context
@@ -123,15 +124,19 @@ void* ZstdDecompressor::decompressFileFRead(const std::string& fname,
     decompressedSize = ZSTD_decompress(decompressedData, decompressedFileSize,
                                        compressedData, compressedSize);
     if (ZSTD_isError(decompressedSize)) {
+        delete[] compressedData;
+        delete[] decompressedData;
         throw runtime_error(ZSTD_getErrorName(decompressedSize));
     }
 
     // When zstd knows the content size, it will error if it doesn't match.
     if (decompressedSize != decompressedFileSize) {
+        delete[] compressedData;
+        delete[] decompressedData;
         throw runtime_error("Impossible because zstd will check this condition!");
     }
 
-    free(compressedData);
+    delete[] compressedData;
 
     return decompressedData;
 }

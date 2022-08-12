@@ -30,10 +30,6 @@ void ZstdPcapNgReader::open() {
     assert(mFileSize > 0);
 }
 
-void ZstdPcapNgReader::close() {
-    free((void*)mData);
-}
-
 } // namespace mmpr
 
 #endif

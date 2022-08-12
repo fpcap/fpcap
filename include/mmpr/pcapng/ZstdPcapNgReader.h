@@ -8,9 +8,14 @@ namespace mmpr {
 class ZstdPcapNgReader : public PcapNgReader {
 public:
     explicit ZstdPcapNgReader(const std::string& filepath);
+    ~ZstdPcapNgReader() {
+        if (mData != nullptr) {
+            delete[] mData;
+        }
+    }
 
     void open() override;
-    void close() override;
+    void close() override {};
 };
 
 } // namespace mmpr

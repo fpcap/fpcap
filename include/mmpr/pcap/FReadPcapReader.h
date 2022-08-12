@@ -12,11 +12,16 @@ namespace mmpr {
 class FReadPcapReader : public PcapReader {
 public:
     explicit FReadPcapReader(const std::string& filepath);
+    ~FReadPcapReader() {
+        if (mMappedMemory != nullptr) {
+            delete[] mMappedMemory;
+        }
+    }
 
     void open() override;
     bool isExhausted() const override;
     bool readNextPacket(Packet& packet) override;
-    void close() override;
+    void close() override {};
 
     size_t getFileSize() const override { return mFileSize; }
     size_t getCurrentOffset() const override { return mOffset; }

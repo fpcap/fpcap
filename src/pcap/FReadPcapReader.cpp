@@ -30,6 +30,7 @@ void FReadPcapReader::open() {
     auto data = new char[mFileSize];
     FILE* const inFile = fopen(mFilepath.c_str(), "rb");
     if (fread(data, 1, mFileSize, inFile) != mFileSize) {
+        delete[] data;
         throw runtime_error("fread error: " + std::string(strerror(errno)));
     }
     fclose(inFile);
@@ -74,10 +75,6 @@ bool FReadPcapReader::readNextPacket(Packet& packet) {
     mOffset += 16 + packetRecord.captureLength;
 
     return true;
-}
-
-void FReadPcapReader::close() {
-    delete[] mMappedMemory;
 }
 
 } // namespace mmpr
