@@ -16,7 +16,8 @@
 #define MMPR_DEBUG_LOG_2(format, val1, val2) printf(format, val1, val2);
 #define MMPR_ASSERT(x) assert(x)
 #else
-#define MMPR_DEBUG_LOG(format, val) while (0)
+#define MMPR_DEBUG_LOG(format) while (0)
+#define MMPR_DEBUG_LOG_1(format, val) while (0)
 #define MMPR_DEBUG_LOG_2(format, val1, val2) while (0)
 #define MMPR_ASSERT(x) (void)(x)
 #endif
