@@ -11,7 +11,8 @@
 #include <vector>
 
 #if DEBUG
-#define MMPR_DEBUG_LOG(format, val) printf(format, val);
+#define MMPR_DEBUG_LOG(format) printf(format);
+#define MMPR_DEBUG_LOG_1(format, val) printf(format, val);
 #define MMPR_DEBUG_LOG_2(format, val1, val2) printf(format, val1, val2);
 #define MMPR_ASSERT(x) assert(x)
 #else

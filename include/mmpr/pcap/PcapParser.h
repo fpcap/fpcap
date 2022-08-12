@@ -52,14 +52,14 @@ public:
         fh.linkType = *(const uint16_t*)&data[20];
         fh.fcsSequence = *(const uint16_t*)&data[22];
 
-        MMPR_DEBUG_LOG("--- [File Header %p] ---\n", (void*)data);
-        MMPR_DEBUG_LOG("[FH] Timestamp Format: %s\n",
-                       fh.timestampFormat == FileHeader::MICROSECONDS ? "MICROSECONDS"
-                                                                      : "NANOSECONDS");
+        MMPR_DEBUG_LOG_1("--- [File Header %p] ---\n", (void*)data);
+        MMPR_DEBUG_LOG_1("[FH] Timestamp Format: %s\n",
+                         fh.timestampFormat == FileHeader::MICROSECONDS ? "MICROSECONDS"
+                                                                        : "NANOSECONDS");
         MMPR_DEBUG_LOG_2("[FH] Version: %u.%u\n", fh.majorVersion, fh.minorVersion);
-        MMPR_DEBUG_LOG("[FH] Snap Length: %u\n", fh.snapLength);
-        MMPR_DEBUG_LOG("[FH] FCS Sequence: %u\n", fh.fcsSequence);
-        MMPR_DEBUG_LOG("[FH] Link Type: %u\n", fh.linkType);
+        MMPR_DEBUG_LOG_1("[FH] Snap Length: %u\n", fh.snapLength);
+        MMPR_DEBUG_LOG_1("[FH] FCS Sequence: %u\n", fh.fcsSequence);
+        MMPR_DEBUG_LOG_1("[FH] Link Type: %u\n", fh.linkType);
     }
 
     /**
@@ -89,12 +89,12 @@ public:
             pr.data = &data[16];
         }
 
-        MMPR_DEBUG_LOG("--- [Packet Record %p] ---\n", (void*)data);
-        MMPR_DEBUG_LOG("[PR] Timestamp Seconds: %u\n", pr.timestampSeconds);
-        MMPR_DEBUG_LOG("[PR] Timestamp SubSeconds: %u\n", pr.timestampSubSeconds);
-        MMPR_DEBUG_LOG("[PR] Capture Length: %u\n", pr.captureLength);
-        MMPR_DEBUG_LOG("[PR] Length: %u\n", pr.length);
-        MMPR_DEBUG_LOG("[PR] Data: %p\n", (void*)pr.data);
+        MMPR_DEBUG_LOG_1("--- [Packet Record %p] ---\n", (void*)data);
+        MMPR_DEBUG_LOG_1("[PR] Timestamp Seconds: %u\n", pr.timestampSeconds);
+        MMPR_DEBUG_LOG_1("[PR] Timestamp SubSeconds: %u\n", pr.timestampSubSeconds);
+        MMPR_DEBUG_LOG_1("[PR] Capture Length: %u\n", pr.captureLength);
+        MMPR_DEBUG_LOG_1("[PR] Length: %u\n", pr.length);
+        MMPR_DEBUG_LOG_1("[PR] Data: %p\n", (void*)pr.data);
     }
 };
 

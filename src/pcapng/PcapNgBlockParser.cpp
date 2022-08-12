@@ -49,11 +49,11 @@ void PcapNgBlockParser::readSHB(const uint8_t* data, SectionHeaderBlock& shb) {
     shb.sectionLength = *(const int64_t*)&data[16];
     MMPR_ASSERT(shb.sectionLength != -1 ? shb.sectionLength % 4 == 0 : true);
 
-    MMPR_DEBUG_LOG("--- [Section Header Block %p] ---\n", (void*)data);
-    MMPR_DEBUG_LOG("[SHB] Block Total Length: %u\n", shb.blockTotalLength);
-    MMPR_DEBUG_LOG("[SHB] Byte-Order Magic: 0x%08X\n", byteOrderMagic);
+    MMPR_DEBUG_LOG_1("--- [Section Header Block %p] ---\n", (void*)data);
+    MMPR_DEBUG_LOG_1("[SHB] Block Total Length: %u\n", shb.blockTotalLength);
+    MMPR_DEBUG_LOG_1("[SHB] Byte-Order Magic: 0x%08X\n", byteOrderMagic);
     MMPR_DEBUG_LOG_2("[SHB] Version: %u.%u\n", shb.majorVersion, shb.minorVersion);
-    MMPR_DEBUG_LOG("[SHB] Section Length: %li\n", shb.sectionLength);
+    MMPR_DEBUG_LOG_1("[SHB] Section Length: %li\n", shb.sectionLength);
 
     // standard Section Header Block has size 28 (without any options)
     if (shb.blockTotalLength > 28) {
@@ -115,10 +115,10 @@ void PcapNgBlockParser::readIDB(const uint8_t* data, InterfaceDescriptionBlock& 
     idb.linkType = *(const uint16_t*)&data[8];
     idb.snapLen = *(const uint32_t*)&data[12];
 
-    MMPR_DEBUG_LOG("--- [Interface Description Block %p] ---\n", (void*)data);
-    MMPR_DEBUG_LOG("[IDB] Block Total Length: %u\n", idb.blockTotalLength);
-    MMPR_DEBUG_LOG("[IDB] LinkType: 0x%04X\n", idb.linkType);
-    MMPR_DEBUG_LOG("[IDB] SnapLen: %u\n", idb.snapLen);
+    MMPR_DEBUG_LOG_1("--- [Interface Description Block %p] ---\n", (void*)data);
+    MMPR_DEBUG_LOG_1("[IDB] Block Total Length: %u\n", idb.blockTotalLength);
+    MMPR_DEBUG_LOG_1("[IDB] LinkType: 0x%04X\n", idb.linkType);
+    MMPR_DEBUG_LOG_1("[IDB] SnapLen: %u\n", idb.snapLen);
 
     // standard Interface Description Block has size 20 (without any options)
     if (idb.blockTotalLength > 20) {
@@ -201,14 +201,14 @@ void PcapNgBlockParser::readEPB(const uint8_t* data, EnhancedPacketBlock& epb) {
     epb.originalPacketLength = *(const uint32_t*)&data[24];
     epb.packetData = &data[28];
 
-    MMPR_DEBUG_LOG("--- [Enhanced Packet Block @%p] ---\n", (void*)data);
-    MMPR_DEBUG_LOG("[EPB] Block Total Length: %u\n", epb.blockTotalLength);
-    MMPR_DEBUG_LOG("[EPB] Interface ID: 0x%08X\n", epb.interfaceId);
-    MMPR_DEBUG_LOG("[EPB] Timestamp (High): %u\n", epb.timestampHigh);
-    MMPR_DEBUG_LOG("[EPB] Timestamp (Low): %u\n", epb.timestampLow);
-    MMPR_DEBUG_LOG("[EPB] Captured Packet Length: %u\n", epb.capturePacketLength);
-    MMPR_DEBUG_LOG("[EPB] Original Packet Length: %u\n", epb.originalPacketLength);
-    MMPR_DEBUG_LOG("[EPB] Packet Data: %p\n", (void*)epb.packetData);
+    MMPR_DEBUG_LOG_1("--- [Enhanced Packet Block @%p] ---\n", (void*)data);
+    MMPR_DEBUG_LOG_1("[EPB] Block Total Length: %u\n", epb.blockTotalLength);
+    MMPR_DEBUG_LOG_1("[EPB] Interface ID: 0x%08X\n", epb.interfaceId);
+    MMPR_DEBUG_LOG_1("[EPB] Timestamp (High): %u\n", epb.timestampHigh);
+    MMPR_DEBUG_LOG_1("[EPB] Timestamp (Low): %u\n", epb.timestampLow);
+    MMPR_DEBUG_LOG_1("[EPB] Captured Packet Length: %u\n", epb.capturePacketLength);
+    MMPR_DEBUG_LOG_1("[EPB] Original Packet Length: %u\n", epb.originalPacketLength);
+    MMPR_DEBUG_LOG_1("[EPB] Packet Data: %p\n", (void*)epb.packetData);
 
     // packet data is padded to 32 bits, calculate the total size in memory (including
     // padding)
@@ -276,15 +276,15 @@ void PcapNgBlockParser::readPB(const uint8_t* data, PacketBlock& pb) {
     pb.originalPacketLength = *(const uint32_t*)&data[24];
     pb.packetData = &data[28];
 
-    MMPR_DEBUG_LOG("--- [Packet Block @%p] ---\n", (void*)data);
-    MMPR_DEBUG_LOG("[PB] Block Total Length: %u\n", pb.blockTotalLength);
-    MMPR_DEBUG_LOG("[PB] Interface ID: 0x%04X\n", pb.interfaceId);
-    MMPR_DEBUG_LOG("[PB] Drops Count: 0x%04X\n", pb.dropsCount);
-    MMPR_DEBUG_LOG("[PB] Timestamp (High): %u\n", pb.timestampHigh);
-    MMPR_DEBUG_LOG("[PB] Timestamp (Low): %u\n", pb.timestampLow);
-    MMPR_DEBUG_LOG("[PB] Captured Packet Length: %u\n", pb.capturePacketLength);
-    MMPR_DEBUG_LOG("[PB] Original Packet Length: %u\n", pb.originalPacketLength);
-    MMPR_DEBUG_LOG("[PB] Packet Data: %p\n", (void*)pb.packetData);
+    MMPR_DEBUG_LOG_1("--- [Packet Block @%p] ---\n", (void*)data);
+    MMPR_DEBUG_LOG_1("[PB] Block Total Length: %u\n", pb.blockTotalLength);
+    MMPR_DEBUG_LOG_1("[PB] Interface ID: 0x%04X\n", pb.interfaceId);
+    MMPR_DEBUG_LOG_1("[PB] Drops Count: 0x%04X\n", pb.dropsCount);
+    MMPR_DEBUG_LOG_1("[PB] Timestamp (High): %u\n", pb.timestampHigh);
+    MMPR_DEBUG_LOG_1("[PB] Timestamp (Low): %u\n", pb.timestampLow);
+    MMPR_DEBUG_LOG_1("[PB] Captured Packet Length: %u\n", pb.capturePacketLength);
+    MMPR_DEBUG_LOG_1("[PB] Original Packet Length: %u\n", pb.originalPacketLength);
+    MMPR_DEBUG_LOG_1("[PB] Packet Data: %p\n", (void*)pb.packetData);
 
     // packet data is padded to 32 bits, calculate the total size in memory (including
     // padding)
@@ -339,12 +339,12 @@ void PcapNgBlockParser::readISB(const uint8_t* data, InterfaceStatisticsBlock& i
     isb.timestampHigh = *(const uint32_t*)&data[12];
     isb.timestampLow = *(const uint32_t*)&data[16];
 
-    MMPR_DEBUG_LOG("--- [Interface Statistics Block @%p] ---\n", (void*)data);
-    MMPR_DEBUG_LOG("[ISB] Block Type: 0x%08X\n", blockType);
-    MMPR_DEBUG_LOG("[ISB] Block Total Length: %u\n", isb.blockTotalLength);
-    MMPR_DEBUG_LOG("[ISB] Interface ID: 0x%08X\n", isb.interfaceId);
-    MMPR_DEBUG_LOG("[ISB] Timestamp (High): %u\n", isb.timestampHigh);
-    MMPR_DEBUG_LOG("[ISB] Timestamp (Low): %u\n", isb.timestampLow);
+    MMPR_DEBUG_LOG_1("--- [Interface Statistics Block @%p] ---\n", (void*)data);
+    MMPR_DEBUG_LOG_1("[ISB] Block Type: 0x%08X\n", blockType);
+    MMPR_DEBUG_LOG_1("[ISB] Block Total Length: %u\n", isb.blockTotalLength);
+    MMPR_DEBUG_LOG_1("[ISB] Interface ID: 0x%08X\n", isb.interfaceId);
+    MMPR_DEBUG_LOG_1("[ISB] Timestamp (High): %u\n", isb.timestampHigh);
+    MMPR_DEBUG_LOG_1("[ISB] Timestamp (Low): %u\n", isb.timestampLow);
 
     // standard Interface Statistics Block has size 24 (without any options)
     if (isb.blockTotalLength > 20) {

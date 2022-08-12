@@ -48,12 +48,12 @@ public:
         mpfh.snapLength = *(uint32_t*)&data[16];
         mpfh.linkType = *(uint32_t*)&data[20];
 
-        MMPR_DEBUG_LOG("--- [Modified PCAP File Header %p] ---\n", (void*)data);
+        MMPR_DEBUG_LOG_1("--- [Modified PCAP File Header %p] ---\n", (void*)data);
         MMPR_DEBUG_LOG_2("[MPFH] Version: %u.%u\n", mpfh.majorVersion, mpfh.minorVersion);
-        MMPR_DEBUG_LOG("[MPFH] This Zone: %i\n", mpfh.thiszone);
-        MMPR_DEBUG_LOG("[MPFH] Sigfigs: %u\n", mpfh.sigfigs);
-        MMPR_DEBUG_LOG("[MPFH] Snap Length: %u\n", mpfh.snapLength);
-        MMPR_DEBUG_LOG("[MPFH] Link Type: %u\n", mpfh.linkType);
+        MMPR_DEBUG_LOG_1("[MPFH] This Zone: %i\n", mpfh.thiszone);
+        MMPR_DEBUG_LOG_1("[MPFH] Sigfigs: %u\n", mpfh.sigfigs);
+        MMPR_DEBUG_LOG_1("[MPFH] Snap Length: %u\n", mpfh.snapLength);
+        MMPR_DEBUG_LOG_1("[MPFH] Link Type: %u\n", mpfh.linkType);
     }
 
     /**
@@ -93,16 +93,16 @@ public:
             mppr.data = &data[24];
         }
 
-        MMPR_DEBUG_LOG("--- [Modified PCAP Packet Record %p] ---\n", (void*)data);
-        MMPR_DEBUG_LOG("[MPPR] Timestamp Seconds: %u\n", mppr.timestampSeconds);
-        MMPR_DEBUG_LOG("[MPPR] Timestamp SubSeconds: %u\n", mppr.timestampSubSeconds);
-        MMPR_DEBUG_LOG("[MPPR] Capture Length: %u\n", mppr.captureLength);
-        MMPR_DEBUG_LOG("[MPPR] Length: %u\n", mppr.length);
-        MMPR_DEBUG_LOG("[MPPR] Interface Index: %u\n", mppr.interfaceIndex);
-        MMPR_DEBUG_LOG("[MPPR] Protocol: %u\n", mppr.protocol);
-        MMPR_DEBUG_LOG("[MPPR] Packet Type: %u\n", mppr.packetType);
-        MMPR_DEBUG_LOG("[MPPR] Padding: %u\n", mppr.padding);
-        MMPR_DEBUG_LOG("[MPPR] Data: %p\n", (void*)mppr.data);
+        MMPR_DEBUG_LOG_1("--- [Modified PCAP Packet Record %p] ---\n", (void*)data);
+        MMPR_DEBUG_LOG_1("[MPPR] Timestamp Seconds: %u\n", mppr.timestampSeconds);
+        MMPR_DEBUG_LOG_1("[MPPR] Timestamp SubSeconds: %u\n", mppr.timestampSubSeconds);
+        MMPR_DEBUG_LOG_1("[MPPR] Capture Length: %u\n", mppr.captureLength);
+        MMPR_DEBUG_LOG_1("[MPPR] Length: %u\n", mppr.length);
+        MMPR_DEBUG_LOG_1("[MPPR] Interface Index: %u\n", mppr.interfaceIndex);
+        MMPR_DEBUG_LOG_1("[MPPR] Protocol: %u\n", mppr.protocol);
+        MMPR_DEBUG_LOG_1("[MPPR] Packet Type: %u\n", mppr.packetType);
+        MMPR_DEBUG_LOG_1("[MPPR] Padding: %u\n", mppr.padding);
+        MMPR_DEBUG_LOG_1("[MPPR] Data: %p\n", (void*)mppr.data);
     }
 };
 
