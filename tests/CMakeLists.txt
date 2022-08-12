@@ -8,6 +8,7 @@ endif()
 
 # Now simply link against gtest as needed. Eg
 add_executable(mmpr_test
+    src/pcap/testFReadPcapReader.cpp
     src/pcap/testMMPcapReader.cpp
     src/pcap/testStreamPcapReader.cpp
     src/pcapng/testMMPcapNgReader.cpp
