@@ -3,6 +3,7 @@
 
 #include "mmpr/mmpr.h"
 #include <algorithm>
+#include <netinet/in.h>
 #include <sstream>
 #include <stdexcept>
 
@@ -29,16 +30,18 @@ public:
      *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
      *
      */
-    static void readFileHeader(const uint8_t* data, ModifiedPcapFileHeader& mpfh) {
+    static int readFileHeader(const uint8_t* data, ModifiedPcapFileHeader& mpfh) {
         auto magicNumber = *(uint32_t*)&data[0];
-        if (magicNumber != MMPR_MAGIC_NUMBER_MODIFIED_PCAP) {
+        if (magicNumber != MMPR_MAGIC_NUMBER_MODIFIED_PCAP &&
+            magicNumber != MMPR_MAGIC_NUMBER_MODIFIED_PCAP_BE) {
             std::stringstream sstream;
             sstream << std::hex << magicNumber;
             std::string hex = sstream.str();
             std::transform(hex.begin(), hex.end(), hex.begin(), ::toupper);
-            throw std::runtime_error("Expected raw file header to start with magic "
-                                     "numbers 0xA1B2CD34, but instead got: 0x" +
-                                     hex);
+            throw std::runtime_error(
+                "Expected raw file header to start with magic numbers 0xA1B2CD34 or "
+                "0x34CDB2A1, but instead got: 0x" +
+                hex);
         }
 
         mpfh.majorVersion = *(uint16_t*)&data[4];
@@ -48,12 +51,23 @@ public:
         mpfh.snapLength = *(uint32_t*)&data[16];
         mpfh.linkType = *(uint32_t*)&data[20];
 
+        if (magicNumber == MMPR_MAGIC_NUMBER_MODIFIED_PCAP_BE) {
+            mpfh.majorVersion = ntohs(mpfh.majorVersion);
+            mpfh.minorVersion = ntohs(mpfh.minorVersion);
+            mpfh.thiszone = ntohl(mpfh.thiszone);
+            mpfh.sigfigs = ntohl(mpfh.sigfigs);
+            mpfh.snapLength = ntohl(mpfh.snapLength);
+            mpfh.linkType = ntohl(mpfh.linkType);
+        }
+
         MMPR_DEBUG_LOG_1("--- [Modified PCAP File Header %p] ---\n", (void*)data);
         MMPR_DEBUG_LOG_2("[MPFH] Version: %u.%u\n", mpfh.majorVersion, mpfh.minorVersion);
         MMPR_DEBUG_LOG_1("[MPFH] This Zone: %i\n", mpfh.thiszone);
         MMPR_DEBUG_LOG_1("[MPFH] Sigfigs: %u\n", mpfh.sigfigs);
         MMPR_DEBUG_LOG_1("[MPFH] Snap Length: %u\n", mpfh.snapLength);
         MMPR_DEBUG_LOG_1("[MPFH] Link Type: %u\n", mpfh.linkType);
+
+        return magicNumber;
     }
 
     /**
@@ -103,6 +117,17 @@ public:
         MMPR_DEBUG_LOG_1("[MPPR] Packet Type: %u\n", mppr.packetType);
         MMPR_DEBUG_LOG_1("[MPPR] Padding: %u\n", mppr.padding);
         MMPR_DEBUG_LOG_1("[MPPR] Data: %p\n", (void*)mppr.data);
+    }
+
+    static void readPacketRecordBE(const uint8_t* data, ModifiedPcapPacketRecord& mppr) {
+        readPacketRecord(data, mppr);
+
+        mppr.timestampSeconds = ntohl(mppr.timestampSeconds);
+        mppr.timestampSubSeconds = ntohl(mppr.timestampSubSeconds);
+        mppr.captureLength = ntohl(mppr.captureLength);
+        mppr.length = ntohl(mppr.length);
+        mppr.interfaceIndex = ntohl(mppr.interfaceIndex);
+        mppr.protocol = ntohs(mppr.protocol);
     }
 };
 

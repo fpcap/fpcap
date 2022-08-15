@@ -39,7 +39,10 @@ void MMModifiedPcapReader::open() {
     mMappedMemory = reinterpret_cast<const uint8_t*>(mmapResult);
 
     ModifiedPcapFileHeader fileHeader{};
-    ModifiedPcapParser::readFileHeader(mMappedMemory, fileHeader);
+    int magicNumber = ModifiedPcapParser::readFileHeader(mMappedMemory, fileHeader);
+    if (magicNumber == MMPR_MAGIC_NUMBER_MODIFIED_PCAP_BE) {
+        throw runtime_error("Modified PCAP format in Big Endian is not supported yet");
+    }
     mOffset += 24;
 }
 
