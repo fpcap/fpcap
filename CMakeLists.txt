@@ -24,6 +24,13 @@ if(WIN32)
     set(MMPR_BUILD_BENCHMARK OFF)
 endif()
 
+option(MMPR_USE_GZIP "Enable Gzip decompression" ON)
+if(WIN32)
+    # for now Gzip is not supported on Windows
+    message(WARNING "Gzip decompression is currently not supported on Windows")
+    set(MMPR_USE_GZIP OFF)
+endif()
+
 # mmpr library target
 file(GLOB_RECURSE MMPR_SRC_FILES src/*.cpp)
 add_library(mmpr ${MMPR_SRC_FILES})
@@ -64,6 +71,16 @@ if(MMPR_USE_ZSTD)
     target_link_libraries(mmpr
         PRIVATE
             ZSTD::ZSTD
+    )
+endif()
+
+if(MMPR_USE_GZIP)
+    # Add zlib compression library
+    find_package(ZLIB REQUIRED)
+    add_definitions(-DMMPR_USE_GZIP=1)
+    target_link_libraries(mmpr
+        PRIVATE
+            ZLIB::ZLIB
     )
 endif()
 

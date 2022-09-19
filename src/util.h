@@ -26,6 +26,22 @@ __attribute__((unused)) static uint32_t read32bitsFromFile(const std::string& fi
 }
 
 /**
+ * Reads first 16 bits from a file to determine the magic number / file format.
+ * @param filepath Path to the file as string
+ * @return The first 16 bits as unsigned
+ */
+__attribute__((unused)) static uint16_t read16bitsFromFile(const std::string& filepath) {
+    uint16_t magicNumber;
+    std::ifstream file(filepath, std::ios::in | std::ios::binary);
+    if (file.is_open()) {
+        file.read((char*)&magicNumber, sizeof(magicNumber));
+    } else {
+        throw std::runtime_error("Failed opening file to read first 32 bits");
+    }
+    return magicNumber;
+}
+
+/**
  * Parses a non zero terminated string from the option at option.value with length
  * option.length.
  * @param option the option containing the string value

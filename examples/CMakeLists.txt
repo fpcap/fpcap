@@ -26,3 +26,8 @@ target_link_libraries(mmpr_example_modified_pcap_simple PRIVATE mmpr)
 
 add_executable(mmpr_statistics_cli statistics_cli.cpp)
 target_link_libraries(mmpr_statistics_cli PRIVATE mmpr)
+
+if(MMPR_USE_GZIP)
+    add_executable(mmpr_example_gzip_pcap gzip_pcap.cpp)
+    target_link_libraries(mmpr_example_gzip_pcap PRIVATE mmpr ZLIB::ZLIB)
+endif()

@@ -5,6 +5,9 @@
 #ifdef MMPR_USE_ZSTD
 #include "mmpr/pcapng/ZstdPcapNgReader.h"
 #endif
+#ifdef MMPR_USE_GZIP
+#include "mmpr/pcap/GzipPcapReader.h"
+#endif
 #include "mmpr/modified_pcap/MMModifiedPcapReader.h"
 #include "util.h"
 #include <filesystem>
@@ -21,21 +24,28 @@ std::unique_ptr<FileReader> FileReader::getReader(const std::string& filepath) {
     }
 
     uint32_t magicNumber = util::read32bitsFromFile(filepath);
-    switch (magicNumber) {
-    case MMPR_MAGIC_NUMBER_PCAP_MICROSECONDS:
-    case MMPR_MAGIC_NUMBER_PCAP_NANOSECONDS:
+    if (magicNumber == MMPR_MAGIC_NUMBER_PCAP_MICROSECONDS || magicNumber == MMPR_MAGIC_NUMBER_PCAP_NANOSECONDS) {
         return std::unique_ptr<MMPcapReader>(new MMPcapReader(filepath));
-    case MMPR_MAGIC_NUMBER_PCAPNG:
-        return std::unique_ptr<MMPcapNgReader>(new MMPcapNgReader(filepath));
-#ifdef MMPR_USE_ZSTD
-    case MMPR_MAGIC_NUMBER_ZSTD:
-        return std::unique_ptr<ZstdPcapNgReader>(new ZstdPcapNgReader(filepath));
-#endif
-    case MMPR_MAGIC_NUMBER_MODIFIED_PCAP:
-        return std::unique_ptr<MMModifiedPcapReader>(new MMModifiedPcapReader(filepath));
-    default:
-        throw std::runtime_error("Failed to determine file type based on first 32 bits");
     }
+    else if(magicNumber == MMPR_MAGIC_NUMBER_PCAPNG) {
+        return std::unique_ptr<MMPcapNgReader>(new MMPcapNgReader(filepath));
+    }
+#ifdef MMPR_USE_ZSTD
+    else if (magicNumber == MMPR_MAGIC_NUMBER_ZSTD) {
+        return std::unique_ptr<ZstdPcapNgReader>(new ZstdPcapNgReader(filepath));
+    }
+#endif
+#ifdef MMPR_USE_GZIP
+    else if (magicNumber >> 16 == MMPR_MAGIC_NUMBER_GZIP) {
+        // TODO switch between PCAP and PCAPNG
+        return std::unique_ptr<GzipPcapReader>(new GzipPcapReader(filepath));
+    }
+#endif
+    else if (magicNumber == MMPR_MAGIC_NUMBER_MODIFIED_PCAP) {
+        return std::unique_ptr<MMModifiedPcapReader>(new MMModifiedPcapReader(filepath));
+    }
+
+    throw std::runtime_error("Failed to determine file type based on first 32 bits");
 }
 
 } // namespace mmpr
