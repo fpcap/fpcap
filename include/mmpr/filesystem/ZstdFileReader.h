@@ -73,7 +73,13 @@ public:
         }
 
         mDecompressedDataPtr = mDecompressedData.get();
+        mFileSize = decompressedSize;
     }
+
+    ZstdFileReader(ZstdFileReader&& other)
+        : FileReader(other.mFilePath),
+          mDecompressedData(std::move(other.mDecompressedData)),
+          mDecompressedDataPtr(mDecompressedData.get()) {}
 
     const uint8_t* data() const override { return mDecompressedDataPtr; }
 

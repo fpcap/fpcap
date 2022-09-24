@@ -2,6 +2,7 @@
 #define MMPR_MMAPFILEREADER_H
 
 #include "FileReader.h"
+#include "ZstdFileReader.h"
 #include <algorithm>
 #include <cerrno>
 #include <cstring>
@@ -39,6 +40,7 @@ public:
         mMappedMemory = reinterpret_cast<const uint8_t*>(mmapResult);
     }
 
+    MMapFileReader(mmpr::ZstdFileReader reader);
     ~MMapFileReader() {
         munmap((void*)mMappedMemory, mMappedSize);
         ::close(mFileDescriptor);

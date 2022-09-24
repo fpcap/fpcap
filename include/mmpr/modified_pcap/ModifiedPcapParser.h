@@ -8,6 +8,7 @@
 #include <stdexcept>
 
 namespace mmpr {
+
 class ModifiedPcapParser {
 public:
     /**
@@ -30,7 +31,7 @@ public:
      *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
      *
      */
-    static int readFileHeader(const uint8_t* data, ModifiedPcapFileHeader& mpfh) {
+    static void readFileHeader(const uint8_t* data, modified_pcap::FileHeader& mpfh) {
         auto magicNumber = *(uint32_t*)&data[0];
         if (magicNumber != MMPR_MAGIC_NUMBER_MODIFIED_PCAP &&
             magicNumber != MMPR_MAGIC_NUMBER_MODIFIED_PCAP_BE) {
@@ -67,7 +68,10 @@ public:
         MMPR_DEBUG_LOG_1("[MPFH] Snap Length: %u\n", mpfh.snapLength);
         MMPR_DEBUG_LOG_1("[MPFH] Link Type: %u\n", mpfh.linkType);
 
-        return magicNumber;
+        if (magicNumber == MMPR_MAGIC_NUMBER_MODIFIED_PCAP_BE) {
+            throw std::runtime_error(
+                "Modified PCAP format in Big Endian is not supported yet");
+        }
     }
 
     /**
@@ -92,7 +96,7 @@ public:
      *    /                                                               /
      *    +---------------------------------------------------------------+
      */
-    static void readPacketRecord(const uint8_t* data, ModifiedPcapPacketRecord& mppr) {
+    static void readPacketRecord(const uint8_t* data, modified_pcap::PacketRecord& mppr) {
         mppr.timestampSeconds = *(uint32_t*)&data[0];
         mppr.timestampSubSeconds = *(uint32_t*)&data[4];
         mppr.captureLength = *(uint32_t*)&data[8];
@@ -119,7 +123,8 @@ public:
         MMPR_DEBUG_LOG_1("[MPPR] Data: %p\n", (void*)mppr.data);
     }
 
-    static void readPacketRecordBE(const uint8_t* data, ModifiedPcapPacketRecord& mppr) {
+    static void readPacketRecordBE(const uint8_t* data,
+                                   modified_pcap::PacketRecord& mppr) {
         readPacketRecord(data, mppr);
 
         mppr.timestampSeconds = ntohl(mppr.timestampSeconds);

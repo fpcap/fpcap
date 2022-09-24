@@ -31,4 +31,21 @@ TEST(ZstdPcapNgReader, FaultyConstructor) {
     EXPECT_THROW(mmpr::ZstdPcapNgReader{""}, std::runtime_error);
 }
 
+TEST(ZstdPcapNgReader, PcapNgExample) {
+    {
+        // Standard Ethernet
+        mmpr::ZstdPcapNgReader reader{"tracefiles/pcapng-example.pcapng.zst"};
+        mmpr::Packet packet;
+        uint64_t processedPackets{0};
+        while (!reader.isExhausted()) {
+            if (reader.readNextPacket(packet)) {
+                ASSERT_TRUE(reader.getDataLinkType() == 1 /* Ethernet */ ||
+                            reader.getDataLinkType() == 113 /* Linux SLL */);
+                ++processedPackets;
+            }
+        }
+        ASSERT_EQ(processedPackets, 159);
+    }
+}
+
 #endif

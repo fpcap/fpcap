@@ -3,6 +3,7 @@
 
 #include "mmpr/mmpr.h"
 #include <algorithm>
+#include <sstream>
 
 namespace mmpr {
 class PcapParser {
@@ -26,9 +27,10 @@ public:
      *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
      *
      */
-    static void readFileHeader(const uint8_t* data, FileHeader& fh) {
+    static void readFileHeader(const uint8_t* data, pcap::FileHeader& fh) {
         auto magicNumber = *(const uint32_t*)&data[0];
-        if (magicNumber != 0xA1B2C3D4 && magicNumber != 0xA1B23C4D) {
+        if (magicNumber != MMPR_MAGIC_NUMBER_PCAP_MICROSECONDS &&
+            magicNumber != MMPR_MAGIC_NUMBER_PCAP_NANOSECONDS) {
             std::stringstream sstream;
             sstream << std::hex << magicNumber;
             std::string hex = sstream.str();
@@ -40,9 +42,9 @@ public:
         }
 
         if (magicNumber == 0xA1B2C3D4) {
-            fh.timestampFormat = FileHeader::MICROSECONDS;
+            fh.timestampFormat = pcap::FileHeader::MICROSECONDS;
         } else {
-            fh.timestampFormat = FileHeader::NANOSECONDS;
+            fh.timestampFormat = pcap::FileHeader::NANOSECONDS;
         }
 
         fh.majorVersion = *(const uint16_t*)&data[4];
@@ -80,7 +82,7 @@ public:
      *    /                                                               /
      *    +---------------------------------------------------------------+
      */
-    static void readPacketRecord(const uint8_t* data, PacketRecord& pr) {
+    static void readPacketRecord(const uint8_t* data, pcap::PacketRecord& pr) {
         pr.timestampSeconds = *(const uint32_t*)&data[0];
         pr.timestampSubSeconds = *(const uint32_t*)&data[4];
         pr.captureLength = *(const uint32_t*)&data[8];

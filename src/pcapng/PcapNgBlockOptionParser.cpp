@@ -22,7 +22,7 @@ namespace mmpr {
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
 void PcapNgBlockOptionParser::readOption(const uint8_t* data,
-                                         Option& option,
+                                         pcapng::Option& option,
                                          size_t offset) {
     option.type = *(const uint16_t*)&data[offset];
     option.length = *(const uint16_t*)&data[offset + 2];
@@ -30,7 +30,7 @@ void PcapNgBlockOptionParser::readOption(const uint8_t* data,
 }
 
 void PcapNgBlockOptionParser::readSHBOption(const uint8_t* data,
-                                            Option& option,
+                                            pcapng::Option& option,
                                             size_t offset) {
     readOption(data, option, offset);
 
@@ -66,7 +66,7 @@ void PcapNgBlockOptionParser::readSHBOption(const uint8_t* data,
 }
 
 void PcapNgBlockOptionParser::readIDBBlockOption(const uint8_t* data,
-                                                 Option& option,
+                                                 pcapng::Option& option,
                                                  size_t offset) {
     readOption(data, option, offset);
 
@@ -74,14 +74,14 @@ void PcapNgBlockOptionParser::readIDBBlockOption(const uint8_t* data,
     switch (option.type) {
     case MMPR_BLOCK_OPTION_IDB_NAME: {
         // if_name: name of the device used to capture data
-        std::string name = util::parseUTF8(option);
+        std::string name = parseUTF8(option);
         MMPR_UNUSED(name);
         MMPR_DEBUG_LOG_1("[IDB][OPT] Device Name: %s\n", name.c_str());
         return;
     }
     case MMPR_BLOCK_OPTION_IDB_DESCRIPTION: {
         // if_description: description of the device used to capture data
-        std::string description = util::parseUTF8(option);
+        std::string description = parseUTF8(option);
         MMPR_UNUSED(description);
         MMPR_DEBUG_LOG_1("[IDB][OPT] Device Description: %s\n", description.c_str());
         return;
@@ -151,7 +151,7 @@ void PcapNgBlockOptionParser::readIDBBlockOption(const uint8_t* data,
     case MMPR_BLOCK_OPTION_IDB_OS: {
         // if_os: name of the operating system of the machine in which this interface is
         // installed
-        std::string os = util::parseUTF8(option);
+        std::string os = parseUTF8(option);
         MMPR_UNUSED(os);
         MMPR_DEBUG_LOG_1("[IDB][OPT] OS: %s\n", os.c_str());
         return;
@@ -201,7 +201,7 @@ void PcapNgBlockOptionParser::readIDBBlockOption(const uint8_t* data,
 }
 
 void PcapNgBlockOptionParser::readEPBOption(const uint8_t* data,
-                                            Option& option,
+                                            pcapng::Option& option,
                                             size_t offset) {
     readOption(data, option, offset);
 
@@ -263,7 +263,7 @@ void PcapNgBlockOptionParser::readEPBOption(const uint8_t* data,
 }
 
 void PcapNgBlockOptionParser::readISBOption(const uint8_t* data,
-                                            Option& option,
+                                            pcapng::Option& option,
                                             size_t offset) {
     readOption(data, option, offset);
 

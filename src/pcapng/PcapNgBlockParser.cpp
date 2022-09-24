@@ -30,7 +30,7 @@ namespace mmpr {
  *    |                      Block Total Length                       |
  *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
-void PcapNgBlockParser::readSHB(const uint8_t* data, SectionHeaderBlock& shb) {
+void PcapNgBlockParser::readSHB(const uint8_t* data, pcapng::SectionHeaderBlock& shb) {
     auto blockType = *(const uint32_t*)&data[0];
     MMPR_ASSERT(blockType == MMPR_SECTION_HEADER_BLOCK);
 
@@ -60,7 +60,7 @@ void PcapNgBlockParser::readSHB(const uint8_t* data, SectionHeaderBlock& shb) {
         uint32_t totalOptionsLength = shb.blockTotalLength - 28;
         uint32_t readOptionsLength = 0;
         while (readOptionsLength < totalOptionsLength) {
-            Option option{};
+            pcapng::Option option{};
             PcapNgBlockOptionParser::readSHBOption(data, option, 24 + readOptionsLength);
             readOptionsLength += option.totalLength();
             switch (option.type) {
@@ -107,7 +107,8 @@ void PcapNgBlockParser::readSHB(const uint8_t* data, SectionHeaderBlock& shb) {
  *    |                      Block Total Length                       |
  *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
-void PcapNgBlockParser::readIDB(const uint8_t* data, InterfaceDescriptionBlock& idb) {
+void PcapNgBlockParser::readIDB(const uint8_t* data,
+                                pcapng::InterfaceDescriptionBlock& idb) {
     auto blockType = *(const uint32_t*)&data[0];
     MMPR_ASSERT(blockType == MMPR_INTERFACE_DESCRIPTION_BLOCK);
 
@@ -125,7 +126,7 @@ void PcapNgBlockParser::readIDB(const uint8_t* data, InterfaceDescriptionBlock& 
         uint32_t totalOptionsLength = idb.blockTotalLength - 20;
         uint32_t readOptionsLength = 0;
         while (readOptionsLength < totalOptionsLength) {
-            Option option{};
+            pcapng::Option option{};
             PcapNgBlockOptionParser::readIDBBlockOption(data, option,
                                                         16 + readOptionsLength);
             readOptionsLength += option.totalLength();
@@ -135,10 +136,10 @@ void PcapNgBlockParser::readIDB(const uint8_t* data, InterfaceDescriptionBlock& 
                 idb.options.timestampResolution = util::fromIfTsresolUInt(*option.value);
                 break;
             case MMPR_BLOCK_OPTION_IDB_NAME:
-                idb.options.name = util::parseUTF8(option);
+                idb.options.name = PcapNgBlockOptionParser::parseUTF8(option);
                 break;
             case MMPR_BLOCK_OPTION_IDB_DESCRIPTION:
-                idb.options.description = util::parseUTF8(option);
+                idb.options.description = PcapNgBlockOptionParser::parseUTF8(option);
                 break;
             case MMPR_BLOCK_OPTION_IDB_FILTER:
                 // skip first octet (filter code), interpret rest as string
@@ -146,7 +147,7 @@ void PcapNgBlockParser::readIDB(const uint8_t* data, InterfaceDescriptionBlock& 
                     reinterpret_cast<const char*>(&option.value[1]), option.length - 1);
                 break;
             case MMPR_BLOCK_OPTION_IDB_OS:
-                idb.options.os = util::parseUTF8(option);
+                idb.options.os = PcapNgBlockOptionParser::parseUTF8(option);
                 break;
             }
         }
@@ -189,7 +190,7 @@ void PcapNgBlockParser::readIDB(const uint8_t* data, InterfaceDescriptionBlock& 
  *    |                      Block Total Length                       |
  *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
-void PcapNgBlockParser::readEPB(const uint8_t* data, EnhancedPacketBlock& epb) {
+void PcapNgBlockParser::readEPB(const uint8_t* data, pcapng::EnhancedPacketBlock& epb) {
     auto blockType = *(const uint32_t*)&data[0];
     MMPR_ASSERT(blockType == MMPR_ENHANCED_PACKET_BLOCK);
 
@@ -219,7 +220,7 @@ void PcapNgBlockParser::readEPB(const uint8_t* data, EnhancedPacketBlock& epb) {
         uint32_t totalOptionsLength = epb.blockTotalLength - 32 - packetDataTotalLength;
         uint32_t readOptionsLength = 0;
         while (readOptionsLength < totalOptionsLength) {
-            Option option{};
+            pcapng::Option option{};
             PcapNgBlockOptionParser::readEPBOption(
                 data, option, 32 + packetDataTotalLength + readOptionsLength);
             readOptionsLength += option.totalLength();
@@ -263,7 +264,7 @@ void PcapNgBlockParser::readEPB(const uint8_t* data, EnhancedPacketBlock& epb) {
  *    |                      Block Total Length                       |
  *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
-void PcapNgBlockParser::readPB(const uint8_t* data, PacketBlock& pb) {
+void PcapNgBlockParser::readPB(const uint8_t* data, pcapng::PacketBlock& pb) {
     auto blockType = *(const uint32_t*)&data[0];
     MMPR_ASSERT(blockType == MMPR_PACKET_BLOCK);
 
@@ -295,7 +296,7 @@ void PcapNgBlockParser::readPB(const uint8_t* data, PacketBlock& pb) {
         uint32_t totalOptionsLength = pb.blockTotalLength - 32 - packetDataTotalLength;
         uint32_t readOptionsLength = 0;
         while (readOptionsLength < totalOptionsLength) {
-            Option option{};
+            pcapng::Option option{};
             PcapNgBlockOptionParser::readEPBOption(
                 data, option, 32 + packetDataTotalLength + readOptionsLength);
             readOptionsLength += option.totalLength();
@@ -330,7 +331,8 @@ void PcapNgBlockParser::readPB(const uint8_t* data, PacketBlock& pb) {
  *    |                      Block Total Length                       |
  *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
-void PcapNgBlockParser::readISB(const uint8_t* data, InterfaceStatisticsBlock& isb) {
+void PcapNgBlockParser::readISB(const uint8_t* data,
+                                pcapng::InterfaceStatisticsBlock& isb) {
     auto blockType = *(const uint32_t*)&data[0];
     MMPR_ASSERT(blockType == MMPR_INTERFACE_STATISTICS_BLOCK);
 
@@ -351,7 +353,7 @@ void PcapNgBlockParser::readISB(const uint8_t* data, InterfaceStatisticsBlock& i
         uint32_t totalOptionsLength = isb.blockTotalLength - 20;
         uint32_t readOptionsLength = 0;
         while (readOptionsLength < totalOptionsLength) {
-            Option option{};
+            pcapng::Option option{};
             PcapNgBlockOptionParser::readISBOption(data, option, 16 + readOptionsLength);
             readOptionsLength += option.totalLength();
         }

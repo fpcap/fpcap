@@ -19,15 +19,6 @@ class PcapNgReader : public Reader {
 
 public:
     PcapNgReader(const std::string& filepath) : mReader(filepath) {
-        if (filepath.empty()) {
-            throw std::runtime_error("Cannot read empty filepath");
-        }
-
-        if (!std::filesystem::exists(filepath)) {
-            throw std::runtime_error("Cannot find file " +
-                                     std::filesystem::absolute(filepath).string());
-        }
-
         uint32_t magicNumber = *(uint32_t*)mReader.data();
         if (magicNumber != MMPR_MAGIC_NUMBER_PCAPNG) {
             std::stringstream sstream;
@@ -39,7 +30,21 @@ public:
                 "number, instead got: 0x" +
                 hex + ", possibly little/big endian issue");
         }
-    };
+    }
+
+    PcapNgReader(TReader&& reader) : mReader(std::forward<TReader>(reader)) {
+        uint32_t magicNumber = *(uint32_t*)mReader.data();
+        if (magicNumber != MMPR_MAGIC_NUMBER_PCAPNG) {
+            std::stringstream sstream;
+            sstream << std::hex << magicNumber;
+            std::string hex = sstream.str();
+            std::transform(hex.begin(), hex.end(), hex.begin(), ::toupper);
+            throw std::runtime_error(
+                "Expected PcapNG format to start with appropriate magic "
+                "number, instead got: 0x" +
+                hex + ", possibly little/big endian issue");
+        }
+    }
 
     bool isExhausted() const override { return mReader.isExhausted(); }
 
@@ -64,14 +69,14 @@ public:
         while (blockType != MMPR_ENHANCED_PACKET_BLOCK &&
                blockType != MMPR_PACKET_BLOCK) {
             if (blockType == MMPR_SECTION_HEADER_BLOCK) {
-                SectionHeaderBlock shb{};
+                pcapng::SectionHeaderBlock shb{};
                 PcapNgBlockParser::readSHB(&mReader.data()[mReader.mOffset], shb);
                 mMetadata.comment = shb.options.comment;
                 mMetadata.os = shb.options.os;
                 mMetadata.hardware = shb.options.hardware;
                 mMetadata.userApplication = shb.options.userApplication;
             } else if (blockType == MMPR_INTERFACE_DESCRIPTION_BLOCK) {
-                InterfaceDescriptionBlock idb{};
+                pcapng::InterfaceDescriptionBlock idb{};
                 PcapNgBlockParser::readIDB(&mReader.data()[mReader.mOffset], idb);
                 mDataLinkType = idb.linkType;
                 mMetadata.timestampResolution = idb.options.timestampResolution;
@@ -102,7 +107,7 @@ public:
 
         switch (blockType) {
         case MMPR_ENHANCED_PACKET_BLOCK: {
-            EnhancedPacketBlock epb{};
+            pcapng::EnhancedPacketBlock epb{};
             PcapNgBlockParser::readEPB(&mReader.data()[mReader.mOffset], epb);
             util::calculateTimestamps(mMetadata.timestampResolution, epb.timestampHigh,
                                       epb.timestampLow, &(packet.timestampSeconds),
@@ -116,7 +121,7 @@ public:
             break;
         }
         case MMPR_PACKET_BLOCK: {
-            PacketBlock pb{};
+            pcapng::PacketBlock pb{};
             PcapNgBlockParser::readPB(&mReader.data()[mReader.mOffset], pb);
             util::calculateTimestamps(mMetadata.timestampResolution, pb.timestampHigh,
                                       pb.timestampLow, &(packet.timestampSeconds),
@@ -157,7 +162,7 @@ public:
 
         switch (blockType) {
         case MMPR_SECTION_HEADER_BLOCK: {
-            SectionHeaderBlock shb{};
+            pcapng::SectionHeaderBlock shb{};
             PcapNgBlockParser::readSHB(&mReader.data()[mReader.mOffset], shb);
             mMetadata.comment = shb.options.comment;
             mMetadata.os = shb.options.os;
@@ -166,7 +171,7 @@ public:
             break;
         }
         case MMPR_INTERFACE_DESCRIPTION_BLOCK: {
-            InterfaceDescriptionBlock idb{};
+            pcapng::InterfaceDescriptionBlock idb{};
             PcapNgBlockParser::readIDB(&mReader.data()[mReader.mOffset], idb);
             mDataLinkType = idb.linkType;
             mMetadata.timestampResolution = idb.options.timestampResolution;
@@ -175,13 +180,13 @@ public:
             break;
         }
         case MMPR_ENHANCED_PACKET_BLOCK: {
-            EnhancedPacketBlock epb{};
+            pcapng::EnhancedPacketBlock epb{};
             PcapNgBlockParser::readEPB(&mReader.data()[mReader.mOffset], epb);
             break;
         }
         case MMPR_PACKET_BLOCK: {
             // deprecated in newer versions of PcapNG
-            PacketBlock pb{};
+            pcapng::PacketBlock pb{};
             PcapNgBlockParser::readPB(&mReader.data()[mReader.mOffset], pb);
             break;
         }
@@ -194,7 +199,7 @@ public:
             break;
         }
         case MMPR_INTERFACE_STATISTICS_BLOCK: {
-            InterfaceStatisticsBlock isb{};
+            pcapng::InterfaceStatisticsBlock isb{};
             PcapNgBlockParser::readISB(&mReader.data()[mReader.mOffset], isb);
             break;
         }
@@ -223,14 +228,14 @@ public:
         return blockType;
     }
 
-    size_t getFileSize() const override { return mReader.mFileSize; };
-    std::string getFilepath() const override { return mReader.mFilePath; };
-    size_t getCurrentOffset() const override { return mReader.mOffset; };
-    uint16_t getDataLinkType() const override { return mDataLinkType; };
-    std::string getComment() const { return mMetadata.comment; };
-    std::string getOS() const { return mMetadata.os; };
-    std::string getHardware() const { return mMetadata.hardware; };
-    std::string getUserApplication() const { return mMetadata.userApplication; };
+    size_t getFileSize() const override { return mReader.mFileSize; }
+    std::string getFilepath() const override { return mReader.mFilePath; }
+    size_t getCurrentOffset() const override { return mReader.mOffset; }
+    uint16_t getDataLinkType() const override { return mDataLinkType; }
+    std::string getComment() const { return mMetadata.comment; }
+    std::string getOS() const { return mMetadata.os; }
+    std::string getHardware() const { return mMetadata.hardware; }
+    std::string getUserApplication() const { return mMetadata.userApplication; }
     std::vector<TraceInterface> getTraceInterfaces() const override {
         return mTraceInterfaces;
     }

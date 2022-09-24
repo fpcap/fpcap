@@ -3,6 +3,7 @@
 
 #include "mmpr/filesystem/FReadFileReader.h"
 #include "mmpr/filesystem/MMapFileReader.h"
+#include "mmpr/filesystem/ZstdFileReader.h"
 #include "mmpr/mmpr.h"
 #include "mmpr/pcap/PcapParser.h"
 #include "mmpr/util.h"
@@ -19,36 +20,22 @@ class PcapReader : public Reader {
 
 public:
     PcapReader(const std::string& filepath) : mReader(filepath) {
-        if (filepath.empty()) {
-            throw std::runtime_error("Cannot read empty filepath");
-        }
-
-        if (!std::filesystem::exists(filepath)) {
-            throw std::runtime_error("Cannot find file " +
-                                     std::filesystem::absolute(filepath).string());
-        }
-
-        uint32_t magicNumber = util::read32bitsFromFile(filepath);
-        if (magicNumber != MMPR_MAGIC_NUMBER_PCAP_MICROSECONDS &&
-            magicNumber != MMPR_MAGIC_NUMBER_PCAP_NANOSECONDS) {
-            std::stringstream sstream;
-            sstream << std::hex << magicNumber;
-            std::string hex = sstream.str();
-            std::transform(hex.begin(), hex.end(), hex.begin(), ::toupper);
-            throw std::runtime_error(
-                "Expected PCAP format to start with appropriate magic "
-                "numbers, instead got: 0x" +
-                hex + ", possibly little/big endian issue");
-        }
-
-        FileHeader fileHeader{};
+        pcap::FileHeader fileHeader{};
         PcapParser::readFileHeader(mReader.data(), fileHeader);
         mDataLinkType = fileHeader.linkType;
         mTimestampFormat = fileHeader.timestampFormat;
         mReader.mOffset += 24;
-    };
+    }
 
-    bool isExhausted() const { return mReader.isExhausted(); };
+    PcapReader(TReader&& reader) : mReader(std::forward<TReader>(reader)) {
+        pcap::FileHeader fileHeader{};
+        PcapParser::readFileHeader(mReader.data(), fileHeader);
+        mDataLinkType = fileHeader.linkType;
+        mTimestampFormat = fileHeader.timestampFormat;
+        mReader.mOffset += 24;
+    }
+
+    bool isExhausted() const { return mReader.isExhausted(); }
 
     bool readNextPacket(Packet& packet) {
         if (isExhausted()) {
@@ -64,10 +51,10 @@ public:
                 std::to_string(mReader.getSafeToReadSize()) + " bytes left in the file");
         }
 
-        PacketRecord packetRecord{};
+        pcap::PacketRecord packetRecord{};
         PcapParser::readPacketRecord(&mReader.data()[mReader.mOffset], packetRecord);
         packet.timestampSeconds = packetRecord.timestampSeconds;
-        packet.timestampMicroseconds = mTimestampFormat == FileHeader::MICROSECONDS
+        packet.timestampMicroseconds = mTimestampFormat == pcap::FileHeader::MICROSECONDS
                                            ? packetRecord.timestampSubSeconds
                                            : packetRecord.timestampSubSeconds / 1000;
         packet.captureLength = packetRecord.captureLength;
@@ -77,12 +64,12 @@ public:
         mReader.mOffset += 16 + packetRecord.captureLength;
 
         return true;
-    };
+    }
 
-    size_t getFileSize() const { return mReader.mFileSize; };
-    std::string getFilepath() const override { return mReader.mFilePath; };
-    size_t getCurrentOffset() const { return mReader.mOffset; };
-    uint16_t getDataLinkType() const override { return mDataLinkType; };
+    size_t getFileSize() const { return mReader.mFileSize; }
+    std::string getFilepath() const override { return mReader.mFilePath; }
+    size_t getCurrentOffset() const { return mReader.mOffset; }
+    uint16_t getDataLinkType() const override { return mDataLinkType; }
     std::vector<TraceInterface> getTraceInterfaces() const override {
         return std::vector<TraceInterface>();
     }
@@ -93,11 +80,12 @@ public:
 private:
     TReader mReader;
     uint16_t mDataLinkType{0};
-    FileHeader::TimestampFormat mTimestampFormat{FileHeader::MICROSECONDS};
+    pcap::FileHeader::TimestampFormat mTimestampFormat{pcap::FileHeader::MICROSECONDS};
 };
 
 typedef PcapReader<FReadFileReader> FReadPcapReader;
 typedef PcapReader<MMapFileReader> MMPcapReader;
+typedef PcapReader<ZstdFileReader> ZstdPcapReader;
 
 } // namespace mmpr
 

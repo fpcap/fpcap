@@ -4,14 +4,16 @@
 #include "mmpr/mmpr.h"
 
 namespace mmpr {
+
 class PcapNgBlockParser {
 public:
-    static void readSHB(const uint8_t* data, SectionHeaderBlock& shb);
-    static void readIDB(const uint8_t* data, InterfaceDescriptionBlock& idb);
-    static void readEPB(const uint8_t* data, EnhancedPacketBlock& epb);
-    static void readPB(const uint8_t* data, PacketBlock& pb);
-    static void readISB(const uint8_t* data, InterfaceStatisticsBlock& isb);
+    static void readSHB(const uint8_t* data, pcapng::SectionHeaderBlock& shb);
+    static void readIDB(const uint8_t* data, pcapng::InterfaceDescriptionBlock& idb);
+    static void readEPB(const uint8_t* data, pcapng::EnhancedPacketBlock& epb);
+    static void readPB(const uint8_t* data, pcapng::PacketBlock& pb);
+    static void readISB(const uint8_t* data, pcapng::InterfaceStatisticsBlock& isb);
 };
+
 } // namespace mmpr
 
 #endif // MMPR_PCAPNGBLOCKPARSER_H

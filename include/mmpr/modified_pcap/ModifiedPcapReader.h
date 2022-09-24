@@ -1,31 +1,68 @@
 #ifndef MMPR_RAWREADER_H
 #define MMPR_RAWREADER_H
 
+#include "mmpr/filesystem/FReadFileReader.h"
+#include "mmpr/filesystem/FileReader.h"
+#include "mmpr/filesystem/MMapFileReader.h"
+#include "mmpr/filesystem/ZstdFileReader.h"
 #include "mmpr/mmpr.h"
+#include "mmpr/modified_pcap/ModifiedPcapParser.h"
 #include <filesystem>
 #include <stdexcept>
 
 namespace mmpr {
+
+template <typename TReader>
 class ModifiedPcapReader : public Reader {
+    static_assert(std::is_base_of<FileReader, TReader>::value,
+                  "TReader must be a subclass of FileReader");
+
 public:
-    explicit ModifiedPcapReader(const std::string& filepath) {
-        if (filepath.empty()) {
-            throw std::runtime_error("Cannot read empty filepath");
+    ModifiedPcapReader(const std::string& filepath) : mReader(filepath) {
+        modified_pcap::FileHeader fileHeader{};
+        ModifiedPcapParser::readFileHeader(mReader.data(), fileHeader);
+        mReader.mOffset += 24;
+    }
+
+    ModifiedPcapReader(TReader&& reader) : mReader(std::forward<TReader>(reader)) {
+        modified_pcap::FileHeader fileHeader{};
+        ModifiedPcapParser::readFileHeader(mReader.data(), fileHeader);
+        mReader.mOffset += 24;
+    }
+
+    bool isExhausted() const override { return mReader.isExhausted(); }
+
+    bool readNextPacket(Packet& packet) override {
+        if (isExhausted()) {
+            // nothing more to read
+            return false;
         }
 
-        if (!std::filesystem::exists(filepath)) {
-            throw std::runtime_error("Cannot find file " +
-                                     std::filesystem::absolute(filepath).string());
+        // make sure there are enough bytes to read
+        if (mReader.getSafeToReadSize() < 24) {
+            throw std::runtime_error(
+                "Expected to read at least one more raw packet record (24 bytes "
+                "at least), but there are only " +
+                std::to_string(mReader.getSafeToReadSize()) + " bytes left in the file");
         }
-    };
 
-    virtual bool isExhausted() const override = 0;
-    virtual bool readNextPacket(Packet& packet) override = 0;
+        modified_pcap::PacketRecord packetRecord{};
+        ModifiedPcapParser::readPacketRecord(&mReader.data()[mReader.mOffset],
+                                             packetRecord);
+        packet.timestampSeconds = packetRecord.timestampSeconds;
+        packet.captureLength = packetRecord.captureLength;
+        packet.length = packetRecord.length;
+        packet.data = packetRecord.data;
 
-    virtual size_t getFileSize() const override = 0;
-    virtual std::string getFilepath() const override = 0;
-    virtual size_t getCurrentOffset() const override = 0;
-    virtual uint16_t getDataLinkType() const override { return mDataLinkType; };
+        mReader.mOffset += 24 + packetRecord.captureLength;
+
+        return true;
+    }
+
+    size_t getFileSize() const override { return mReader.mFileSize; }
+    std::string getFilepath() const override { return mReader.mFilePath; }
+    size_t getCurrentOffset() const override { return mReader.mOffset; }
+    uint16_t getDataLinkType() const override { return mDataLinkType; }
     std::vector<TraceInterface> getTraceInterfaces() const override {
         return std::vector<TraceInterface>();
     }
@@ -35,7 +72,14 @@ public:
 
 protected:
     uint16_t mDataLinkType{101};
+
+private:
+    TReader mReader;
 };
+
+typedef ModifiedPcapReader<MMapFileReader> MMModifiedPcapReader;
+typedef ModifiedPcapReader<FReadFileReader> FReadModifiedPcapReader;
+typedef ModifiedPcapReader<ZstdFileReader> ZstdModifiedPcapReader;
 
 } // namespace mmpr
 

@@ -1,4 +1,4 @@
-#include "mmpr/modified_pcap/ModifiedPcapReader.h"
+#include "mmpr/pcap/PcapReader.h"
 #include <chrono>
 #include <iostream>
 
@@ -6,11 +6,11 @@ using namespace std;
 using namespace std::chrono;
 
 int main() {
-    string filepath = "tracefiles/fritzbox-ip.pcap";
+    string filepath = "tracefiles/example.pcap.zst";
 
     // open file, map to memory and measure execution time
     auto start = high_resolution_clock::now();
-    mmpr::MMModifiedPcapReader reader(filepath);
+    mmpr::ZstdPcapReader reader(filepath);
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<milliseconds>(stop - start);
     cout << "Open and mapped file to memory in " << duration.count() << "ms" << endl;
