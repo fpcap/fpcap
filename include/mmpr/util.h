@@ -47,7 +47,7 @@ namespace util {
         // most significant bit is 0, rest of bits is negative power of 10
         return std::pow(10, -remainingBits);
     } else {
-        // most signiticant bit is 1, rest of bits is negative power of 2
+        // most significant bit is 1, rest of bits is negative power of 2
         return std::pow(2, -remainingBits);
     }
 }
