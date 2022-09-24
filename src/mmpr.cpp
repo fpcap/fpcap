@@ -20,29 +20,29 @@ unique_ptr<Reader> Reader::getReader(const string& filepath) {
 
     uint32_t magicNumber = util::read32bitsFromFile(filepath);
     switch (magicNumber) {
-    case MMPR_MAGIC_NUMBER_PCAP_MICROSECONDS:
-    case MMPR_MAGIC_NUMBER_PCAP_NANOSECONDS: {
+    case PCAP_MICROSECONDS:
+    case PCAP_NANOSECONDS: {
         return make_unique<MMPcapReader>(filepath);
     }
-    case MMPR_MAGIC_NUMBER_PCAPNG: {
+    case PCAPNG: {
         return make_unique<MMPcapNgReader>(filepath);
     }
-    case MMPR_MAGIC_NUMBER_MODIFIED_PCAP: {
+    case MODIFIED_PCAP: {
         return make_unique<MMModifiedPcapReader>(filepath);
     }
 #ifdef MMPR_USE_ZSTD
-    case MMPR_MAGIC_NUMBER_ZSTD: {
+    case ZSTD: {
         ZstdFileReader compressedFileReader(filepath);
         auto uncompressedMagicNumber = *(uint32_t*)compressedFileReader.data();
         switch (uncompressedMagicNumber) {
-        case MMPR_MAGIC_NUMBER_PCAP_MICROSECONDS:
-        case MMPR_MAGIC_NUMBER_PCAP_NANOSECONDS: {
+        case PCAP_MICROSECONDS:
+        case PCAP_NANOSECONDS: {
             return make_unique<ZstdPcapReader>(std::move(compressedFileReader));
         }
-        case MMPR_MAGIC_NUMBER_PCAPNG: {
+        case PCAPNG: {
             return make_unique<ZstdPcapNgReader>(std::move(compressedFileReader));
         }
-        case MMPR_MAGIC_NUMBER_MODIFIED_PCAP: {
+        case MODIFIED_PCAP: {
             return make_unique<ZstdModifiedPcapReader>(std::move(compressedFileReader));
         }
         default:

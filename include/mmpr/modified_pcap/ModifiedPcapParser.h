@@ -33,8 +33,8 @@ public:
      */
     static void readFileHeader(const uint8_t* data, modified_pcap::FileHeader& mpfh) {
         auto magicNumber = *(uint32_t*)&data[0];
-        if (magicNumber != MMPR_MAGIC_NUMBER_MODIFIED_PCAP &&
-            magicNumber != MMPR_MAGIC_NUMBER_MODIFIED_PCAP_BE) {
+        if (magicNumber != MODIFIED_PCAP &&
+            magicNumber != MODIFIED_PCAP_BE) {
             std::stringstream sstream;
             sstream << std::hex << magicNumber;
             std::string hex = sstream.str();
@@ -52,7 +52,7 @@ public:
         mpfh.snapLength = *(uint32_t*)&data[16];
         mpfh.linkType = *(uint32_t*)&data[20];
 
-        if (magicNumber == MMPR_MAGIC_NUMBER_MODIFIED_PCAP_BE) {
+        if (magicNumber == MODIFIED_PCAP_BE) {
             mpfh.majorVersion = ntohs(mpfh.majorVersion);
             mpfh.minorVersion = ntohs(mpfh.minorVersion);
             mpfh.thiszone = ntohl(mpfh.thiszone);
@@ -68,7 +68,7 @@ public:
         MMPR_DEBUG_LOG_1("[MPFH] Snap Length: %u\n", mpfh.snapLength);
         MMPR_DEBUG_LOG_1("[MPFH] Link Type: %u\n", mpfh.linkType);
 
-        if (magicNumber == MMPR_MAGIC_NUMBER_MODIFIED_PCAP_BE) {
+        if (magicNumber == MODIFIED_PCAP_BE) {
             throw std::runtime_error(
                 "Modified PCAP format in Big Endian is not supported yet");
         }

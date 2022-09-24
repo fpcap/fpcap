@@ -23,13 +23,6 @@
 #define MMPR_WARN_1(msg, val) fprintf(stderr, msg, val)
 #define MMPR_UNUSED(x) (void)(x)
 
-#define MMPR_MAGIC_NUMBER_PCAP_MICROSECONDS 0xA1B2C3D4
-#define MMPR_MAGIC_NUMBER_PCAP_NANOSECONDS 0xA1B23C4D
-#define MMPR_MAGIC_NUMBER_PCAPNG 0x0A0D0D0A
-#define MMPR_MAGIC_NUMBER_ZSTD 0xFD2FB528
-#define MMPR_MAGIC_NUMBER_MODIFIED_PCAP 0xA1B2CD34
-#define MMPR_MAGIC_NUMBER_MODIFIED_PCAP_BE 0x34CDB2A1
-
 namespace mmpr {
 
 struct Packet {
@@ -70,6 +63,18 @@ struct TraceInterface {
     std::optional<std::string> description;
     std::optional<std::string> filter;
     std::optional<std::string> os;
+};
+
+/**
+ * Magic numbers for implemented file formats.
+ */
+enum MagicNumber : uint32_t {
+    PCAP_MICROSECONDS = 0xA1B2C3D4,
+    PCAP_NANOSECONDS = 0xA1B23C4D,
+    PCAPNG = 0x0A0D0D0A,
+    ZSTD = 0xFD2FB528,
+    MODIFIED_PCAP = 0xA1B2CD34,
+    MODIFIED_PCAP_BE = 0x34CDB2A1
 };
 
 class Reader {

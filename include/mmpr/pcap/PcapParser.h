@@ -29,8 +29,8 @@ public:
      */
     static void readFileHeader(const uint8_t* data, pcap::FileHeader& fh) {
         auto magicNumber = *(const uint32_t*)&data[0];
-        if (magicNumber != MMPR_MAGIC_NUMBER_PCAP_MICROSECONDS &&
-            magicNumber != MMPR_MAGIC_NUMBER_PCAP_NANOSECONDS) {
+        if (magicNumber != PCAP_MICROSECONDS &&
+            magicNumber != PCAP_NANOSECONDS) {
             std::stringstream sstream;
             sstream << std::hex << magicNumber;
             std::string hex = sstream.str();

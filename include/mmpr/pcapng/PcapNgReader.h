@@ -20,7 +20,7 @@ class PcapNgReader : public Reader {
 public:
     PcapNgReader(const std::string& filepath) : mReader(filepath) {
         uint32_t magicNumber = *(uint32_t*)mReader.data();
-        if (magicNumber != MMPR_MAGIC_NUMBER_PCAPNG) {
+        if (magicNumber != PCAPNG) {
             std::stringstream sstream;
             sstream << std::hex << magicNumber;
             std::string hex = sstream.str();
@@ -34,7 +34,7 @@ public:
 
     PcapNgReader(TReader&& reader) : mReader(std::forward<TReader>(reader)) {
         uint32_t magicNumber = *(uint32_t*)mReader.data();
-        if (magicNumber != MMPR_MAGIC_NUMBER_PCAPNG) {
+        if (magicNumber != PCAPNG) {
             std::stringstream sstream;
             sstream << std::hex << magicNumber;
             std::string hex = sstream.str();

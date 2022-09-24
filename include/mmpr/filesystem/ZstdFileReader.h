@@ -22,7 +22,7 @@ public:
         }
 
         uint32_t magicNumber = *(const uint32_t*)&compressedFileReader.data()[0];
-        if (magicNumber != MMPR_MAGIC_NUMBER_ZSTD) {
+        if (magicNumber != ZSTD) {
             std::stringstream sstream;
             sstream << std::hex << magicNumber;
             std::string hex = sstream.str();
