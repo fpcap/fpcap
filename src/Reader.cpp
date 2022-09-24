@@ -1,21 +1,18 @@
 #include "mmpr/mmpr.h"
 
+#include "mmpr/filesystem/FReadFileReader.h"
+#include "mmpr/modified_pcap/MMModifiedPcapReader.h"
 #include "mmpr/pcap/MMPcapReader.h"
 #include "mmpr/pcapng/MMPcapNgReader.h"
-#ifdef MMPR_USE_ZSTD
 #include "mmpr/pcapng/ZstdPcapNgReader.h"
-#endif
-#include "mmpr/modified_pcap/MMModifiedPcapReader.h"
-#include "util.h"
+#include "mmpr/util.h"
 #include <filesystem>
 #include <iostream>
 #include <memory>
 
 namespace mmpr {
 
-FileReader::FileReader(const std::string& filepath) : mFilepath(filepath) {}
-
-std::unique_ptr<FileReader> FileReader::getReader(const std::string& filepath) {
+std::unique_ptr<Reader> Reader::getReader(const std::string& filepath) {
     if (!std::filesystem::exists(filepath)) {
         throw std::runtime_error("FileReader: could not find file \"" + filepath + "\"");
     }

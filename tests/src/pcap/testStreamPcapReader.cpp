@@ -21,7 +21,6 @@ TEST(StreamPcapReader, DLT) {
     {
         // Standard Ethernet
         mmpr::StreamPcapReader reader{"tracefiles/example.pcap"};
-        reader.open();
         mmpr::Packet packet;
         uint64_t processedPackets{0};
         while (!reader.isExhausted()) {
@@ -35,7 +34,6 @@ TEST(StreamPcapReader, DLT) {
     {
         // Linux Cooked Capture (SLL)
         mmpr::StreamPcapReader reader{"tracefiles/linux-cooked-unsw-nb15.pcap"};
-        reader.open();
         mmpr::Packet packet;
         uint64_t processedPackets{0};
         while (!reader.isExhausted()) {

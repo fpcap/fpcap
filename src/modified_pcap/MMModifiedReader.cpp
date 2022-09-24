@@ -1,54 +1,21 @@
 #include "mmpr/modified_pcap/MMModifiedPcapReader.h"
 
 #include "mmpr/modified_pcap/ModifiedPcapParser.h"
-#include <cerrno>
-#include <cstring>
-#include <fcntl.h>
-#include <filesystem>
 #include <stdexcept>
-#include <sys/mman.h>
-#include <unistd.h>
 
 using namespace std;
 
 namespace mmpr {
+
 MMModifiedPcapReader::MMModifiedPcapReader(const string& filepath)
-    : ModifiedPcapReader(filepath) {}
-
-void MMModifiedPcapReader::open() {
-    mFileDescriptor = ::open(mFilepath.c_str(), O_RDONLY, 0);
-    if (mFileDescriptor < 0) {
-        throw runtime_error("Error while reading file " +
-                            std::filesystem::absolute(mFilepath).string() + ": " +
-                            strerror(errno));
-    }
-
-    mFileSize = lseek(mFileDescriptor, 0, SEEK_END);
-    long pageSize = sysconf (_SC_PAGESIZE);
-    mMappedSize = (mFileSize / pageSize + 1) * pageSize;
-
-    auto mmapResult =
-        mmap(nullptr, mMappedSize, PROT_READ, MAP_SHARED, mFileDescriptor, 0);
-    if (mmapResult == MAP_FAILED) {
-        ::close(mFileDescriptor);
-        throw runtime_error("Error while mapping file " +
-                            std::filesystem::absolute(mFilepath).string() + ": " +
-                            strerror(errno));
-    }
-
-    mOffset = 0;
-    mMappedMemory = reinterpret_cast<const uint8_t*>(mmapResult);
-
+    : ModifiedPcapReader(filepath), mReader(filepath) {
     ModifiedPcapFileHeader fileHeader{};
-    int magicNumber = ModifiedPcapParser::readFileHeader(mMappedMemory, fileHeader);
+    int magicNumber =
+        ModifiedPcapParser::readFileHeader(mReader.mMappedMemory, fileHeader);
     if (magicNumber == MMPR_MAGIC_NUMBER_MODIFIED_PCAP_BE) {
         throw runtime_error("Modified PCAP format in Big Endian is not supported yet");
     }
-    mOffset += 24;
-}
-
-bool MMModifiedPcapReader::isExhausted() const {
-    return mOffset >= mFileSize;
+    mReader.mOffset += 24;
 }
 
 bool MMModifiedPcapReader::readNextPacket(Packet& packet) {
@@ -58,28 +25,24 @@ bool MMModifiedPcapReader::readNextPacket(Packet& packet) {
     }
 
     // make sure there are enough bytes to read
-    if (mFileSize - mOffset < 24) {
+    if (mReader.getSafeToReadSize() < 24) {
         throw runtime_error(
             "Expected to read at least one more raw packet record (24 bytes "
             "at least), but there are only " +
-            to_string(mFileSize - mOffset) + " bytes left in the file");
+            to_string(mReader.getSafeToReadSize()) + " bytes left in the file");
     }
 
     ModifiedPcapPacketRecord packetRecord{};
-    ModifiedPcapParser::readPacketRecord(&mMappedMemory[mOffset], packetRecord);
+    ModifiedPcapParser::readPacketRecord(&mReader.mMappedMemory[mReader.mOffset],
+                                         packetRecord);
     packet.timestampSeconds = packetRecord.timestampSeconds;
     packet.captureLength = packetRecord.captureLength;
     packet.length = packetRecord.length;
     packet.data = packetRecord.data;
 
-    mOffset += 24 + packetRecord.captureLength;
+    mReader.mOffset += 24 + packetRecord.captureLength;
 
     return true;
-}
-
-void MMModifiedPcapReader::close() {
-    munmap((void*)mMappedMemory, mMappedSize);
-    ::close(mFileDescriptor);
 }
 
 } // namespace mmpr

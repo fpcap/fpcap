@@ -3,6 +3,7 @@
 #include "mmpr/pcap/FReadPcapReader.h"
 #include "mmpr/pcap/MMPcapReader.h"
 #include "mmpr/pcap/StreamPcapReader.h"
+#include "mmpr/pcapng/FReadPcapNgReader.h"
 #include "mmpr/pcapng/MMPcapNgReader.h"
 #include "mmpr/pcapng/ZstdPcapNgReader.h"
 #include <PcapFileDevice.h>
@@ -17,7 +18,6 @@ static void bmMmprPcap(benchmark::State& state) {
     mmpr::Packet packet;
     for (auto _ : state) {
         mmpr::MMPcapReader reader(inputFilePcap);
-        reader.open();
 
         uint64_t packetCount{0};
         while (!reader.isExhausted()) {
@@ -26,7 +26,7 @@ static void bmMmprPcap(benchmark::State& state) {
             }
         }
 
-        reader.close();
+        benchmark::ClobberMemory();
     }
     benchmark::DoNotOptimize(packet);
 }
@@ -35,7 +35,6 @@ static void bmMmprPcapStream(benchmark::State& state) {
     mmpr::Packet packet;
     for (auto _ : state) {
         mmpr::StreamPcapReader reader(inputFilePcap);
-        reader.open();
 
         uint64_t packetCount{0};
         while (!reader.isExhausted()) {
@@ -44,7 +43,7 @@ static void bmMmprPcapStream(benchmark::State& state) {
             }
         }
 
-        reader.close();
+        benchmark::ClobberMemory();
     }
     benchmark::DoNotOptimize(packet);
 }
@@ -53,7 +52,6 @@ static void bmMmprPcapFRead(benchmark::State& state) {
     mmpr::Packet packet;
     for (auto _ : state) {
         mmpr::FReadPcapReader reader(inputFilePcap);
-        reader.open();
 
         uint64_t packetCount{0};
         while (!reader.isExhausted()) {
@@ -62,7 +60,7 @@ static void bmMmprPcapFRead(benchmark::State& state) {
             }
         }
 
-        reader.close();
+        benchmark::ClobberMemory();
     }
     benchmark::DoNotOptimize(packet);
 }
@@ -71,7 +69,6 @@ static void bmMmprPcapNG(benchmark::State& state) {
     mmpr::Packet packet;
     for (auto _ : state) {
         mmpr::MMPcapNgReader reader(inputFilePcapNg);
-        reader.open();
 
         uint64_t packetCount{0};
         while (!reader.isExhausted()) {
@@ -80,7 +77,24 @@ static void bmMmprPcapNG(benchmark::State& state) {
             }
         }
 
-        reader.close();
+        benchmark::ClobberMemory();
+    }
+    benchmark::DoNotOptimize(packet);
+}
+
+static void bmMmprPcapNGFRead(benchmark::State& state) {
+    mmpr::Packet packet;
+    for (auto _ : state) {
+        mmpr::FReadPcapNgReader reader(inputFilePcapNg);
+
+        uint64_t packetCount{0};
+        while (!reader.isExhausted()) {
+            if (reader.readNextPacket(packet)) {
+                ++packetCount;
+            }
+        }
+
+        benchmark::ClobberMemory();
     }
     benchmark::DoNotOptimize(packet);
 }
@@ -89,7 +103,6 @@ static void bmMmprPcapNGZst(benchmark::State& state) {
     mmpr::Packet packet;
     for (auto _ : state) {
         mmpr::ZstdPcapNgReader reader(inputFilePcapNgZst);
-        reader.open();
 
         uint64_t packetCount{0};
         while (!reader.isExhausted()) {
@@ -98,7 +111,7 @@ static void bmMmprPcapNGZst(benchmark::State& state) {
             }
         }
 
-        reader.close();
+        benchmark::ClobberMemory();
     }
     benchmark::DoNotOptimize(packet);
 }
@@ -115,6 +128,8 @@ static void bmPcapPlusPlusPcap(benchmark::State& state) {
         }
 
         reader.close();
+
+        benchmark::ClobberMemory();
     }
     benchmark::DoNotOptimize(packet);
 }
@@ -131,6 +146,8 @@ static void bmPcapPlusPlusPcapNG(benchmark::State& state) {
         }
 
         reader.close();
+
+        benchmark::ClobberMemory();
     }
     benchmark::DoNotOptimize(packet);
 }
@@ -147,6 +164,8 @@ static void bmPcapPlusPlusPcapNGZstd(benchmark::State& state) {
         }
 
         reader.close();
+
+        benchmark::ClobberMemory();
     }
     benchmark::DoNotOptimize(packet);
 }
@@ -164,6 +183,8 @@ static void bmLibpcapPcap(benchmark::State& state) {
         }
 
         pcap_close(pcapHandle);
+
+        benchmark::ClobberMemory();
     }
     benchmark::DoNotOptimize(packet);
 }
@@ -181,6 +202,8 @@ static void bmLibpcapPcapNG(benchmark::State& state) {
         }
 
         pcap_close(pcapHandle);
+
+        benchmark::ClobberMemory();
     }
     benchmark::DoNotOptimize(packet);
 }
@@ -189,6 +212,7 @@ BENCHMARK(bmMmprPcap)->Name("mmpr (pcap)");
 BENCHMARK(bmMmprPcapStream)->Name("mmpr-stream (pcap)");
 BENCHMARK(bmMmprPcapFRead)->Name("mmpr-fread (pcap)");
 BENCHMARK(bmMmprPcapNG)->Name("mmpr (pcapng)");
+BENCHMARK(bmMmprPcapNGFRead)->Name("mmpr-fread (pcapng)");
 BENCHMARK(bmMmprPcapNGZst)->Name("mmpr (pcapng.zst)");
 BENCHMARK(bmPcapPlusPlusPcap)->Name("PcapPlusPlus (pcap)");
 BENCHMARK(bmPcapPlusPlusPcapNG)->Name("PcapPlusPlus (pcapng)");

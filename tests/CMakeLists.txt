@@ -11,6 +11,7 @@ add_executable(mmpr_test
     src/pcap/testFReadPcapReader.cpp
     src/pcap/testMMPcapReader.cpp
     src/pcap/testStreamPcapReader.cpp
+    src/pcapng/testFReadPcapNgReader.cpp
     src/pcapng/testMMPcapNgReader.cpp
     src/pcapng/testTraceInterfaces.cpp
     src/pcapng/testZstdPcapNgReader.cpp

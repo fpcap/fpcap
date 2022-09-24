@@ -2,6 +2,7 @@
 
 #include "mmpr/mmpr.h"
 #include <filesystem>
+#include <iostream>
 
 TEST(FileReader, GetReader) {
     std::vector<std::string> files;
@@ -17,10 +18,10 @@ TEST(FileReader, GetReader) {
         files.emplace_back(file);
     }
 
-    for (std::string file : files) {
-        auto reader = mmpr::FileReader::getReader(file);
-        reader->open();
+    for (const std::string& file : files) {
+        std::cout << "Reading file " << file << std::endl;
 
+        auto reader = mmpr::Reader::getReader(file);
         mmpr::Packet packet;
         uint64_t processedPackets{0};
         while (!reader->isExhausted()) {

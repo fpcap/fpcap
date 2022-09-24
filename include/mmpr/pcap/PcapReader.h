@@ -7,9 +7,9 @@
 
 namespace mmpr {
 
-class PcapReader : public FileReader {
+class PcapReader : public Reader {
 public:
-    explicit PcapReader(const std::string& filepath) : FileReader(filepath) {
+    explicit PcapReader(const std::string& filepath) {
         if (filepath.empty()) {
             throw std::runtime_error("Cannot read empty filepath");
         }
@@ -20,13 +20,11 @@ public:
         }
     };
 
-    virtual void open() = 0;
     virtual bool isExhausted() const = 0;
     virtual bool readNextPacket(Packet& packet) = 0;
-    virtual void close() = 0;
 
     virtual size_t getFileSize() const = 0;
-    virtual std::string getFilepath() const override { return mFilepath; }
+    virtual std::string getFilepath() const override = 0;
     virtual size_t getCurrentOffset() const = 0;
     virtual uint16_t getDataLinkType() const override { return mDataLinkType; };
     std::vector<TraceInterface> getTraceInterfaces() const override {

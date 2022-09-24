@@ -5,7 +5,6 @@
 
 TEST(TraceInterfaces, ReadBlock) {
     mmpr::MMPcapNgReader reader{"tracefiles/many_interfaces-1.pcapng"};
-    reader.open();
 
     while (!reader.isExhausted()) {
         reader.readBlock();
@@ -64,13 +63,10 @@ TEST(TraceInterfaces, ReadBlock) {
     }
 
     ASSERT_EQ(reader.getTraceInterfaces().size(), 11);
-
-    reader.close();
 }
 
 TEST(TraceInterfaces, ReadPacket) {
     mmpr::MMPcapNgReader reader{"tracefiles/many_interfaces-1.pcapng"};
-    reader.open();
 
     mmpr::Packet packet{};
     while (!reader.isExhausted()) {
@@ -133,6 +129,4 @@ TEST(TraceInterfaces, ReadPacket) {
         }
         ++traceInterfaceIndex;
     }
-
-    reader.close();
 }

@@ -32,15 +32,15 @@ add_library(mmpr::mmpr ALIAS mmpr)
 target_include_directories(mmpr
     PUBLIC
         $<INSTALL_INTERFACE:include>
+        $<INSTALL_INTERFACE:include/filesystem>
         $<INSTALL_INTERFACE:include/pcap>
         $<INSTALL_INTERFACE:include/pcapng>
         $<INSTALL_INTERFACE:include/modified_pcap>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/filesystem>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/pcap>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/pcapng>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/modified_pcap>
-    PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
 target_compile_features(mmpr PUBLIC cxx_std_17)

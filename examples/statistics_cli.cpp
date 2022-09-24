@@ -30,8 +30,7 @@ int main(int argc, char** argv) {
     auto start = high_resolution_clock::now();
 
     for (const auto& pcapFile : pcapFiles) {
-        std::unique_ptr<mmpr::FileReader> reader = mmpr::FileReader::getReader(pcapFile);
-        reader->open();
+        std::unique_ptr<mmpr::Reader> reader = mmpr::Reader::getReader(pcapFile);
         totalFileSize += reader->getFileSize();
 
         mmpr::Packet packet;
@@ -42,8 +41,6 @@ int main(int argc, char** argv) {
                 capturedBytes += packet.captureLength;
             }
         }
-
-        reader->close();
     }
 
     auto stop = high_resolution_clock::now();

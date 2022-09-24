@@ -1,14 +1,15 @@
-#ifndef MMPR_MMPCAPNGREADER_H
-#define MMPR_MMPCAPNGREADER_H
+#ifndef MMPR_FREADPCAPNGREADER_H
+#define MMPR_FREADPCAPNGREADER_H
 
+#include "mmpr/filesystem/FReadFileReader.h"
 #include "mmpr/filesystem/MMapFileReader.h"
 #include "mmpr/pcapng/PcapNgReader.h"
 
 namespace mmpr {
 
-class MMPcapNgReader : public PcapNgReader {
+class FReadPcapNgReader : public PcapNgReader {
 public:
-    explicit MMPcapNgReader(const std::string& filepath)
+    explicit FReadPcapNgReader(const std::string& filepath)
         : PcapNgReader(filepath), mReader(filepath) {
         uint32_t magicNumber = util::read32bitsFromFile(filepath);
         if (magicNumber != MMPR_MAGIC_NUMBER_PCAPNG) {
@@ -32,9 +33,9 @@ public:
     size_t getCurrentOffset() const override { return mReader.mOffset; }
 
 private:
-    MMapFileReader mReader;
+    FReadFileReader mReader;
 };
 
 } // namespace mmpr
 
-#endif // MMPR_MMPCAPNGREADER_H
+#endif // MMPR_FREADPCAPNGREADER_H

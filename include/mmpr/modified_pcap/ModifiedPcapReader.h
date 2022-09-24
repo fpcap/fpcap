@@ -6,9 +6,9 @@
 #include <stdexcept>
 
 namespace mmpr {
-class ModifiedPcapReader : public FileReader {
+class ModifiedPcapReader : public Reader {
 public:
-    explicit ModifiedPcapReader(const std::string& filepath) : FileReader(filepath) {
+    explicit ModifiedPcapReader(const std::string& filepath) {
         if (filepath.empty()) {
             throw std::runtime_error("Cannot read empty filepath");
         }
@@ -19,13 +19,11 @@ public:
         }
     };
 
-    virtual void open() override = 0;
     virtual bool isExhausted() const override = 0;
     virtual bool readNextPacket(Packet& packet) override = 0;
-    virtual void close() override = 0;
 
     virtual size_t getFileSize() const override = 0;
-    virtual std::string getFilepath() const override { return mFilepath; }
+    virtual std::string getFilepath() const override = 0;
     virtual size_t getCurrentOffset() const override = 0;
     virtual uint16_t getDataLinkType() const override { return mDataLinkType; };
     std::vector<TraceInterface> getTraceInterfaces() const override {

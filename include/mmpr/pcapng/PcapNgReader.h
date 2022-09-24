@@ -2,14 +2,16 @@
 #define MMPR_PCAPNGREADER_H
 
 #include "mmpr/mmpr.h"
+#include "mmpr/util.h"
+#include <algorithm>
 #include <filesystem>
 #include <stdexcept>
 
 namespace mmpr {
 
-class PcapNgReader : public FileReader {
+class PcapNgReader : public Reader {
 public:
-    explicit PcapNgReader(const std::string& filepath) : FileReader(filepath) {
+    explicit PcapNgReader(const std::string& filepath) {
         if (filepath.empty()) {
             throw std::runtime_error("Cannot read empty filepath");
         }
@@ -20,16 +22,13 @@ public:
         }
     };
 
-    virtual void open() = 0;
-    virtual void close() = 0;
+    virtual bool isExhausted() const = 0;
+    virtual bool readNextPacket(Packet& packet) = 0;
+    virtual uint32_t readBlock() = 0;
 
-    virtual bool isExhausted() const { return mOffset >= mFileSize; };
-    virtual bool readNextPacket(Packet& packet);
-    virtual uint32_t readBlock();
-
-    virtual size_t getFileSize() const { return mFileSize; };
-    virtual std::string getFilepath() const { return mFilepath; }
-    virtual size_t getCurrentOffset() const { return mOffset; };
+    virtual size_t getFileSize() const = 0;
+    virtual std::string getFilepath() const = 0;
+    virtual size_t getCurrentOffset() const = 0;
     virtual uint16_t getDataLinkType() const { return mDataLinkType; };
     virtual std::string getComment() const { return mMetadata.comment; };
     virtual std::string getOS() const { return mMetadata.os; };
@@ -47,9 +46,6 @@ public:
     }
 
 protected:
-    size_t mFileSize{0};
-    size_t mOffset{0};
-    const uint8_t* mData{nullptr};
     uint16_t mDataLinkType{0};
     std::vector<TraceInterface> mTraceInterfaces;
 

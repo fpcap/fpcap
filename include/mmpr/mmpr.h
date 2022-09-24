@@ -74,17 +74,10 @@ struct TraceInterface {
     std::optional<std::string> os;
 };
 
-class FileReader {
-protected:
-    FileReader(const std::string& filepath);
-
-    std::string mFilepath;
-
+class Reader {
 public:
-    virtual ~FileReader() = default;
+    virtual ~Reader() = default;
 
-    virtual void open() = 0;
-    virtual void close() = 0;
     virtual bool isExhausted() const = 0;
     virtual bool readNextPacket(Packet& packet) = 0;
     virtual size_t getFileSize() const = 0;
@@ -94,7 +87,7 @@ public:
     virtual std::vector<TraceInterface> getTraceInterfaces() const = 0;
     virtual TraceInterface getTraceInterface(size_t id) const = 0;
 
-    static std::unique_ptr<FileReader> getReader(const std::string& filepath);
+    static std::unique_ptr<Reader> getReader(const std::string& filepath);
 };
 
 } // namespace mmpr

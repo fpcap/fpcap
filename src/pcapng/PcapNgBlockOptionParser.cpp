@@ -1,7 +1,7 @@
 #include "mmpr/pcapng/PcapNgBlockOptionParser.h"
 
 #include "mmpr/mmpr.h"
-#include "util.h"
+#include "mmpr/util.h"
 #include <cmath>
 
 namespace mmpr {

@@ -11,10 +11,9 @@ int main() {
     // open file, map to memory and measure execution time
     auto start = high_resolution_clock::now();
     mmpr::StreamPcapReader reader(filepath);
-    reader.open();
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<milliseconds>(stop - start);
-    cout << "Open file in " << duration.count() << "ms" << endl;
+    cout << "Opened file in " << duration.count() << "ms" << endl;
 
     // read all packets from the capture and measure execution time
     start = high_resolution_clock::now();
@@ -30,9 +29,6 @@ int main() {
 
     cout << "Processed " << processedPackets << " packets in " << duration.count() << "ms"
          << endl;
-
-    // close stream
-    reader.close();
 
     return 0;
 }
