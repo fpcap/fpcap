@@ -84,7 +84,28 @@ Wiki [Cpu frequency scaling](https://wiki.archlinux.org/title/CPU_frequency_scal
 looking for options.
 
 ## Docker
+
 ```shell
 cd docker/
 docker build -t debian11-zstd-develop .
+```
+
+## Benchmark results
+
+### 25.09.2022
+
+```
+---------------------------------------------------------------------
+Benchmark                           Time             CPU   Iterations
+---------------------------------------------------------------------
+mmpr (pcap)                  59666484 ns     12744900 ns           52
+mmpr-fread (pcap)             9108406 ns      1318842 ns          457
+mmpr (pcapng)                58144655 ns     12134124 ns           55
+mmpr-fread (pcapng)           8729187 ns      1195401 ns          592
+mmpr (pcapng.zst)             8381497 ns      1946854 ns          361
+PcapPlusPlus (pcap)          56237054 ns     11692277 ns           60
+PcapPlusPlus (pcapng)        58786941 ns     12942878 ns           51
+PcapPlusPlus (pcapng.zstd)    9824016 ns      3027536 ns          235
+libpcap (pcap)               56189614 ns     11405524 ns           59
+libpcap (pcapng)             58584807 ns     11988455 ns           60
 ```
