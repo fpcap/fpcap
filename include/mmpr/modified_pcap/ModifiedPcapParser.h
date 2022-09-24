@@ -1,5 +1,5 @@
-#ifndef MMPR_RAWPARSER_H
-#define MMPR_RAWPARSER_H
+#ifndef MMPR_MODIFIEDPCAPPARSER_H
+#define MMPR_MODIFIEDPCAPPARSER_H
 
 #include "mmpr/mmpr.h"
 #include <algorithm>
@@ -138,4 +138,4 @@ public:
 
 } // namespace mmpr
 
-#endif // MMPR_RAWPARSER_H
+#endif // MMPR_MODIFIEDPCAPPARSER_H

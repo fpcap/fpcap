@@ -1,5 +1,5 @@
-#ifndef MMPR_RAWREADER_H
-#define MMPR_RAWREADER_H
+#ifndef MMPR_MODIFIEDPCAPREADER_H
+#define MMPR_MODIFIEDPCAPREADER_H
 
 #include "mmpr/filesystem/FReadFileReader.h"
 #include "mmpr/filesystem/FileReader.h"
@@ -81,4 +81,4 @@ typedef ModifiedPcapReader<ZstdFileReader> ZstdModifiedPcapReader;
 
 } // namespace mmpr
 
-#endif // MMPR_RAWREADER_H
+#endif // MMPR_MODIFIEDPCAPREADER_H
