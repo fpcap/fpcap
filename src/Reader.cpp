@@ -1,7 +1,7 @@
 #include "mmpr/mmpr.h"
 
 #include "mmpr/modified_pcap/MMModifiedPcapReader.h"
-#include "mmpr/pcap/MMPcapReader.h"
+#include "mmpr/pcap/PcapReader.h"
 #include "mmpr/pcapng/PcapNgReader.h"
 #include "mmpr/util.h"
 #include <filesystem>

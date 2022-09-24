@@ -1,4 +1,4 @@
-#include "mmpr/pcap/MMPcapReader.h"
+#include "mmpr/pcap/PcapReader.h"
 #include <chrono>
 #include <iostream>
 

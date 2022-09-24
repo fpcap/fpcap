@@ -14,6 +14,9 @@ namespace mmpr {
 
 template <typename TReader>
 class PcapNgReader : public Reader {
+    static_assert(std::is_base_of<FileReader, TReader>::value,
+                  "TReader must be a subclass of FileReader");
+
 public:
     PcapNgReader(const std::string& filepath) : mReader(filepath) {
         if (filepath.empty()) {
