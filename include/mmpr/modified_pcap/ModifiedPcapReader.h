@@ -70,11 +70,9 @@ public:
         return {};
     }
 
-protected:
-    uint16_t mDataLinkType{101};
-
 private:
     TReader mReader;
+    uint16_t mDataLinkType{101};
 };
 
 typedef ModifiedPcapReader<MMapFileReader> MMModifiedPcapReader;

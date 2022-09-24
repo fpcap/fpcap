@@ -247,7 +247,7 @@ public:
         return mTraceInterfaces[id];
     }
 
-protected:
+private:
     TReader mReader;
     uint16_t mDataLinkType{0};
     std::vector<TraceInterface> mTraceInterfaces;
