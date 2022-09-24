@@ -24,7 +24,8 @@ void MMModifiedPcapReader::open() {
     }
 
     mFileSize = lseek(mFileDescriptor, 0, SEEK_END);
-    mMappedSize = (mFileSize / MMPR_PAGE_SIZE + 1) * MMPR_PAGE_SIZE;
+    long pageSize = sysconf (_SC_PAGESIZE);
+    mMappedSize = (mFileSize / pageSize + 1) * pageSize;
 
     auto mmapResult =
         mmap(nullptr, mMappedSize, PROT_READ, MAP_SHARED, mFileDescriptor, 0);

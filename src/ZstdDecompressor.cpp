@@ -34,7 +34,8 @@ void* ZstdDecompressor::decompressFileMMAP(const std::string& fname,
     }
 
     size_t compressedSize = lseek(fd, 0, SEEK_END);
-    size_t mappedSize = (compressedSize / MMPR_PAGE_SIZE + 1) * MMPR_PAGE_SIZE;
+    long pageSize = sysconf (_SC_PAGESIZE);
+    size_t mappedSize = (compressedSize / pageSize + 1) * pageSize;
 
     void* const compressedData = mmap(nullptr, mappedSize, PROT_READ, MAP_SHARED, fd, 0);
     if (compressedData == MAP_FAILED) {
