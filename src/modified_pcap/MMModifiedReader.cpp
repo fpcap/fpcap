@@ -11,7 +11,7 @@ MMModifiedPcapReader::MMModifiedPcapReader(const string& filepath)
     : ModifiedPcapReader(filepath), mReader(filepath) {
     ModifiedPcapFileHeader fileHeader{};
     int magicNumber =
-        ModifiedPcapParser::readFileHeader(mReader.mMappedMemory, fileHeader);
+        ModifiedPcapParser::readFileHeader(mReader.data(), fileHeader);
     if (magicNumber == MMPR_MAGIC_NUMBER_MODIFIED_PCAP_BE) {
         throw runtime_error("Modified PCAP format in Big Endian is not supported yet");
     }
@@ -33,7 +33,7 @@ bool MMModifiedPcapReader::readNextPacket(Packet& packet) {
     }
 
     ModifiedPcapPacketRecord packetRecord{};
-    ModifiedPcapParser::readPacketRecord(&mReader.mMappedMemory[mReader.mOffset],
+    ModifiedPcapParser::readPacketRecord(&mReader.data()[mReader.mOffset],
                                          packetRecord);
     packet.timestampSeconds = packetRecord.timestampSeconds;
     packet.captureLength = packetRecord.captureLength;

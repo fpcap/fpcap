@@ -44,11 +44,12 @@ public:
         ::close(mFileDescriptor);
     }
 
-    const uint8_t* mMappedMemory{nullptr};
+    const uint8_t* data() const override { return mMappedMemory; }
 
 private:
     int mFileDescriptor{0};
     size_t mMappedSize{0};
+    const uint8_t* mMappedMemory{nullptr};
 };
 
 } // namespace mmpr

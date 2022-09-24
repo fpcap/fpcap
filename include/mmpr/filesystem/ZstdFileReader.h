@@ -12,7 +12,7 @@ class ZstdFileReader : public FileReader {
 public:
     ZstdFileReader(const std::string& filePath) : FileReader(filePath) {
         FReadFileReader compressedFileReader(filePath);
-        auto compressedData = compressedFileReader.mData;
+        auto compressedData = compressedFileReader.data();
         auto compressedSize = compressedFileReader.mFileSize;
 
         if (compressedSize < 4) {
@@ -21,7 +21,7 @@ public:
                                      std::to_string(compressedSize));
         }
 
-        uint32_t magicNumber = *(const uint32_t*)&compressedFileReader.mData[0];
+        uint32_t magicNumber = *(const uint32_t*)&compressedFileReader.data()[0];
         if (magicNumber != MMPR_MAGIC_NUMBER_ZSTD) {
             std::stringstream sstream;
             sstream << std::hex << magicNumber;
@@ -72,13 +72,14 @@ public:
             throw std::runtime_error("Content size does not match");
         }
 
-        mData = mDecompressedData.get();
+        mDecompressedDataPtr = mDecompressedData.get();
     }
 
-    const uint8_t* mData;
+    const uint8_t* data() const override { return mDecompressedDataPtr; }
 
 private:
     std::unique_ptr<uint8_t> mDecompressedData;
+    const uint8_t* mDecompressedDataPtr;
 };
 
 } // namespace mmpr

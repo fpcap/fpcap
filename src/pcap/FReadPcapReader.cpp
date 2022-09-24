@@ -24,7 +24,7 @@ FReadPcapReader::FReadPcapReader(const string& filepath)
     }
 
     FileHeader fileHeader{};
-    PcapParser::readFileHeader(mReader.mData, fileHeader);
+    PcapParser::readFileHeader(mReader.data(), fileHeader);
     mDataLinkType = fileHeader.linkType;
     mTimestampFormat = fileHeader.timestampFormat;
     mReader.mOffset += 24;
@@ -45,7 +45,7 @@ bool FReadPcapReader::readNextPacket(Packet& packet) {
     }
 
     PacketRecord packetRecord{};
-    PcapParser::readPacketRecord(&mReader.mData[mReader.mOffset], packetRecord);
+    PcapParser::readPacketRecord(&mReader.data()[mReader.mOffset], packetRecord);
     packet.timestampSeconds = packetRecord.timestampSeconds;
     packet.timestampMicroseconds = mTimestampFormat == FileHeader::MICROSECONDS
                                        ? packetRecord.timestampSubSeconds

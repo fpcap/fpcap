@@ -12,6 +12,8 @@ public:
     FileReader(const std::string& filePath)
         : mFilePath(filePath), mFileSize(std::filesystem::file_size(filePath)) {}
 
+    virtual const uint8_t* data() const = 0;
+
     std::size_t getSafeToReadSize() const {
         if (mOffset >= mFileSize) {
             return 0;

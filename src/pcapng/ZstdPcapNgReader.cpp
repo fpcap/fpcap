@@ -23,21 +23,21 @@ bool ZstdPcapNgReader::readNextPacket(Packet& packet) {
                             " bytes left in the file");
     }
 
-    uint32_t blockType = *(uint32_t*)&mReader.mData[mReader.mOffset];
-    uint32_t blockTotalLength = *(uint32_t*)&mReader.mData[mReader.mOffset + 4];
+    uint32_t blockType = *(uint32_t*)&mReader.data()[mReader.mOffset];
+    uint32_t blockTotalLength = *(uint32_t*)&mReader.data()[mReader.mOffset + 4];
 
     // TODO add support for Simple Packet Blocks
     while (blockType != MMPR_ENHANCED_PACKET_BLOCK && blockType != MMPR_PACKET_BLOCK) {
         if (blockType == MMPR_SECTION_HEADER_BLOCK) {
             SectionHeaderBlock shb{};
-            PcapNgBlockParser::readSHB(&mReader.mData[mReader.mOffset], shb);
+            PcapNgBlockParser::readSHB(&mReader.data()[mReader.mOffset], shb);
             mMetadata.comment = shb.options.comment;
             mMetadata.os = shb.options.os;
             mMetadata.hardware = shb.options.hardware;
             mMetadata.userApplication = shb.options.userApplication;
         } else if (blockType == MMPR_INTERFACE_DESCRIPTION_BLOCK) {
             InterfaceDescriptionBlock idb{};
-            PcapNgBlockParser::readIDB(&mReader.mData[mReader.mOffset], idb);
+            PcapNgBlockParser::readIDB(&mReader.data()[mReader.mOffset], idb);
             mDataLinkType = idb.linkType;
             mMetadata.timestampResolution = idb.options.timestampResolution;
             mTraceInterfaces.emplace_back(idb.options.name, idb.options.description,
@@ -60,14 +60,14 @@ bool ZstdPcapNgReader::readNextPacket(Packet& packet) {
         }
 
         // try to read next block type
-        blockType = *(const uint32_t*)&mReader.mData[mReader.mOffset];
-        blockTotalLength = *(const uint32_t*)&mReader.mData[mReader.mOffset + 4];
+        blockType = *(const uint32_t*)&mReader.data()[mReader.mOffset];
+        blockTotalLength = *(const uint32_t*)&mReader.data()[mReader.mOffset + 4];
     }
 
     switch (blockType) {
     case MMPR_ENHANCED_PACKET_BLOCK: {
         EnhancedPacketBlock epb{};
-        PcapNgBlockParser::readEPB(&mReader.mData[mReader.mOffset], epb);
+        PcapNgBlockParser::readEPB(&mReader.data()[mReader.mOffset], epb);
         util::calculateTimestamps(mMetadata.timestampResolution, epb.timestampHigh,
                                   epb.timestampLow, &(packet.timestampSeconds),
                                   &(packet.timestampMicroseconds));
@@ -81,7 +81,7 @@ bool ZstdPcapNgReader::readNextPacket(Packet& packet) {
     }
     case MMPR_PACKET_BLOCK: {
         PacketBlock pb{};
-        PcapNgBlockParser::readPB(&mReader.mData[mReader.mOffset], pb);
+        PcapNgBlockParser::readPB(&mReader.data()[mReader.mOffset], pb);
         util::calculateTimestamps(mMetadata.timestampResolution, pb.timestampHigh,
                                   pb.timestampLow, &(packet.timestampSeconds),
                                   &(packet.timestampMicroseconds));
@@ -115,13 +115,13 @@ bool ZstdPcapNgReader::readNextPacket(Packet& packet) {
  *   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
 uint32_t ZstdPcapNgReader::readBlock() {
-    const auto blockType = *(const uint32_t*)&mReader.mData[mReader.mOffset];
-    const auto blockTotalLength = *(const uint32_t*)&mReader.mData[mReader.mOffset + 4];
+    const auto blockType = *(const uint32_t*)&mReader.data()[mReader.mOffset];
+    const auto blockTotalLength = *(const uint32_t*)&mReader.data()[mReader.mOffset + 4];
 
     switch (blockType) {
     case MMPR_SECTION_HEADER_BLOCK: {
         SectionHeaderBlock shb{};
-        PcapNgBlockParser::readSHB(&mReader.mData[mReader.mOffset], shb);
+        PcapNgBlockParser::readSHB(&mReader.data()[mReader.mOffset], shb);
         mMetadata.comment = shb.options.comment;
         mMetadata.os = shb.options.os;
         mMetadata.hardware = shb.options.hardware;
@@ -130,7 +130,7 @@ uint32_t ZstdPcapNgReader::readBlock() {
     }
     case MMPR_INTERFACE_DESCRIPTION_BLOCK: {
         InterfaceDescriptionBlock idb{};
-        PcapNgBlockParser::readIDB(&mReader.mData[mReader.mOffset], idb);
+        PcapNgBlockParser::readIDB(&mReader.data()[mReader.mOffset], idb);
         mDataLinkType = idb.linkType;
         mMetadata.timestampResolution = idb.options.timestampResolution;
         mTraceInterfaces.emplace_back(idb.options.name, idb.options.description,
@@ -139,13 +139,13 @@ uint32_t ZstdPcapNgReader::readBlock() {
     }
     case MMPR_ENHANCED_PACKET_BLOCK: {
         EnhancedPacketBlock epb{};
-        PcapNgBlockParser::readEPB(&mReader.mData[mReader.mOffset], epb);
+        PcapNgBlockParser::readEPB(&mReader.data()[mReader.mOffset], epb);
         break;
     }
     case MMPR_PACKET_BLOCK: {
         // deprecated in newer versions of PcapNG
         PacketBlock pb{};
-        PcapNgBlockParser::readPB(&mReader.mData[mReader.mOffset], pb);
+        PcapNgBlockParser::readPB(&mReader.data()[mReader.mOffset], pb);
         break;
     }
     case MMPR_SIMPLE_PACKET_BLOCK: {
@@ -158,7 +158,7 @@ uint32_t ZstdPcapNgReader::readBlock() {
     }
     case MMPR_INTERFACE_STATISTICS_BLOCK: {
         InterfaceStatisticsBlock isb{};
-        PcapNgBlockParser::readISB(&mReader.mData[mReader.mOffset], isb);
+        PcapNgBlockParser::readISB(&mReader.data()[mReader.mOffset], isb);
         break;
     }
     case MMPR_DECRYPTION_SECRETS_BLOCK: {

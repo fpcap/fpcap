@@ -18,13 +18,14 @@ public:
             throw std::runtime_error("fread error: " + std::string(strerror(errno)));
         }
         fclose(inFile);
-        mData = mFileContent.get();
+        mFileContentPtr = mFileContent.get();
     }
 
-    const uint8_t* mData;
+    const uint8_t* data() const override { return mFileContentPtr; }
 
 private:
     std::unique_ptr<uint8_t> mFileContent;
+    const uint8_t* mFileContentPtr;
 };
 
 } // namespace mmpr
