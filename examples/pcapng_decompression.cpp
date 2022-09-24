@@ -1,4 +1,4 @@
-#include "mmpr/pcapng/ZstdPcapNgReader.h"
+#include "mmpr/pcapng/PcapNgReader.h"
 #include <chrono>
 #include <iostream>
 

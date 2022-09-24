@@ -2,9 +2,7 @@
 
 #include "mmpr/pcap/FReadPcapReader.h"
 #include "mmpr/pcap/MMPcapReader.h"
-#include "mmpr/pcapng/FReadPcapNgReader.h"
-#include "mmpr/pcapng/MMPcapNgReader.h"
-#include "mmpr/pcapng/ZstdPcapNgReader.h"
+#include "mmpr/pcapng/PcapNgReader.h"
 #include <PcapFileDevice.h>
 #include <pcap.h>
 

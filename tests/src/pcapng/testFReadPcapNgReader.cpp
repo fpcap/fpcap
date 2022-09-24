@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "mmpr/pcapng/FReadPcapNgReader.h"
+#include "mmpr/pcapng/PcapNgReader.h"
 
 TEST(FReadPcapNgReader, ConstructorSimple) {
     mmpr::FReadPcapNgReader reader{"tracefiles/pcapng-example.pcapng"};

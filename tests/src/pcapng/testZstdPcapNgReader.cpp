@@ -2,7 +2,7 @@
 
 #include "gtest/gtest.h"
 
-#include "mmpr/pcapng/ZstdPcapNgReader.h"
+#include "mmpr/pcapng/PcapNgReader.h"
 
 TEST(ZstdPcapNgReader, ConstructorSimple) {
     {

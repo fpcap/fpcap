@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "mmpr/pcapng/MMPcapNgReader.h"
+#include "mmpr/pcapng/PcapNgReader.h"
 #include <iostream>
 
 TEST(TraceInterfaces, ReadBlock) {
