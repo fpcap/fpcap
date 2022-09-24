@@ -24,11 +24,8 @@ public:
                                      ": " + strerror(errno));
         }
 
-        long pageSize = sysconf(_SC_PAGESIZE);
-        mMappedSize = (mFileSize / pageSize + 1) * pageSize;
-
         auto mmapResult =
-            mmap(nullptr, mMappedSize, PROT_READ, MAP_SHARED, mFileDescriptor, 0);
+            mmap(nullptr, mFileSize, PROT_READ, MAP_SHARED, mFileDescriptor, 0);
         if (mmapResult == MAP_FAILED) {
             ::close(mFileDescriptor);
             throw std::runtime_error("Error while mapping file " +
@@ -42,7 +39,7 @@ public:
 
     MMapFileReader(mmpr::ZstdFileReader reader);
     ~MMapFileReader() {
-        munmap((void*)mMappedMemory, mMappedSize);
+        munmap((void*)mMappedMemory, mFileSize);
         ::close(mFileDescriptor);
     }
 
@@ -50,7 +47,6 @@ public:
 
 private:
     int mFileDescriptor{0};
-    size_t mMappedSize{0};
     const uint8_t* mMappedMemory{nullptr};
 };
 
