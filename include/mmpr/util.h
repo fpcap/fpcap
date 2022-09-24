@@ -14,7 +14,7 @@ namespace util {
  * @param filepath Path to the file as string
  * @return The first 32 bits as unsigned
  */
-__attribute__((unused)) static uint32_t read32bitsFromFile(const std::string& filepath) {
+[[maybe_unused]] static uint32_t read32bitsFromFile(const std::string& filepath) {
     uint32_t magicNumber;
     std::ifstream file(filepath, std::ios::in | std::ios::binary);
     if (file.is_open()) {
@@ -31,11 +31,11 @@ __attribute__((unused)) static uint32_t read32bitsFromFile(const std::string& fi
  * @param option the option containing the string value
  * @return string value
  */
-__attribute__((unused)) static std::string parseUTF8(const Option& option) {
+[[maybe_unused]] static std::string parseUTF8(const Option& option) {
     return std::string(reinterpret_cast<const char*>(option.value), option.length);
 }
 
-__attribute__((unused)) static void dumpMemory(const uint8_t* data, size_t length) {
+[[maybe_unused]] static void dumpMemory(const uint8_t* data, size_t length) {
     for (size_t i = 1; i <= length; i++) {
         printf("%02hhx", data[i - 1]);
         if (i % 16 == 0) {
@@ -49,7 +49,7 @@ __attribute__((unused)) static void dumpMemory(const uint8_t* data, size_t lengt
     putchar('\n');
 }
 
-__attribute__((unused)) static double fromIfTsresolDouble(const uint8_t value) {
+[[maybe_unused]] static double fromIfTsresolDouble(const uint8_t value) {
     uint8_t mostSignificantBit = value & 0x80;
     uint8_t remainingBits = value & 0x7F;
 
@@ -62,7 +62,7 @@ __attribute__((unused)) static double fromIfTsresolDouble(const uint8_t value) {
     }
 }
 
-__attribute__((unused)) static uint32_t fromIfTsresolUInt(const uint8_t value) {
+[[maybe_unused]] static uint32_t fromIfTsresolUInt(const uint8_t value) {
     uint8_t mostSignificantBit = value & 0x80;
     uint8_t remainingBits = value & 0x7F;
 

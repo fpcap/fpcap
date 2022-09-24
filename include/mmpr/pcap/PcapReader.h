@@ -30,7 +30,7 @@ public:
     std::vector<TraceInterface> getTraceInterfaces() const override {
         return std::vector<TraceInterface>();
     }
-    TraceInterface getTraceInterface(__attribute__((unused)) size_t id) const override {
+    TraceInterface getTraceInterface([[maybe_unused]] size_t id) const override {
         return {};
     }
 
