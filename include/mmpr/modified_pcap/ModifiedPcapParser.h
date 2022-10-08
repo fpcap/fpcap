@@ -67,11 +67,6 @@ public:
         MMPR_DEBUG_LOG_1("[MPFH] Sigfigs: %u\n", mpfh.sigfigs);
         MMPR_DEBUG_LOG_1("[MPFH] Snap Length: %u\n", mpfh.snapLength);
         MMPR_DEBUG_LOG_1("[MPFH] Link Type: %u\n", mpfh.linkType);
-
-        if (magicNumber == MODIFIED_PCAP_BE) {
-            throw std::runtime_error(
-                "Modified PCAP format in Big Endian is not supported yet");
-        }
     }
 
     /**
