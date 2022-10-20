@@ -1,7 +1,9 @@
 #include "mmpr/mmpr.h"
 
+#include "mmpr/filesystem/writing/StreamFileWriter.h"
 #include "mmpr/modified_pcap/ModifiedPcapReader.h"
 #include "mmpr/pcap/PcapReader.h"
+#include "mmpr/pcap/PcapWriter.h"
 #include "mmpr/pcapng/PcapNgReader.h"
 #include "mmpr/util.h"
 #include <filesystem>
@@ -54,6 +56,10 @@ unique_ptr<Reader> Reader::getReader(const string& filepath) {
     default:
         throw runtime_error("Failed to determine file type based on first 32 bits");
     }
+}
+
+unique_ptr<Writer> Writer::getWriter(const string& filepath) {
+    return make_unique<StreamPcapWriter>(filepath);
 }
 
 } // namespace mmpr

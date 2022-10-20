@@ -1,8 +1,8 @@
 #ifndef MMPR_PCAPNGREADER_H
 #define MMPR_PCAPNGREADER_H
 
-#include "mmpr/filesystem/MMapFileReader.h"
-#include "mmpr/filesystem/ZstdFileReader.h"
+#include "mmpr/filesystem/reading/MMapFileReader.h"
+#include "mmpr/filesystem/reading/ZstdFileReader.h"
 #include "mmpr/mmpr.h"
 #include "mmpr/pcapng/PcapNgBlockParser.h"
 #include "mmpr/util.h"

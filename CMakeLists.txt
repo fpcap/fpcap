@@ -33,11 +33,15 @@ target_include_directories(mmpr
     PUBLIC
         $<INSTALL_INTERFACE:include>
         $<INSTALL_INTERFACE:include/filesystem>
+        $<INSTALL_INTERFACE:include/filesystem/writing>
+        $<INSTALL_INTERFACE:include/filesystem/reading>
         $<INSTALL_INTERFACE:include/pcap>
         $<INSTALL_INTERFACE:include/pcapng>
         $<INSTALL_INTERFACE:include/modified_pcap>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/filesystem>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/filesystem/writing>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/filesystem/reading>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/pcap>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/pcapng>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/modified_pcap>

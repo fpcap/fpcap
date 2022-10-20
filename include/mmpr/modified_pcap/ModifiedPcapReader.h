@@ -1,10 +1,10 @@
 #ifndef MMPR_MODIFIEDPCAPREADER_H
 #define MMPR_MODIFIEDPCAPREADER_H
 
-#include "mmpr/filesystem/FReadFileReader.h"
-#include "mmpr/filesystem/FileReader.h"
-#include "mmpr/filesystem/MMapFileReader.h"
-#include "mmpr/filesystem/ZstdFileReader.h"
+#include "mmpr/filesystem/reading/FReadFileReader.h"
+#include "mmpr/filesystem/reading/FileReader.h"
+#include "mmpr/filesystem/reading/MMapFileReader.h"
+#include "mmpr/filesystem/reading/ZstdFileReader.h"
 #include "mmpr/mmpr.h"
 #include "mmpr/modified_pcap/ModifiedPcapParser.h"
 #include <filesystem>

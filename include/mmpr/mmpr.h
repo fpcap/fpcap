@@ -93,6 +93,15 @@ public:
     static std::unique_ptr<Reader> getReader(const std::string& filepath);
 };
 
+class Writer {
+public:
+    virtual ~Writer() = default;
+
+    virtual void write(const Packet& packet) = 0;
+
+    static std::unique_ptr<Writer> getWriter(const std::string& filepath);
+};
+
 /**
  * PCAP
  */

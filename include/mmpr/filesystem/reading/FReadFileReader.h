@@ -1,7 +1,7 @@
 #ifndef MMPR_FREADFILEREADER_H
 #define MMPR_FREADFILEREADER_H
 
-#include "mmpr/filesystem/FileReader.h"
+#include "FileReader.h"
 #include <cstring>
 #include <filesystem>
 #include <memory>
