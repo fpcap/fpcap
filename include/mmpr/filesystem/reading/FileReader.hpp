@@ -1,7 +1,7 @@
-#ifndef MMPR_FILEREADER_H
-#define MMPR_FILEREADER_H
+#ifndef MMPR_FILEREADER_HPP
+#define MMPR_FILEREADER_HPP
 
-#include "mmpr/mmpr.h"
+#include "mmpr/mmpr.hpp"
 #include <filesystem>
 #include <string>
 
@@ -40,4 +40,4 @@ public:
 
 } // namespace mmpr
 
-#endif // MMPR_FILEREADER_H
+#endif // MMPR_FILEREADER_HPP

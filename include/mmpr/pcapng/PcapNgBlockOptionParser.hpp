@@ -1,7 +1,7 @@
-#ifndef MMPR_PCAPNGBLOCKOPTIONPARSER_H
-#define MMPR_PCAPNGBLOCKOPTIONPARSER_H
+#ifndef MMPR_PCAPNGBLOCKOPTIONPARSER_HPP
+#define MMPR_PCAPNGBLOCKOPTIONPARSER_HPP
 
-#include "mmpr/mmpr.h"
+#include "mmpr/mmpr.hpp"
 #include <cstddef>
 
 namespace mmpr {
@@ -28,4 +28,4 @@ public:
 
 } // namespace mmpr
 
-#endif // MMPR_PCAPNGBLOCKOPTIONPARSER_H
+#endif // MMPR_PCAPNGBLOCKOPTIONPARSER_HPP

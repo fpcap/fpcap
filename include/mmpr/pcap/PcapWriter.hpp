@@ -1,9 +1,9 @@
-#ifndef MMPR_PCAPWRITER_H
-#define MMPR_PCAPWRITER_H
+#ifndef MMPR_PCAPWRITER_HPP
+#define MMPR_PCAPWRITER_HPP
 
-#include "mmpr/filesystem/writing/FileWriter.h"
-#include "mmpr/filesystem/writing/StreamFileWriter.h"
-#include "mmpr/mmpr.h"
+#include "mmpr/filesystem/writing/FileWriter.hpp"
+#include "mmpr/filesystem/writing/StreamFileWriter.hpp"
+#include "mmpr/mmpr.hpp"
 
 namespace mmpr {
 
@@ -64,4 +64,4 @@ typedef PcapWriter<StreamFileWriter> StreamPcapWriter;
 
 } // namespace mmpr
 
-#endif // MMPR_PCAPWRITER_H
+#endif // MMPR_PCAPWRITER_HPP

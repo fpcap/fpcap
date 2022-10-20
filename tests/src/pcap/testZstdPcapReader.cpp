@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "mmpr/pcap/PcapReader.h"
+#include "mmpr/pcap/PcapReader.hpp"
 
 TEST(ZstdPcapReader, ConstructorSimple) {
     mmpr::ZstdPcapReader reader{"tracefiles/example.pcap.zst"};

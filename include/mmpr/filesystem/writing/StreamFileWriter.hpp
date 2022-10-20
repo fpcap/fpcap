@@ -1,7 +1,7 @@
-#ifndef MMPR_STREAMFILEWRITER_H
-#define MMPR_STREAMFILEWRITER_H
+#ifndef MMPR_STREAMFILEWRITER_HPP
+#define MMPR_STREAMFILEWRITER_HPP
 
-#include "mmpr/filesystem/writing/FileWriter.h"
+#include "mmpr/filesystem/writing/FileWriter.hpp"
 #include <fstream>
 
 namespace mmpr {
@@ -21,4 +21,4 @@ private:
 
 } // namespace mmpr
 
-#endif // MMPR_STREAMFILEWRITER_H
+#endif // MMPR_STREAMFILEWRITER_HPP

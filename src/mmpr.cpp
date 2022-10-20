@@ -1,11 +1,11 @@
-#include "mmpr/mmpr.h"
+#include "mmpr/mmpr.hpp"
 
-#include "mmpr/filesystem/writing/StreamFileWriter.h"
-#include "mmpr/modified_pcap/ModifiedPcapReader.h"
-#include "mmpr/pcap/PcapReader.h"
-#include "mmpr/pcap/PcapWriter.h"
-#include "mmpr/pcapng/PcapNgReader.h"
-#include "mmpr/util.h"
+#include "mmpr/filesystem/writing/StreamFileWriter.hpp"
+#include "mmpr/modified_pcap/ModifiedPcapReader.hpp"
+#include "mmpr/pcap/PcapReader.hpp"
+#include "mmpr/pcap/PcapWriter.hpp"
+#include "mmpr/pcapng/PcapNgReader.hpp"
+#include "mmpr/util.hpp"
 #include <filesystem>
 #include <iostream>
 #include <memory>

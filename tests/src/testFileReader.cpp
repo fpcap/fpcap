@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "mmpr/mmpr.h"
+#include "mmpr/mmpr.hpp"
 #include <filesystem>
 #include <iostream>
 

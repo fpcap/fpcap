@@ -1,7 +1,7 @@
-#ifndef MMPR_ZSTDFILEREADER_H
-#define MMPR_ZSTDFILEREADER_H
+#ifndef MMPR_ZSTDFILEREADER_HPP
+#define MMPR_ZSTDFILEREADER_HPP
 
-#include "FReadFileReader.h"
+#include "FReadFileReader.hpp"
 #include <algorithm>
 #include <fstream>
 #include <zstd.h>
@@ -90,4 +90,4 @@ private:
 
 } // namespace mmpr
 
-#endif // MMPR_ZSTDFILEREADER_H
+#endif // MMPR_ZSTDFILEREADER_HPP

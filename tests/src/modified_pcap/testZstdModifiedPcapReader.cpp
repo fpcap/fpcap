@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "mmpr/modified_pcap/ModifiedPcapReader.h"
+#include "mmpr/modified_pcap/ModifiedPcapReader.hpp"
 
 TEST(ZstdModifiedPcapReader, ConstructorSimple) {
     mmpr::ZstdModifiedPcapReader reader{"tracefiles/fritzbox-ip.pcap.zst"};

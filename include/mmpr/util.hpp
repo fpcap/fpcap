@@ -1,5 +1,5 @@
-#ifndef MMPR_UTIL_H
-#define MMPR_UTIL_H
+#ifndef MMPR_UTIL_HPP
+#define MMPR_UTIL_HPP
 
 #include <cmath>
 #include <cstdint>
@@ -79,4 +79,4 @@ inline static void calculateTimestamps(uint32_t timestampResolution,
 } // namespace util
 } // namespace mmpr
 
-#endif // MMPR_UTIL_H
+#endif // MMPR_UTIL_HPP

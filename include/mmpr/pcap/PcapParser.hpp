@@ -1,7 +1,7 @@
-#ifndef MMPR_PCAPPARSER_H
-#define MMPR_PCAPPARSER_H
+#ifndef MMPR_PCAPPARSER_HPP
+#define MMPR_PCAPPARSER_HPP
 
-#include "mmpr/mmpr.h"
+#include "mmpr/mmpr.hpp"
 #include <algorithm>
 #include <sstream>
 
@@ -102,4 +102,4 @@ public:
 
 } // namespace mmpr
 
-#endif // MMPR_PCAPPARSER_H
+#endif // MMPR_PCAPPARSER_HPP

@@ -1,12 +1,12 @@
-#ifndef MMPR_PCAPREADER_H
-#define MMPR_PCAPREADER_H
+#ifndef MMPR_PCAPREADER_HPP
+#define MMPR_PCAPREADER_HPP
 
-#include "mmpr/filesystem/reading/FReadFileReader.h"
-#include "mmpr/filesystem/reading/MMapFileReader.h"
-#include "mmpr/filesystem/reading/ZstdFileReader.h"
-#include "mmpr/mmpr.h"
-#include "mmpr/pcap/PcapParser.h"
-#include "mmpr/util.h"
+#include "mmpr/filesystem/reading/FReadFileReader.hpp"
+#include "mmpr/filesystem/reading/MMapFileReader.hpp"
+#include "mmpr/filesystem/reading/ZstdFileReader.hpp"
+#include "mmpr/mmpr.hpp"
+#include "mmpr/pcap/PcapParser.hpp"
+#include "mmpr/util.hpp"
 #include <filesystem>
 #include <sstream>
 #include <stdexcept>
@@ -89,4 +89,4 @@ typedef PcapReader<ZstdFileReader> ZstdPcapReader;
 
 } // namespace mmpr
 
-#endif // MMPR_PCAPREADER_H
+#endif // MMPR_PCAPREADER_HPP

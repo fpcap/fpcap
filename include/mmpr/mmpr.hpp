@@ -1,5 +1,5 @@
-#ifndef MMPR_MMPR_H
-#define MMPR_MMPR_H
+#ifndef MMPR_MMPR_HPP
+#define MMPR_MMPR_HPP
 
 #include <cassert>
 #include <cstdint>
@@ -271,4 +271,4 @@ struct InterfaceStatisticsBlock {
 
 } // namespace mmpr
 
-#endif // MMPR_MMPR_H
+#endif // MMPR_MMPR_HPP

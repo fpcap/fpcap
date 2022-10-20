@@ -1,7 +1,7 @@
-#ifndef MMPR_FILEWRITER_H
-#define MMPR_FILEWRITER_H
+#ifndef MMPR_FILEWRITER_HPP
+#define MMPR_FILEWRITER_HPP
 
-#include "mmpr/mmpr.h"
+#include "mmpr/mmpr.hpp"
 #include <string>
 #include <vector>
 
@@ -19,4 +19,4 @@ protected:
 
 } // namespace mmpr
 
-#endif // MMPR_FILEWRITER_H
+#endif // MMPR_FILEWRITER_HPP

@@ -1,7 +1,7 @@
-#ifndef MMPR_MODIFIEDPCAPPARSER_H
-#define MMPR_MODIFIEDPCAPPARSER_H
+#ifndef MMPR_MODIFIEDPCAPPARSER_HPP
+#define MMPR_MODIFIEDPCAPPARSER_HPP
 
-#include "mmpr/mmpr.h"
+#include "mmpr/mmpr.hpp"
 #include <algorithm>
 #include <netinet/in.h>
 #include <sstream>
@@ -133,4 +133,4 @@ public:
 
 } // namespace mmpr
 
-#endif // MMPR_MODIFIEDPCAPPARSER_H
+#endif // MMPR_MODIFIEDPCAPPARSER_HPP

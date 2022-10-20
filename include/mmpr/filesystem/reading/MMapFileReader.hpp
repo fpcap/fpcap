@@ -1,8 +1,8 @@
-#ifndef MMPR_MMAPFILEREADER_H
-#define MMPR_MMAPFILEREADER_H
+#ifndef MMPR_MMAPFILEREADER_HPP
+#define MMPR_MMAPFILEREADER_HPP
 
-#include "FileReader.h"
-#include "ZstdFileReader.h"
+#include "FileReader.hpp"
+#include "ZstdFileReader.hpp"
 #include <algorithm>
 #include <cerrno>
 #include <cstring>
@@ -52,4 +52,4 @@ private:
 
 } // namespace mmpr
 
-#endif // MMPR_MMAPFILEREADER_H
+#endif // MMPR_MMAPFILEREADER_HPP

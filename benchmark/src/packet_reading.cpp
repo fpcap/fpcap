@@ -1,7 +1,7 @@
 #include <benchmark/benchmark.h>
 
-#include "mmpr/pcap/PcapReader.h"
-#include "mmpr/pcapng/PcapNgReader.h"
+#include "mmpr/pcap/PcapReader.hpp"
+#include "mmpr/pcapng/PcapNgReader.hpp"
 #include <PcapFileDevice.h>
 #include <pcap.h>
 
