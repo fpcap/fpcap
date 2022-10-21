@@ -111,9 +111,7 @@ public:
 #endif
     }
 
-#if MMPR_USE_ZSTD
     MMapFileReader(mmpr::ZstdFileReader reader);
-#endif
 
 #if __linux__
     ~MMapFileReader() {

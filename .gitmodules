@@ -10,3 +10,6 @@
 	path = benchmark/libs/PcapPlusPlus
 	url = https://github.com/clementperon/PcapPlusPlus.git
 	branch = a7326003891b3d82fabe2b84c98ccf5ba442b4f3
+[submodule "libs/zstd"]
+	path = libs/zstd
+	url = https://github.com/facebook/zstd.git

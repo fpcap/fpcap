@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
+include(FetchContent)
+
 project(mmpr VERSION 0.1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -16,11 +18,9 @@ else()
     option(MMPR_BUILD_EXAMPLES "Build examples" OFF)
 endif()
 
-option(MMPR_USE_ZSTD "Enable ZSTD decompression" ON)
 if(WIN32)
     # for now ZSTD is not supported on Windows
-    message(WARNING "Benchmark and ZSTD decompression is currently not supported on Windows")
-    set(MMPR_USE_ZSTD OFF)
+    message(WARNING "Benchmark is currently not supported on Windows")
     set(MMPR_BUILD_BENCHMARK OFF)
 endif()
 
@@ -45,12 +45,16 @@ target_include_directories(mmpr
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/pcap>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/pcapng>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/modified_pcap>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/libs/zstd/lib>
 )
 
 target_compile_features(mmpr PUBLIC cxx_std_17)
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    # Visual Studio
     target_compile_options(mmpr PRIVATE /Wall)
-else()
+    add_definitions(-D_AMD64_=1) # TODO possibly there is a better way to solve the "No Target Architecture" error
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    # GCC, MinGW etc.
     target_compile_options(mmpr PRIVATE -static-libstdc++ -Wall -Wextra -pedantic)
 endif()
 
@@ -59,21 +63,17 @@ if((CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR) AND (CMAKE_BUILD_TYPE ST
     target_compile_options(mmpr PRIVATE -DDEBUG)
 endif()
 
+set(ZSTD_BUILD_STATIC ON)
+set(ZSTD_BUILD_SHARED OFF)
+set(ZSTD_LEGACY_SUPPORT OFF)
+set(ZSTD_BUILD_PROGRAMS OFF)
+set(ZSTD_BUILD_TESTS OFF)
+add_subdirectory(libs/zstd/build/cmake)
+target_link_libraries(mmpr PRIVATE libzstd_static)
+
 if(WIN32)
     # Windows requires winsock32.h for ntohs and ntohl etc.
     target_link_libraries(mmpr PRIVATE ws2_32.lib)
-endif()
-
-if(MMPR_USE_ZSTD)
-    # Add Zstd compression library
-    list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-    set(MIN_ZSTD_VERSION 1.4)
-    find_package(ZSTD ${MIN_ZSTD_VERSION} REQUIRED MODULE)
-    add_definitions(-DMMPR_USE_ZSTD=1)
-    target_link_libraries(mmpr
-        PRIVATE
-            ZSTD::ZSTD
-    )
 endif()
 
 # mmpr install instructions

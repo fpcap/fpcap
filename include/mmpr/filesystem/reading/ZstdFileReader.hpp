@@ -1,12 +1,11 @@
 #ifndef MMPR_ZSTDFILEREADER_HPP
 #define MMPR_ZSTDFILEREADER_HPP
 
-#if MMPR_USE_ZSTD
-
 #include "FReadFileReader.hpp"
+#include "zstd.h"
 #include <algorithm>
 #include <fstream>
-#include <zstd.h>
+#include <sstream>
 
 namespace mmpr {
 
@@ -91,7 +90,5 @@ private:
 };
 
 } // namespace mmpr
-
-#endif
 
 #endif // MMPR_ZSTDFILEREADER_HPP

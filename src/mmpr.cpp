@@ -35,7 +35,6 @@ unique_ptr<Reader> Reader::getReader(const string& filepath) {
     case MODIFIED_PCAP: {
         return make_unique<MMModifiedPcapReader>(filepath);
     }
-#ifdef MMPR_USE_ZSTD
     case ZSTD: {
         ZstdFileReader compressedFileReader(filepath);
         auto uncompressedMagicNumber = *(uint32_t*)compressedFileReader.data();
@@ -55,7 +54,6 @@ unique_ptr<Reader> Reader::getReader(const string& filepath) {
                                 "on first 32 bits");
         }
     }
-#endif
     default:
         throw runtime_error("Failed to determine file type based on first 32 bits");
     }

@@ -277,9 +277,7 @@ private:
 
 typedef PcapNgReader<FReadFileReader> FReadPcapNgReader;
 typedef PcapNgReader<MMapFileReader> MMPcapNgReader;
-#if MMPR_USE_ZSTD
 typedef PcapNgReader<ZstdFileReader> ZstdPcapNgReader;
-#endif
 
 } // namespace mmpr
 

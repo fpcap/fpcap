@@ -77,9 +77,7 @@ private:
 
 typedef ModifiedPcapReader<FReadFileReader> FReadModifiedPcapReader;
 typedef ModifiedPcapReader<MMapFileReader> MMModifiedPcapReader;
-#if MMPR_USE_ZSTD
 typedef ModifiedPcapReader<ZstdFileReader> ZstdModifiedPcapReader;
-#endif
 
 } // namespace mmpr
 
