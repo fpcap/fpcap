@@ -2,8 +2,6 @@
 
 #include "mmpr/pcap/PcapReader.hpp"
 
-#if __linux__
-
 TEST(MMPcapReader, ConstructorSimple) {
     mmpr::MMPcapReader reader{"tracefiles/example.pcap"};
     EXPECT_EQ(reader.getFilepath(), "tracefiles/example.pcap")
@@ -47,5 +45,3 @@ TEST(MMPcapReader, DLT) {
         ASSERT_EQ(processedPackets, 1000);
     }
 }
-
-#endif

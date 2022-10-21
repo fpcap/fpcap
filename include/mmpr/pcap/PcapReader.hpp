@@ -84,8 +84,8 @@ private:
 };
 
 typedef PcapReader<FReadFileReader> FReadPcapReader;
-#if __linux__
 typedef PcapReader<MMapFileReader> MMPcapReader;
+#if MMPR_USE_ZSTD
 typedef PcapReader<ZstdFileReader> ZstdPcapReader;
 #endif
 

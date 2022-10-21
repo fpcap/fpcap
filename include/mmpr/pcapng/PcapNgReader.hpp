@@ -276,8 +276,8 @@ private:
 };
 
 typedef PcapNgReader<FReadFileReader> FReadPcapNgReader;
-#if __linux__
 typedef PcapNgReader<MMapFileReader> MMPcapNgReader;
+#if MMPR_USE_ZSTD
 typedef PcapNgReader<ZstdFileReader> ZstdPcapNgReader;
 #endif
 

@@ -2,8 +2,6 @@
 #include <chrono>
 #include <iostream>
 
-#if __linux__
-
 using namespace std;
 using namespace std::chrono;
 
@@ -34,5 +32,3 @@ int main() {
 
     return 0;
 }
-
-#endif
