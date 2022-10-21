@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
 
-include(FetchContent)
-
 project(mmpr VERSION 0.1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -19,8 +17,7 @@ else()
 endif()
 
 if(WIN32)
-    # for now ZSTD is not supported on Windows
-    message(WARNING "Benchmark is currently not supported on Windows")
+    # TODO support benchmark on Windows
     set(MMPR_BUILD_BENCHMARK OFF)
 endif()
 
@@ -113,17 +110,12 @@ configure_package_config_file(${CMAKE_CURRENT_LIST_DIR}/cmake/mmprConfig.cmake.i
 
 # Install the config, config version and custom find modules
 install(FILES
-    ${CMAKE_CURRENT_LIST_DIR}/cmake/FindZSTD.cmake
     ${CMAKE_CURRENT_BINARY_DIR}/mmprConfig.cmake
     ${CMAKE_CURRENT_BINARY_DIR}/mmprConfigVersion.cmake
     DESTINATION ${INSTALL_CONFIGDIR}
 )
 
 # Exporting from the build tree
-configure_file(${CMAKE_CURRENT_LIST_DIR}/cmake/FindZSTD.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/FindZSTD.cmake
-    COPYONLY)
-
 export(EXPORT mmpr-targets
     FILE ${CMAKE_CURRENT_BINARY_DIR}/mmprTargets.cmake
     NAMESPACE mmpr::)
