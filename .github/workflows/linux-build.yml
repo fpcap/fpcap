@@ -1,5 +1,5 @@
 name: linux-build
-on: [push]
+on: [ push ]
 jobs:
   debian-11-build:
     runs-on: ubuntu-latest
@@ -18,8 +18,6 @@ jobs:
         run: sudo apt install -y libpcap-dev
       - name: Install boost
         run: sudo apt install -y libboost-all-dev
-      - name: Install zstd compression library
-        run: sudo apt install -y zstd libzstd-dev
       - name: Initialize git submodules
         run: git submodule update --init --recursive
       - name: Configure

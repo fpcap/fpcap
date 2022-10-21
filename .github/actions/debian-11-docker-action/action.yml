@@ -1,5 +1,5 @@
 name: 'debian-11-docker-action'
-description: 'Sets up a debian 11 (bullseye) docker image with C++/CMake enviornment, libpcap, boost and zstd'
+description: 'Sets up a debian 11 (bullseye) docker image with C++/CMake enviornment, libpcap and boost'
 runs:
   using: 'docker'
   image: 'Dockerfile'
