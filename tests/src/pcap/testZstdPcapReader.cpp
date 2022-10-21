@@ -2,6 +2,8 @@
 
 #include "mmpr/pcap/PcapReader.hpp"
 
+#if MMPR_USE_ZSTD
+
 TEST(ZstdPcapReader, ConstructorSimple) {
     mmpr::ZstdPcapReader reader{"tracefiles/example.pcap.zst"};
     EXPECT_EQ(reader.getFilepath(), "tracefiles/example.pcap.zst")
@@ -45,3 +47,5 @@ TEST(ZstdPcapReader, DLT) {
         ASSERT_EQ(processedPackets, 1000);
     }
 }
+
+#endif

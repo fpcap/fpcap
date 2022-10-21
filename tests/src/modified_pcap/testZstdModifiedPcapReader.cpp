@@ -1,5 +1,7 @@
 #include "gtest/gtest.h"
 
+#if MMPR_USE_ZSTD
+
 #include "mmpr/modified_pcap/ModifiedPcapReader.hpp"
 
 TEST(ZstdModifiedPcapReader, ConstructorSimple) {
@@ -32,3 +34,5 @@ TEST(ZstdModifiedPcapReader, DLT) {
         ASSERT_EQ(processedPackets, 5);
     }
 }
+
+#endif

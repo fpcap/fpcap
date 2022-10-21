@@ -16,6 +16,9 @@ using namespace std;
 namespace mmpr {
 
 unique_ptr<Reader> Reader::getReader(const string& filepath) {
+    if (filepath.empty()) {
+        throw runtime_error("cannot create reader for empty filepath");
+    }
     if (!filesystem::exists(filepath)) {
         throw runtime_error("FileReader: could not find file \"" + filepath + "\"");
     }
@@ -24,13 +27,25 @@ unique_ptr<Reader> Reader::getReader(const string& filepath) {
     switch (magicNumber) {
     case PCAP_MICROSECONDS:
     case PCAP_NANOSECONDS: {
+#if __linux__
         return make_unique<MMPcapReader>(filepath);
+#else
+        return make_unique<FReadPcapReader>(filepath);
+#endif
     }
     case PCAPNG: {
+#if __linux__
         return make_unique<MMPcapNgReader>(filepath);
+#else
+        return make_unique<FReadPcapNgReader>(filepath);
+#endif
     }
     case MODIFIED_PCAP: {
+#if __linux__
         return make_unique<MMModifiedPcapReader>(filepath);
+#else
+        return make_unique<FReadModifiedPcapReader>(filepath);
+#endif
     }
 #ifdef MMPR_USE_ZSTD
     case ZSTD: {
@@ -59,6 +74,10 @@ unique_ptr<Reader> Reader::getReader(const string& filepath) {
 }
 
 unique_ptr<Writer> Writer::getWriter(const string& filepath) {
+    if (filepath.empty()) {
+        throw runtime_error("cannot writer reader for empty filepath");
+    }
+
     return make_unique<StreamPcapWriter>(filepath);
 }
 

@@ -3,7 +3,11 @@
 
 #include "mmpr/mmpr.hpp"
 #include <algorithm>
+#if __linux__
 #include <netinet/in.h>
+#elif _WIN32
+#include <winsock2.h>
+#endif
 #include <sstream>
 #include <stdexcept>
 

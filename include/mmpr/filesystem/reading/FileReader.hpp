@@ -9,15 +9,15 @@ namespace mmpr {
 
 class FileReader {
 public:
-    FileReader(const std::string& filePath)
-        : mFilePath(filePath), mFileSize(std::filesystem::file_size(filePath)) {
-        if (filePath.empty()) {
+    FileReader(const std::string& filepath)
+        : mFilepath(filepath), mFileSize(std::filesystem::file_size(filepath)) {
+        if (filepath.empty()) {
             throw std::runtime_error("Cannot read empty filepath");
         }
 
-        if (!std::filesystem::exists(filePath)) {
+        if (!std::filesystem::exists(filepath)) {
             throw std::runtime_error("Cannot find file " +
-                                     std::filesystem::absolute(filePath).string());
+                                     std::filesystem::absolute(filepath).string());
         }
     }
 
@@ -33,7 +33,7 @@ public:
 
     bool isExhausted() const { return mOffset >= mFileSize; }
 
-    const std::string mFilePath;
+    const std::string mFilepath;
     std::size_t mFileSize;
     std::size_t mOffset{0};
 };

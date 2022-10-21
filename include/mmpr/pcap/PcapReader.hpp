@@ -67,7 +67,7 @@ public:
     }
 
     size_t getFileSize() const { return mReader.mFileSize; }
-    std::string getFilepath() const override { return mReader.mFilePath; }
+    std::string getFilepath() const override { return mReader.mFilepath; }
     size_t getCurrentOffset() const { return mReader.mOffset; }
     uint16_t getDataLinkType() const override { return mDataLinkType; }
     std::vector<TraceInterface> getTraceInterfaces() const override {
@@ -84,8 +84,10 @@ private:
 };
 
 typedef PcapReader<FReadFileReader> FReadPcapReader;
+#if __linux__
 typedef PcapReader<MMapFileReader> MMPcapReader;
 typedef PcapReader<ZstdFileReader> ZstdPcapReader;
+#endif
 
 } // namespace mmpr
 

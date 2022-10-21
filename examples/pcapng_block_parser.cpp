@@ -8,9 +8,9 @@ using namespace std::chrono;
 int main() {
     string filepath = "tracefiles/pcapng-example.pcapng";
 
-    mmpr::MMPcapNgReader reader(filepath);
-    for (size_t i = 0; i < 10 && !reader.isExhausted(); ++i) {
-        reader.readBlock();
+    auto reader = mmpr::Reader::getReader(filepath);
+    for (size_t i = 0; i < 10 && !reader->isExhausted(); ++i) {
+        reader->readBlock();
     }
 
     return 0;

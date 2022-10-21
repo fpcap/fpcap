@@ -1,6 +1,8 @@
 #ifndef MMPR_ZSTDFILEREADER_HPP
 #define MMPR_ZSTDFILEREADER_HPP
 
+#if MMPR_USE_ZSTD
+
 #include "FReadFileReader.hpp"
 #include <algorithm>
 #include <fstream>
@@ -10,8 +12,8 @@ namespace mmpr {
 
 class ZstdFileReader : public FileReader {
 public:
-    ZstdFileReader(const std::string& filePath) : FileReader(filePath) {
-        FReadFileReader compressedFileReader(filePath);
+    ZstdFileReader(const std::string& filepath) : FileReader(filepath) {
+        FReadFileReader compressedFileReader(mFilepath);
         auto compressedData = compressedFileReader.data();
         auto compressedSize = compressedFileReader.mFileSize;
 
@@ -77,7 +79,7 @@ public:
     }
 
     ZstdFileReader(ZstdFileReader&& other)
-        : FileReader(other.mFilePath),
+        : FileReader(other.mFilepath),
           mDecompressedData(std::move(other.mDecompressedData)),
           mDecompressedDataPtr(mDecompressedData.get()) {}
 
@@ -89,5 +91,7 @@ private:
 };
 
 } // namespace mmpr
+
+#endif
 
 #endif // MMPR_ZSTDFILEREADER_HPP

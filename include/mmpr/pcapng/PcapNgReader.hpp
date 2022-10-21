@@ -1,6 +1,8 @@
 #ifndef MMPR_PCAPNGREADER_HPP
 #define MMPR_PCAPNGREADER_HPP
 
+#include "mmpr/filesystem/reading/FReadFileReader.hpp"
+#include "mmpr/filesystem/reading/FileReader.hpp"
 #include "mmpr/filesystem/reading/MMapFileReader.hpp"
 #include "mmpr/filesystem/reading/ZstdFileReader.hpp"
 #include "mmpr/mmpr.hpp"
@@ -28,7 +30,8 @@ public:
             throw std::runtime_error(
                 "Expected PcapNG format to start with appropriate magic "
                 "number, instead got: 0x" +
-                hex + ", possibly little/big endian issue");
+                hex + ", possibly little/big endian issue while reading file " +
+                filepath);
         }
     }
 
@@ -42,7 +45,8 @@ public:
             throw std::runtime_error(
                 "Expected PcapNG format to start with appropriate magic "
                 "number, instead got: 0x" +
-                hex + ", possibly little/big endian issue");
+                hex + ", possibly little/big endian issue while reading file " +
+                getFilepath());
         }
     }
 
@@ -155,7 +159,7 @@ public:
      *   |                      Block Total Length                       |
      *   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
      */
-    uint32_t readBlock() {
+    uint32_t readBlock() override {
         const auto blockType = *(const uint32_t*)&mReader.data()[mReader.mOffset];
         const auto blockTotalLength =
             *(const uint32_t*)&mReader.data()[mReader.mOffset + 4];
@@ -229,16 +233,25 @@ public:
     }
 
     size_t getFileSize() const override { return mReader.mFileSize; }
-    std::string getFilepath() const override { return mReader.mFilePath; }
+
+    std::string getFilepath() const override { return mReader.mFilepath; }
+
     size_t getCurrentOffset() const override { return mReader.mOffset; }
+
     uint16_t getDataLinkType() const override { return mDataLinkType; }
-    std::string getComment() const { return mMetadata.comment; }
-    std::string getOS() const { return mMetadata.os; }
-    std::string getHardware() const { return mMetadata.hardware; }
-    std::string getUserApplication() const { return mMetadata.userApplication; }
+
+    std::string getComment() const override { return mMetadata.comment; }
+
+    std::string getOS() const override { return mMetadata.os; }
+
+    std::string getHardware() const override { return mMetadata.hardware; }
+
+    std::string getUserApplication() const override { return mMetadata.userApplication; }
+
     std::vector<TraceInterface> getTraceInterfaces() const override {
         return mTraceInterfaces;
     }
+
     TraceInterface getTraceInterface(size_t id) const override {
         if (id >= mTraceInterfaces.size()) {
             throw std::out_of_range("Trace interface index " + std::to_string(id) +
@@ -263,8 +276,10 @@ private:
 };
 
 typedef PcapNgReader<FReadFileReader> FReadPcapNgReader;
+#if __linux__
 typedef PcapNgReader<MMapFileReader> MMPcapNgReader;
 typedef PcapNgReader<ZstdFileReader> ZstdPcapNgReader;
+#endif
 
 } // namespace mmpr
 

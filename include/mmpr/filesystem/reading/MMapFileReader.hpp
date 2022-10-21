@@ -1,6 +1,8 @@
 #ifndef MMPR_MMAPFILEREADER_HPP
 #define MMPR_MMAPFILEREADER_HPP
 
+#if __linux__
+
 #include "FileReader.hpp"
 #include "ZstdFileReader.hpp"
 #include <algorithm>
@@ -16,11 +18,11 @@ namespace mmpr {
 
 class MMapFileReader : public FileReader {
 public:
-    MMapFileReader(const std::string& filePath) : FileReader(filePath) {
-        mFileDescriptor = ::open(mFilePath.c_str(), O_RDONLY, 0);
+    MMapFileReader(const std::string& filepath) : FileReader(filepath) {
+        mFileDescriptor = ::open(mFilepath.c_str(), O_RDONLY, 0);
         if (mFileDescriptor < 0) {
             throw std::runtime_error("Error while reading file " +
-                                     std::filesystem::absolute(mFilePath).string() +
+                                     std::filesystem::absolute(mFilepath).string() +
                                      ": " + strerror(errno));
         }
 
@@ -29,7 +31,7 @@ public:
         if (mmapResult == MAP_FAILED) {
             ::close(mFileDescriptor);
             throw std::runtime_error("Error while mapping file " +
-                                     std::filesystem::absolute(mFilePath).string() +
+                                     std::filesystem::absolute(mFilepath).string() +
                                      ": " + strerror(errno));
         }
 
@@ -51,5 +53,7 @@ private:
 };
 
 } // namespace mmpr
+
+#endif
 
 #endif // MMPR_MMAPFILEREADER_HPP

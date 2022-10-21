@@ -4,14 +4,14 @@
 #include <iostream>
 
 TEST(TraceInterfaces, ReadBlock) {
-    mmpr::MMPcapNgReader reader{"tracefiles/many_interfaces-1.pcapng"};
+    auto reader = mmpr::Reader::getReader("tracefiles/many_interfaces-1.pcapng");
 
-    while (!reader.isExhausted()) {
-        reader.readBlock();
+    while (!reader->isExhausted()) {
+        reader->readBlock();
     }
 
     size_t traceInterfaceIndex = 0;
-    for (const auto& traceInterface : reader.getTraceInterfaces()) {
+    for (const auto& traceInterface : reader->getTraceInterfaces()) {
         switch (traceInterfaceIndex) {
             ASSERT_TRUE(traceInterface.name) << "interface: " << traceInterfaceIndex;
             ASSERT_FALSE(traceInterface.description)
@@ -62,24 +62,24 @@ TEST(TraceInterfaces, ReadBlock) {
         ++traceInterfaceIndex;
     }
 
-    ASSERT_EQ(reader.getTraceInterfaces().size(), 11);
+    ASSERT_EQ(reader->getTraceInterfaces().size(), 11);
 }
 
 TEST(TraceInterfaces, ReadPacket) {
-    mmpr::MMPcapNgReader reader{"tracefiles/many_interfaces-1.pcapng"};
+    auto reader = mmpr::Reader::getReader("tracefiles/many_interfaces-1.pcapng");
 
     mmpr::Packet packet{};
-    while (!reader.isExhausted()) {
-        if (reader.readNextPacket(packet)) {
+    while (!reader->isExhausted()) {
+        if (reader->readNextPacket(packet)) {
             auto interfaceId = packet.interfaceIndex;
-            ASSERT_LT(interfaceId, reader.getTraceInterfaces().size());
+            ASSERT_LT(interfaceId, reader->getTraceInterfaces().size());
         }
     }
 
-    ASSERT_EQ(reader.getTraceInterfaces().size(), 11);
+    ASSERT_EQ(reader->getTraceInterfaces().size(), 11);
 
     size_t traceInterfaceIndex = 0;
-    for (const auto& traceInterface : reader.getTraceInterfaces()) {
+    for (const auto& traceInterface : reader->getTraceInterfaces()) {
         switch (traceInterfaceIndex) {
             ASSERT_TRUE(traceInterface.name) << "interface: " << traceInterfaceIndex;
             ASSERT_FALSE(traceInterface.description)

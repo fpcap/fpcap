@@ -6,14 +6,18 @@
 #include <filesystem>
 #include <memory>
 #include <stdexcept>
+#include <stdio.h>
+#include <errno.h>
+#include <string.h>
+#include <locale.h>
 
 namespace mmpr {
 
 class FReadFileReader : public FileReader {
 public:
-    FReadFileReader(const std::string& filePath) : FileReader(filePath) {
+    FReadFileReader(const std::string& filepath) : FileReader(filepath) {
         mFileContent = std::unique_ptr<uint8_t>(new uint8_t[mFileSize]);
-        FILE* const inFile = fopen(mFilePath.c_str(), "rb");
+        FILE* const inFile = fopen(mFilepath.c_str(), "rb");
         if (fread(mFileContent.get(), 1, mFileSize, inFile) != mFileSize) {
             throw std::runtime_error("fread error: " + std::string(strerror(errno)));
         }

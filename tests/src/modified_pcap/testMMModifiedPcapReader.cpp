@@ -1,5 +1,7 @@
 #include "gtest/gtest.h"
 
+#if __linux__
+
 #include "mmpr/modified_pcap/ModifiedPcapReader.hpp"
 
 TEST(MMModifiedPcapReader, ConstructorSimple) {
@@ -32,3 +34,5 @@ TEST(MMModifiedPcapReader, DLT) {
         ASSERT_EQ(processedPackets, 5);
     }
 }
+
+#endif

@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -87,8 +88,28 @@ public:
     virtual std::string getFilepath() const = 0;
     virtual size_t getCurrentOffset() const = 0;
     virtual uint16_t getDataLinkType() const = 0;
-    virtual std::vector<TraceInterface> getTraceInterfaces() const = 0;
-    virtual TraceInterface getTraceInterface(size_t id) const = 0;
+
+    virtual std::string getComment() const {
+        throw std::runtime_error("getComment() not implemented");
+    }
+    virtual std::string getOS() const {
+        throw std::runtime_error("getOS() not implemented");
+    }
+    virtual std::string getHardware() const {
+        throw std::runtime_error("getHardware() not implemented");
+    }
+    virtual std::string getUserApplication() const {
+        throw std::runtime_error("getUserApplication() not implemented");
+    }
+    virtual uint32_t readBlock() {
+        throw std::runtime_error("readBlock() not implemented");
+    }
+    virtual std::vector<TraceInterface> getTraceInterfaces() const {
+        throw std::runtime_error("getTraceInterfaces() not implemented");
+    }
+    virtual TraceInterface getTraceInterface(size_t) const {
+        throw std::runtime_error("getTraceInterface(size_t) not implemented");
+    }
 
     static std::unique_ptr<Reader> getReader(const std::string& filepath);
 };

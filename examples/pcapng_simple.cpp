@@ -10,7 +10,7 @@ int main() {
 
     // open file, map to memory and measure execution time
     auto start = high_resolution_clock::now();
-    mmpr::MMPcapNgReader reader(filepath);
+    auto reader = mmpr::Reader::getReader(filepath);
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<milliseconds>(stop - start);
     cout << "Open and mapped file to memory in " << duration.count() << "ms" << endl;
@@ -19,8 +19,8 @@ int main() {
     start = high_resolution_clock::now();
     mmpr::Packet packet{};
     uint64_t processedPackets{0};
-    while (!reader.isExhausted()) {
-        if (reader.readNextPacket(packet)) {
+    while (!reader->isExhausted()) {
+        if (reader->readNextPacket(packet)) {
             processedPackets++;
         }
     }

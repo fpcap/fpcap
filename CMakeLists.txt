@@ -59,6 +59,11 @@ if((CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR) AND (CMAKE_BUILD_TYPE ST
     target_compile_options(mmpr PRIVATE -DDEBUG)
 endif()
 
+if(WIN32)
+    # Windows requires winsock32.h for ntohs and ntohl etc.
+    target_link_libraries(mmpr PRIVATE ws2_32.lib)
+endif()
+
 if(MMPR_USE_ZSTD)
     # Add Zstd compression library
     list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
