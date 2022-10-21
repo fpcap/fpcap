@@ -1,15 +1,7 @@
-[submodule "benchmark/libs/benchmark"]
-	path = benchmark/libs/benchmark
-	url = https://github.com/google/benchmark.git
-	branch = 0d98dba29d66e93259db7daa53a9327df767a415
 [submodule "tests/libs/googletest"]
 	path = tests/libs/googletest
 	url = https://github.com/google/googletest.git
 	branch = e2239ee6043f73722e7aa812a459f54a28552929
-[submodule "benchmark/libs/PcapPlusPlus"]
-	path = benchmark/libs/PcapPlusPlus
-	url = https://github.com/clementperon/PcapPlusPlus.git
-	branch = a7326003891b3d82fabe2b84c98ccf5ba442b4f3
 [submodule "libs/zstd"]
 	path = libs/zstd
 	url = https://github.com/facebook/zstd.git

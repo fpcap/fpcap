@@ -7,18 +7,11 @@ set(CMAKE_CXX_STANDARD 17)
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     # in standalone set default settings to ON
     option(MMPR_BUILD_TESTS "Force tests to build" ON)
-    option(MMPR_BUILD_BENCHMARK "Build benchmarks" ON)
     option(MMPR_BUILD_EXAMPLES "Build examples" ON)
 else()
     # if used as library set default settings to OFF
     option(MMPR_BUILD_TESTS "Force tests to build" OFF)
-    option(MMPR_BUILD_BENCHMARK "Build benchmarks" OFF)
     option(MMPR_BUILD_EXAMPLES "Build examples" OFF)
-endif()
-
-if(WIN32)
-    # TODO support benchmark on Windows
-    set(MMPR_BUILD_BENCHMARK OFF)
 endif()
 
 # mmpr library target
@@ -127,11 +120,6 @@ if(MMPR_BUILD_TESTS)
     # Add tests
     enable_testing()
     add_subdirectory(tests)
-endif()
-
-if(MMPR_BUILD_BENCHMARK)
-    # Add benchmarks
-    add_subdirectory(benchmark)
 endif()
 
 if(MMPR_BUILD_EXAMPLES)
