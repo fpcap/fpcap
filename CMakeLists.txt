@@ -35,7 +35,6 @@ target_include_directories(mmpr
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/pcap>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/pcapng>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/modified_pcap>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/libs/zstd/lib>
 )
 
 target_compile_features(mmpr PUBLIC cxx_std_17)
@@ -60,6 +59,7 @@ set(ZSTD_BUILD_PROGRAMS OFF)
 set(ZSTD_BUILD_TESTS OFF)
 add_subdirectory(libs/zstd/build/cmake)
 target_link_libraries(mmpr PRIVATE libzstd_static)
+target_include_directories(mmpr PRIVATE ${CMAKE_SOURCE_DIR}/libs/zstd/lib)
 
 if(WIN32)
     # Windows requires winsock32.h for ntohs and ntohl etc.
