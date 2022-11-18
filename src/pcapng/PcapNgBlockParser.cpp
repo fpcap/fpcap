@@ -5,6 +5,7 @@
 #include "mmpr/util.hpp"
 
 namespace mmpr {
+
 /**
  * 4.1.  Section Header Block
  *
@@ -363,4 +364,5 @@ void PcapNgBlockParser::readISB(const uint8_t* data,
     auto blockTotalLength = *(const uint32_t*)&data[isb.blockTotalLength - 4];
     MMPR_ASSERT(isb.blockTotalLength == blockTotalLength);
 }
+
 } // namespace mmpr

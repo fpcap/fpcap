@@ -21,8 +21,11 @@ add_executable(mmpr_test
     src/main.cpp
     src/testFileReader.cpp
 )
-target_compile_features(mmpr_test PRIVATE cxx_std_11)
-target_link_libraries(mmpr_test gtest_main mmpr::mmpr)
+target_link_libraries(mmpr_test
+    PUBLIC
+        mmpr::mmpr
+        gtest_main
+)
 
 add_test(NAME mmpr_test
     COMMAND mmpr_test

@@ -1,7 +1,7 @@
 #include "mmpr/filesystem/reading/ZstdFileReader.hpp"
 
-#include "zstd.h"
 #include "mmpr/filesystem/reading/FReadFileReader.hpp"
+#include "zstd.h"
 #include <algorithm>
 #include <fstream>
 #include <sstream>
@@ -70,5 +70,10 @@ ZstdFileReader::ZstdFileReader(const std::string& filepath) : FileReader(filepat
     mDecompressedDataPtr = mDecompressedData.get();
     mFileSize = decompressedSize;
 }
+
+ZstdFileReader::ZstdFileReader(ZstdFileReader&& other)
+    : FileReader(other.mFilepath),
+      mDecompressedData(std::move(other.mDecompressedData)),
+      mDecompressedDataPtr(mDecompressedData.get()) {}
 
 } // namespace mmpr

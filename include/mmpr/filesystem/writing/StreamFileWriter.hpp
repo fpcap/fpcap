@@ -8,12 +8,9 @@ namespace mmpr {
 
 class StreamFileWriter : public FileWriter {
 public:
-    StreamFileWriter(const std::string& filepath)
-        : FileWriter(filepath), mOutputFileStream(mFilepath) {}
+    StreamFileWriter(const std::string& filepath);
 
-    void write(const uint8_t* data, size_t size) override {
-        mOutputFileStream.write((const char*)data, size);
-    }
+    void write(const uint8_t* data, size_t size) override;
 
 private:
     std::ofstream mOutputFileStream;

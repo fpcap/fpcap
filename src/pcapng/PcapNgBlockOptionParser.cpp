@@ -5,6 +5,7 @@
 #include <cmath>
 
 namespace mmpr {
+
 /**
  *                      1                   2                   3
  *  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -327,4 +328,9 @@ void PcapNgBlockOptionParser::readISBOption(const uint8_t* data,
     MMPR_DEBUG_LOG_1("[ISB][OPT] Option Code/Type: %u\n", option.type);
     MMPR_DEBUG_LOG_1("[ISB][OPT] Option Length: %u\n", option.length);
 }
+
+std::string PcapNgBlockOptionParser::parseUTF8(const pcapng::Option& option) {
+    return std::string(reinterpret_cast<const char*>(option.value), option.length);
+}
+
 } // namespace mmpr

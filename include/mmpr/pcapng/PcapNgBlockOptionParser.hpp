@@ -21,9 +21,7 @@ public:
      * @param option the option containing the string value
      * @return string value
      */
-    static std::string parseUTF8(const pcapng::Option& option) {
-        return std::string(reinterpret_cast<const char*>(option.value), option.length);
-    }
+    static std::string parseUTF8(const pcapng::Option& option);
 };
 
 } // namespace mmpr
