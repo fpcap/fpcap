@@ -28,7 +28,6 @@ target_include_directories(mmpr
         $<INSTALL_INTERFACE:include/pcap>
         $<INSTALL_INTERFACE:include/pcapng>
         $<INSTALL_INTERFACE:include/modified_pcap>
-        $<INSTALL_INTERFACE:libs/zstd/lib>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/filesystem>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/filesystem/writing>
@@ -36,6 +35,7 @@ target_include_directories(mmpr
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/pcap>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/pcapng>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/modified_pcap>
+    PRIVATE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/libs/zstd/lib>
 )
 
