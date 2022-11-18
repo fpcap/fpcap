@@ -59,7 +59,7 @@ set(ZSTD_BUILD_SHARED OFF)
 set(ZSTD_LEGACY_SUPPORT OFF)
 set(ZSTD_BUILD_PROGRAMS OFF)
 set(ZSTD_BUILD_TESTS OFF)
-add_subdirectory(libs/zstd/build/cmake)
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/libs/zstd/build/cmake")
 target_link_libraries(mmpr PRIVATE libzstd_static)
 
 if(WIN32)
