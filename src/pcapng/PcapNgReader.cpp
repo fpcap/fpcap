@@ -11,7 +11,6 @@ PcapNgReader<TReader>::PcapNgReader(const std::string& filepath) : mReader(filep
         std::stringstream sstream;
         sstream << std::hex << magicNumber;
         std::string hex = sstream.str();
-        std::transform(hex.begin(), hex.end(), hex.begin(), ::toupper);
         throw std::runtime_error(
             "Expected PcapNG format to start with appropriate magic "
             "number, instead got: 0x" +
@@ -27,7 +26,6 @@ PcapNgReader<TReader>::PcapNgReader(TReader&& reader)
         std::stringstream sstream;
         sstream << std::hex << magicNumber;
         std::string hex = sstream.str();
-        std::transform(hex.begin(), hex.end(), hex.begin(), ::toupper);
         throw std::runtime_error(
             "Expected PcapNG format to start with appropriate magic "
             "number, instead got: 0x" +

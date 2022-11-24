@@ -9,7 +9,6 @@ void ModifiedPcapParser::readFileHeader(const uint8_t* data,
         std::stringstream sstream;
         sstream << std::hex << magicNumber;
         std::string hex = sstream.str();
-        std::transform(hex.begin(), hex.end(), hex.begin(), ::toupper);
         throw std::runtime_error(
             "Expected raw file header to start with magic numbers 0xA1B2CD34 or "
             "0x34CDB2A1, but instead got: 0x" +
