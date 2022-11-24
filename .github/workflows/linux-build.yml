@@ -13,11 +13,7 @@ jobs:
       - name: Install C++ build environment
         run: |
           sudo apt update
-          sudo apt install -y build-essential gcc libssl-dev cmake gdb g++ make libc6-dev
-      - name: Install libpcap
-        run: sudo apt install -y libpcap-dev
-      - name: Install boost
-        run: sudo apt install -y libboost-all-dev
+          sudo apt install -y build-essential gcc cmake g++ make
       - name: Initialize git submodules
         run: git submodule update --init --recursive
       - name: Configure
