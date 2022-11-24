@@ -1,9 +1,8 @@
 #include "mmpr/filesystem/reading/ZstdFileReader.hpp"
 
-#include "zstd.h"
 #include "mmpr/filesystem/reading/FReadFileReader.hpp"
+#include "zstd.h"
 #include <algorithm>
-#include <fstream>
 #include <sstream>
 
 namespace mmpr {
@@ -24,7 +23,6 @@ ZstdFileReader::ZstdFileReader(const std::string& filepath) : FileReader(filepat
         std::stringstream sstream;
         sstream << std::hex << magicNumber;
         std::string hex = sstream.str();
-        std::transform(hex.begin(), hex.end(), hex.begin(), ::toupper);
         throw std::runtime_error("Expected ZSTD format to start with appropriate magic "
                                  "number, instead got: 0x" +
                                  hex + ", possibly little/big endian issue");
@@ -70,5 +68,10 @@ ZstdFileReader::ZstdFileReader(const std::string& filepath) : FileReader(filepat
     mDecompressedDataPtr = mDecompressedData.get();
     mFileSize = decompressedSize;
 }
+
+ZstdFileReader::ZstdFileReader(ZstdFileReader&& other)
+    : FileReader(other.mFilepath),
+      mDecompressedData(std::move(other.mDecompressedData)),
+      mDecompressedDataPtr(mDecompressedData.get()) {}
 
 } // namespace mmpr

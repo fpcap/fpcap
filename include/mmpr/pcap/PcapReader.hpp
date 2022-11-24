@@ -10,6 +10,7 @@
 #include <filesystem>
 #include <sstream>
 #include <stdexcept>
+#include <string>
 
 namespace mmpr {
 
@@ -19,56 +20,17 @@ class PcapReader : public Reader {
                   "TReader must be a subclass of FileReader");
 
 public:
-    PcapReader(const std::string& filepath) : mReader(filepath) {
-        pcap::FileHeader fileHeader{};
-        PcapParser::readFileHeader(mReader.data(), fileHeader);
-        mDataLinkType = fileHeader.linkType;
-        mTimestampFormat = fileHeader.timestampFormat;
-        mReader.mOffset += 24;
-    }
+    PcapReader(const std::string& filepath);
 
-    PcapReader(TReader&& reader) : mReader(std::forward<TReader>(reader)) {
-        pcap::FileHeader fileHeader{};
-        PcapParser::readFileHeader(mReader.data(), fileHeader);
-        mDataLinkType = fileHeader.linkType;
-        mTimestampFormat = fileHeader.timestampFormat;
-        mReader.mOffset += 24;
-    }
+    PcapReader(TReader&& reader);
 
-    bool isExhausted() const { return mReader.isExhausted(); }
+    bool isExhausted() const override;
 
-    bool readNextPacket(Packet& packet) {
-        if (isExhausted()) {
-            // nothing more to read
-            return false;
-        }
+    bool readNextPacket(Packet& packet) override;
 
-        // make sure there are enough bytes to read
-        if (mReader.getSafeToReadSize() < 16) {
-            throw std::runtime_error(
-                "Expected to read at least one more packet record (16 bytes "
-                "at least), but there are only " +
-                std::to_string(mReader.getSafeToReadSize()) + " bytes left in the file");
-        }
-
-        pcap::PacketRecord packetRecord{};
-        PcapParser::readPacketRecord(&mReader.data()[mReader.mOffset], packetRecord);
-        packet.timestampSeconds = packetRecord.timestampSeconds;
-        packet.timestampMicroseconds = mTimestampFormat == pcap::FileHeader::MICROSECONDS
-                                           ? packetRecord.timestampSubSeconds
-                                           : packetRecord.timestampSubSeconds / 1000;
-        packet.captureLength = packetRecord.captureLength;
-        packet.length = packetRecord.length;
-        packet.data = packetRecord.data;
-
-        mReader.mOffset += 16 + packetRecord.captureLength;
-
-        return true;
-    }
-
-    size_t getFileSize() const { return mReader.mFileSize; }
+    size_t getFileSize() const override { return mReader.mFileSize; }
     std::string getFilepath() const override { return mReader.mFilepath; }
-    size_t getCurrentOffset() const { return mReader.mOffset; }
+    size_t getCurrentOffset() const override { return mReader.mOffset; }
     uint16_t getDataLinkType() const override { return mDataLinkType; }
     std::vector<TraceInterface> getTraceInterfaces() const override {
         return std::vector<TraceInterface>();

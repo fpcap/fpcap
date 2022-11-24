@@ -12,10 +12,7 @@ class ZstdFileReader : public FileReader {
 public:
     ZstdFileReader(const std::string& filepath);
 
-    ZstdFileReader(ZstdFileReader&& other)
-        : FileReader(other.mFilepath),
-          mDecompressedData(std::move(other.mDecompressedData)),
-          mDecompressedDataPtr(mDecompressedData.get()) {}
+    ZstdFileReader(ZstdFileReader&& other);
 
     const uint8_t* data() const override { return mDecompressedDataPtr; }
 

@@ -5,6 +5,7 @@
 #include "mmpr/util.hpp"
 
 namespace mmpr {
+
 /**
  * 4.1.  Section Header Block
  *
@@ -53,7 +54,7 @@ void PcapNgBlockParser::readSHB(const uint8_t* data, pcapng::SectionHeaderBlock&
     MMPR_DEBUG_LOG_1("[SHB] Block Total Length: %u\n", shb.blockTotalLength);
     MMPR_DEBUG_LOG_1("[SHB] Byte-Order Magic: 0x%08X\n", byteOrderMagic);
     MMPR_DEBUG_LOG_2("[SHB] Version: %u.%u\n", shb.majorVersion, shb.minorVersion);
-    MMPR_DEBUG_LOG_1("[SHB] Section Length: %li\n", shb.sectionLength);
+    MMPR_DEBUG_LOG_1("[SHB] Section Length: %li\n", static_cast<long>(shb.sectionLength));
 
     // standard Section Header Block has size 28 (without any options)
     if (shb.blockTotalLength > 28) {
@@ -144,7 +145,7 @@ void PcapNgBlockParser::readIDB(const uint8_t* data,
             case MMPR_BLOCK_OPTION_IDB_FILTER:
                 // skip first octet (filter code), interpret rest as string
                 idb.options.filter = std::string(
-                    reinterpret_cast<const char*>(&option.value[1]), option.length - 1);
+                    reinterpret_cast<const char*>(&option.value[1]), option.length - 1u);
                 break;
             case MMPR_BLOCK_OPTION_IDB_OS:
                 idb.options.os = PcapNgBlockOptionParser::parseUTF8(option);
@@ -154,7 +155,7 @@ void PcapNgBlockParser::readIDB(const uint8_t* data,
     }
 
     // make sure that the block actually ends with block total length
-    auto blockTotalLength = *(const uint32_t*)&data[idb.blockTotalLength - 4];
+    auto blockTotalLength = *(const uint32_t*)&data[idb.blockTotalLength - 4u];
     MMPR_ASSERT(idb.blockTotalLength == blockTotalLength);
 }
 
@@ -214,21 +215,21 @@ void PcapNgBlockParser::readEPB(const uint8_t* data, pcapng::EnhancedPacketBlock
     // packet data is padded to 32 bits, calculate the total size in memory (including
     // padding)
     auto packetDataTotalLength =
-        epb.capturePacketLength + (4 - epb.capturePacketLength % 4) % 4;
+        epb.capturePacketLength + (4u - epb.capturePacketLength % 4u) % 4u;
     // standard Enhanced Packet Block has size 32 (without packet data or options)
-    if (epb.blockTotalLength - 32 > packetDataTotalLength) {
-        uint32_t totalOptionsLength = epb.blockTotalLength - 32 - packetDataTotalLength;
+    if (epb.blockTotalLength - 32u > packetDataTotalLength) {
+        uint32_t totalOptionsLength = epb.blockTotalLength - 32u - packetDataTotalLength;
         uint32_t readOptionsLength = 0;
         while (readOptionsLength < totalOptionsLength) {
             pcapng::Option option{};
             PcapNgBlockOptionParser::readEPBOption(
-                data, option, 32 + packetDataTotalLength + readOptionsLength);
+                data, option, 32u + packetDataTotalLength + readOptionsLength);
             readOptionsLength += option.totalLength();
         }
     }
 
     // make sure that the block actually ends with block total length
-    auto blockTotalLength = *(const uint32_t*)&data[epb.blockTotalLength - 4];
+    auto blockTotalLength = *(const uint32_t*)&data[epb.blockTotalLength - 4u];
     MMPR_ASSERT(epb.blockTotalLength == blockTotalLength);
 }
 
@@ -363,4 +364,5 @@ void PcapNgBlockParser::readISB(const uint8_t* data,
     auto blockTotalLength = *(const uint32_t*)&data[isb.blockTotalLength - 4];
     MMPR_ASSERT(isb.blockTotalLength == blockTotalLength);
 }
+
 } // namespace mmpr

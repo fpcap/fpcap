@@ -18,46 +18,13 @@ class ModifiedPcapReader : public Reader {
                   "TReader must be a subclass of FileReader");
 
 public:
-    ModifiedPcapReader(const std::string& filepath) : mReader(filepath) {
-        modified_pcap::FileHeader fileHeader{};
-        ModifiedPcapParser::readFileHeader(mReader.data(), fileHeader);
-        mReader.mOffset += 24;
-    }
+    ModifiedPcapReader(const std::string& filepath);
 
-    ModifiedPcapReader(TReader&& reader) : mReader(std::forward<TReader>(reader)) {
-        modified_pcap::FileHeader fileHeader{};
-        ModifiedPcapParser::readFileHeader(mReader.data(), fileHeader);
-        mReader.mOffset += 24;
-    }
+    ModifiedPcapReader(TReader&& reader);
 
-    bool isExhausted() const override { return mReader.isExhausted(); }
+    bool isExhausted() const override;
 
-    bool readNextPacket(Packet& packet) override {
-        if (isExhausted()) {
-            // nothing more to read
-            return false;
-        }
-
-        // make sure there are enough bytes to read
-        if (mReader.getSafeToReadSize() < 24) {
-            throw std::runtime_error(
-                "Expected to read at least one more raw packet record (24 bytes "
-                "at least), but there are only " +
-                std::to_string(mReader.getSafeToReadSize()) + " bytes left in the file");
-        }
-
-        modified_pcap::PacketRecord packetRecord{};
-        ModifiedPcapParser::readPacketRecord(&mReader.data()[mReader.mOffset],
-                                             packetRecord);
-        packet.timestampSeconds = packetRecord.timestampSeconds;
-        packet.captureLength = packetRecord.captureLength;
-        packet.length = packetRecord.length;
-        packet.data = packetRecord.data;
-
-        mReader.mOffset += 24 + packetRecord.captureLength;
-
-        return true;
-    }
+    bool readNextPacket(Packet& packet) override;
 
     size_t getFileSize() const override { return mReader.mFileSize; }
     std::string getFilepath() const override { return mReader.mFilepath; }
