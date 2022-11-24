@@ -1,5 +1,9 @@
 #include "mmpr/modified_pcap/ModifiedPcapParser.hpp"
 
+#ifdef _WIN32
+#include <winsock2.h>
+#endif
+
 namespace mmpr {
 
 void ModifiedPcapParser::readFileHeader(const uint8_t* data,
