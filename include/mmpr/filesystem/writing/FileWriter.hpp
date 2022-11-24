@@ -10,6 +10,7 @@ namespace mmpr {
 class FileWriter {
 public:
     FileWriter(const std::string& filepath);
+    virtual ~FileWriter();
 
     virtual void write(const uint8_t* data, size_t size) = 0;
 
