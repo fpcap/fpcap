@@ -6,21 +6,8 @@ else()
     find_package(GTest REQUIRED)
 endif()
 
-# Now simply link against gtest as needed. Eg
-add_executable(mmpr_test
-    src/modified_pcap/testFReadModifiedPcapReader.cpp
-    src/modified_pcap/testMMModifiedPcapReader.cpp
-    src/modified_pcap/testZstdModifiedPcapReader.cpp
-    src/pcap/testFReadPcapReader.cpp
-    src/pcap/testMMPcapReader.cpp
-    src/pcap/testZstdPcapReader.cpp
-    src/pcapng/testFReadPcapNgReader.cpp
-    src/pcapng/testMMPcapNgReader.cpp
-    src/pcapng/testTraceInterfaces.cpp
-    src/pcapng/testZstdPcapNgReader.cpp
-    src/main.cpp
-    src/testFileReader.cpp
-)
+file(GLOB_RECURSE MMPR_TEST_SRC_FILES CONFIGURE_DEPENDS src/**/*.cpp)
+add_executable(mmpr_test ${MMPR_TEST_SRC_FILES})
 target_link_libraries(mmpr_test
     PUBLIC
         mmpr::mmpr
