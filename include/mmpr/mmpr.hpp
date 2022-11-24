@@ -36,7 +36,7 @@ struct Packet {
 };
 
 struct TraceInterface {
-    TraceInterface(){};
+    TraceInterface() = default;
     TraceInterface(std::optional<std::string> name,
                    std::optional<std::string> description,
                    std::optional<std::string> filter,
