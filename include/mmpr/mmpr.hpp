@@ -31,7 +31,7 @@ struct Packet {
     uint32_t timestampMicroseconds{0};
     uint32_t captureLength{0};
     uint32_t length{0};
-    int interfaceIndex{-1};
+    int32_t interfaceIndex{-1};
     const uint8_t* data{nullptr};
 };
 
@@ -214,7 +214,7 @@ struct Option {
      *
      * @return total length of option including padding
      */
-    uint32_t totalLength() const { return 4 + length + ((4 - length % 4) % 4); }
+    uint32_t totalLength() const { return 4u + length + ((4u - length % 4u) % 4u); }
 };
 
 struct SectionHeaderBlock {
