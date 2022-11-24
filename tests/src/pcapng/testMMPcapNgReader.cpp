@@ -13,6 +13,8 @@ TEST(MMPcapNgReader, ConstructorMissingFile) {
 }
 
 TEST(MMPcapNgReader, FaultyConstructor) {
+#ifdef __linux__ // throws un-catchable SEH exception on Windows
     EXPECT_THROW(mmpr::MMPcapNgReader{nullptr}, std::logic_error);
+#endif
     EXPECT_THROW(mmpr::MMPcapNgReader{""}, std::runtime_error);
 }

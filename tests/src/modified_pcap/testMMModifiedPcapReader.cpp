@@ -13,7 +13,9 @@ TEST(MMModifiedPcapReader, ConstructorMissingFile) {
 }
 
 TEST(MMModifiedPcapReader, FaultyConstructor) {
+#ifdef __linux__ // throws un-catchable SEH exception on Windows
     EXPECT_THROW(mmpr::MMModifiedPcapReader{nullptr}, std::logic_error);
+#endif
     EXPECT_THROW(mmpr::MMModifiedPcapReader{""}, std::runtime_error);
 }
 
