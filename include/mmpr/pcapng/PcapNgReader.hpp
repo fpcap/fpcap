@@ -83,10 +83,6 @@ private:
     } mMetadata{};
 };
 
-template class PcapNgReader<FReadFileReader>;
-template class PcapNgReader<MMapFileReader>;
-template class PcapNgReader<ZstdFileReader>;
-
 typedef PcapNgReader<FReadFileReader> FReadPcapNgReader;
 typedef PcapNgReader<MMapFileReader> MMPcapNgReader;
 typedef PcapNgReader<ZstdFileReader> ZstdPcapNgReader;

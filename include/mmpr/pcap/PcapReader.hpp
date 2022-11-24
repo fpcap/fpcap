@@ -45,10 +45,6 @@ private:
     pcap::FileHeader::TimestampFormat mTimestampFormat{pcap::FileHeader::MICROSECONDS};
 };
 
-template class PcapReader<FReadFileReader>;
-template class PcapReader<MMapFileReader>;
-template class PcapReader<ZstdFileReader>;
-
 typedef PcapReader<FReadFileReader> FReadPcapReader;
 typedef PcapReader<MMapFileReader> MMPcapReader;
 typedef PcapReader<ZstdFileReader> ZstdPcapReader;

@@ -56,4 +56,8 @@ bool PcapReader<TReader>::readNextPacket(Packet& packet) {
     return true;
 }
 
+template class PcapReader<FReadFileReader>;
+template class PcapReader<MMapFileReader>;
+template class PcapReader<ZstdFileReader>;
+
 } // namespace mmpr

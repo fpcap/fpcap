@@ -42,10 +42,6 @@ private:
     uint16_t mDataLinkType{101};
 };
 
-template class ModifiedPcapReader<FReadFileReader>;
-template class ModifiedPcapReader<MMapFileReader>;
-template class ModifiedPcapReader<ZstdFileReader>;
-
 typedef ModifiedPcapReader<FReadFileReader> FReadModifiedPcapReader;
 typedef ModifiedPcapReader<MMapFileReader> MMModifiedPcapReader;
 typedef ModifiedPcapReader<ZstdFileReader> ZstdModifiedPcapReader;

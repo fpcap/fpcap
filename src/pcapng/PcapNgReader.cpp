@@ -210,4 +210,8 @@ TraceInterface PcapNgReader<TReader>::getTraceInterface(size_t id) const {
     return mTraceInterfaces[id];
 }
 
+template class PcapNgReader<FReadFileReader>;
+template class PcapNgReader<MMapFileReader>;
+template class PcapNgReader<ZstdFileReader>;
+
 } // namespace mmpr

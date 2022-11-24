@@ -50,4 +50,6 @@ void PcapWriter<TWriter>::writePcapHeader() {
     mWriter.write((uint8_t*)&pcapHeader, sizeof(pcapHeader));
 }
 
+template class PcapWriter<StreamFileWriter>;
+
 } // namespace mmpr

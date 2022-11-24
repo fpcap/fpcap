@@ -23,8 +23,6 @@ private:
     TWriter mWriter;
 };
 
-template class PcapWriter<StreamFileWriter>;
-
 typedef PcapWriter<StreamFileWriter> StreamPcapWriter;
 
 } // namespace mmpr
