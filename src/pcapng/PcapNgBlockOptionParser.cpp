@@ -111,7 +111,7 @@ void PcapNgBlockOptionParser::readIDBBlockOption(const uint8_t* data,
         // if_speed: interface speed, in bits per second
         const uint64_t speed = *(const uint64_t*)option.value;
         MMPR_UNUSED(speed);
-        MMPR_DEBUG_LOG_1("[IDB][OPT] Interface Speed: %lu bits/s\n", speed);
+        MMPR_DEBUG_LOG_1("[IDB][OPT] Interface Speed: %lu bits/s\n", static_cast<unsigned long>(speed));
         return;
     }
     case MMPR_BLOCK_OPTION_IDB_TSRESOL: {
@@ -169,7 +169,7 @@ void PcapNgBlockOptionParser::readIDBBlockOption(const uint8_t* data,
         // each packet to obtain the absolute timestamp of a packet
         const int64_t tsoffset = *(const int64_t*)option.value;
         MMPR_UNUSED(tsoffset);
-        MMPR_DEBUG_LOG_1("[IDB][OPT] Timestamp Offset: %li\n", tsoffset);
+        MMPR_DEBUG_LOG_1("[IDB][OPT] Timestamp Offset: %li\n", static_cast<long>(tsoffset));
         return;
     }
     case 15: {
@@ -182,14 +182,14 @@ void PcapNgBlockOptionParser::readIDBBlockOption(const uint8_t* data,
         // if_txspeed: interface transmit speed in bits per second
         const uint64_t txspeed = *(const uint64_t*)option.value;
         MMPR_UNUSED(txspeed);
-        MMPR_DEBUG_LOG_1("[IDB][OPT] Transmit Speed: %lu bits/s\n", txspeed);
+        MMPR_DEBUG_LOG_1("[IDB][OPT] Transmit Speed: %lu bits/s\n", static_cast<unsigned long>(txspeed));
         return;
     }
     case 17: {
         // if_rxspeed: interface receive speed, in bits per second
         const uint64_t rxspeed = *(const uint64_t*)option.value;
         MMPR_UNUSED(rxspeed);
-        MMPR_DEBUG_LOG_1("[IDB][OPT] Receive Speed: %lu bits/s\n", rxspeed);
+        MMPR_DEBUG_LOG_1("[IDB][OPT] Receive Speed: %lu bits/s\n", static_cast<unsigned long>(rxspeed));
         return;
     }
     default: {
@@ -228,14 +228,14 @@ void PcapNgBlockOptionParser::readEPBOption(const uint8_t* data,
         //                and the start of the capture process
         uint64_t dropCount = *(const uint64_t*)option.value;
         MMPR_UNUSED(dropCount);
-        MMPR_DEBUG_LOG_1("[EPB][OPT] Drop Count: %lu packets\n", dropCount);
+        MMPR_DEBUG_LOG_1("[EPB][OPT] Drop Count: %lu packets\n", static_cast<unsigned long>(dropCount));
         return;
     }
     case 5: {
         // epb_packetid: 64-bit unsigned integer that uniquely identifies the packet
         uint64_t packetId = *(const uint64_t*)option.value;
         MMPR_UNUSED(packetId);
-        MMPR_DEBUG_LOG_1("[EPB][OPT] Packet ID: %lu\n", packetId);
+        MMPR_DEBUG_LOG_1("[EPB][OPT] Packet ID: %lu\n", static_cast<unsigned long>(packetId));
         return;
     }
     case 6: {
@@ -285,7 +285,7 @@ void PcapNgBlockOptionParser::readISBOption(const uint8_t* data,
         //             starting from the beginning of the capture
         uint64_t ifrecv = *(const uint64_t*)option.value;
         MMPR_UNUSED(ifrecv);
-        MMPR_DEBUG_LOG_1("[ISB][OPT] Received Packets: %lu", ifrecv);
+        MMPR_DEBUG_LOG_1("[ISB][OPT] Received Packets: %lu", static_cast<unsigned long>(ifrecv));
         return;
     }
     case 5: {
@@ -293,7 +293,7 @@ void PcapNgBlockOptionParser::readISBOption(const uint8_t* data,
         //             resources starting from the beginning of the capture
         uint64_t ifdrop = *(const uint64_t*)option.value;
         MMPR_UNUSED(ifdrop);
-        MMPR_DEBUG_LOG_1("[ISB][OPT] Dropped Packets (Interface): %lu", ifdrop);
+        MMPR_DEBUG_LOG_1("[ISB][OPT] Dropped Packets (Interface): %lu", static_cast<unsigned long>(ifdrop));
         return;
     }
     case 6: {
@@ -301,7 +301,7 @@ void PcapNgBlockOptionParser::readISBOption(const uint8_t* data,
         //                   the beginning of the capture
         uint64_t filteraccept = *(const uint64_t*)option.value;
         MMPR_UNUSED(filteraccept);
-        MMPR_DEBUG_LOG_1("[ISB][OPT] Filtered Packets: %lu", filteraccept);
+        MMPR_DEBUG_LOG_1("[ISB][OPT] Filtered Packets: %lu", static_cast<unsigned long>(filteraccept));
         return;
     }
     case 7: {
@@ -309,7 +309,7 @@ void PcapNgBlockOptionParser::readISBOption(const uint8_t* data,
         //             from the beginning of the capture
         uint64_t osdrop = *(const uint64_t*)option.value;
         MMPR_UNUSED(osdrop);
-        MMPR_DEBUG_LOG_1("[ISB][OPT] Dropped Packets (OS): %lu", osdrop);
+        MMPR_DEBUG_LOG_1("[ISB][OPT] Dropped Packets (OS): %lu", static_cast<unsigned long>(osdrop));
         return;
     }
     case 8: {
@@ -317,7 +317,7 @@ void PcapNgBlockOptionParser::readISBOption(const uint8_t* data,
         //               beginning of the capture
         uint64_t usrdeliv = *(const uint64_t*)option.value;
         MMPR_UNUSED(usrdeliv);
-        MMPR_DEBUG_LOG_1("[ISB][OPT] Packets Delivered to User: %lu", usrdeliv);
+        MMPR_DEBUG_LOG_1("[ISB][OPT] Packets Delivered to User: %lu", static_cast<unsigned long>(usrdeliv));
         return;
     }
     default: {

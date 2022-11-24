@@ -54,7 +54,7 @@ void PcapNgBlockParser::readSHB(const uint8_t* data, pcapng::SectionHeaderBlock&
     MMPR_DEBUG_LOG_1("[SHB] Block Total Length: %u\n", shb.blockTotalLength);
     MMPR_DEBUG_LOG_1("[SHB] Byte-Order Magic: 0x%08X\n", byteOrderMagic);
     MMPR_DEBUG_LOG_2("[SHB] Version: %u.%u\n", shb.majorVersion, shb.minorVersion);
-    MMPR_DEBUG_LOG_1("[SHB] Section Length: %li\n", shb.sectionLength);
+    MMPR_DEBUG_LOG_1("[SHB] Section Length: %li\n", static_cast<long>(shb.sectionLength));
 
     // standard Section Header Block has size 28 (without any options)
     if (shb.blockTotalLength > 28) {
