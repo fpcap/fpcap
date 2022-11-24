@@ -10,7 +10,7 @@ using namespace std::filesystem;
 namespace mmpr {
 
 FileReader::FileReader(const string& filepath)
-    : mFilepath(filepath), mFileSize(file_size(filepath)) {
+    : mFilepath(filepath) {
     if (filepath.empty()) {
         throw runtime_error("Cannot read empty filepath");
     }
@@ -18,6 +18,8 @@ FileReader::FileReader(const string& filepath)
     if (!exists(filepath)) {
         throw runtime_error("Cannot find file " + absolute(filepath).string());
     }
+
+    mFileSize = file_size(filepath);
 }
 
 size_t FileReader::getSafeToReadSize() const {

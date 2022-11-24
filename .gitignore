@@ -13,4 +13,8 @@ cmake-build*
 .idea
 core
 tracefiles/
+
 *.pcap
+*.pcapng
+*.zst
+*.zstd

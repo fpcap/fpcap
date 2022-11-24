@@ -12,6 +12,7 @@ target_link_libraries(mmpr_test
     PUBLIC
         mmpr::mmpr
         gtest_main
+        gmock
 )
 
 add_test(NAME mmpr_test

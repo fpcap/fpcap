@@ -1,8 +1,28 @@
+#include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
-#include "mmpr/mmpr.hpp"
+#include "mmpr/filesystem/reading/FileReader.hpp"
 #include <filesystem>
 #include <iostream>
+
+class FileReaderMock : public mmpr::FileReader {
+public:
+    FileReaderMock(const std::string& filepath) : mmpr::FileReader(filepath) {}
+
+    MOCK_METHOD(uint8_t*, data, (), (const, override));
+};
+
+TEST(FileReader, Constructor) {
+    FileReaderMock reader{"tracefiles/example.pcap"};
+}
+
+TEST(FileReader, ConstructorEmptyFilepath) {
+    EXPECT_THROW(FileReaderMock{""}, std::runtime_error);
+}
+
+TEST(FileReader, ConstructorNonExistingFilepath) {
+    EXPECT_THROW(FileReaderMock{"missing-file"}, std::runtime_error);
+}
 
 TEST(FileReader, GetReader) {
     std::vector<std::string> files;
