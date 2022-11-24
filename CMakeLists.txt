@@ -40,7 +40,7 @@ target_link_libraries(mmpr PRIVATE libzstd_static)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     # Visual Studio
-    target_compile_options(mmpr PRIVATE /Wall)
+    target_compile_options(mmpr PRIVATE /W4 /WX)
     add_definitions(-D_AMD64_=1) # TODO possibly there is a better way to solve the "No Target Architecture" error
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     # GCC, MinGW etc.
