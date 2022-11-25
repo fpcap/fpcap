@@ -19,6 +19,7 @@ TEST(Mmpr, GetReaderBrokenFile) {
 }
 
 TEST(Mmpr, GetWriter) {
+    // TODO replace with something platform independent
     ASSERT_NE(nullptr,mmpr::Writer::getWriter(std::tmpnam(nullptr)));
 }
 
