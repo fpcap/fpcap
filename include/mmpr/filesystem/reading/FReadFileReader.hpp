@@ -20,7 +20,7 @@ public:
     const uint8_t* data() const override { return mFileContentPtr; }
 
 private:
-    std::unique_ptr<uint8_t> mFileContent;
+    std::unique_ptr<uint8_t[]> mFileContent;
     const uint8_t* mFileContentPtr;
 };
 

@@ -15,7 +15,7 @@ namespace util {
  * @return The first 32 bits as unsigned
  */
 [[maybe_unused]] static uint32_t read32bitsFromFile(const std::string& filepath) {
-    uint32_t magicNumber;
+    uint32_t magicNumber = 0;
     std::ifstream file(filepath, std::ios::in | std::ios::binary);
     if (file.is_open()) {
         file.read((char*)&magicNumber, sizeof(magicNumber));
