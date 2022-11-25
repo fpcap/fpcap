@@ -9,7 +9,7 @@ class FileReaderMock : public mmpr::FileReader {
 public:
     FileReaderMock(const std::string& filepath) : mmpr::FileReader(filepath) {}
 
-    MOCK_METHOD(uint8_t*, data, (), (const, override));
+    MOCK_METHOD(const uint8_t*, data, (), (const, override));
 };
 
 TEST(FileReader, Constructor) {
