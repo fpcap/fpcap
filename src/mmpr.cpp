@@ -19,6 +19,7 @@ unique_ptr<Reader> Reader::getReader(const string& filepath) {
     if (filepath.empty()) {
         throw runtime_error("cannot create reader for empty filepath");
     }
+
     if (!filesystem::exists(filepath)) {
         throw runtime_error("FileReader: could not find file \"" + filepath + "\"");
     }

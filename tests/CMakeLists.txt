@@ -6,7 +6,7 @@ else()
     find_package(GTest REQUIRED)
 endif()
 
-file(GLOB_RECURSE MMPR_TEST_SRC_FILES CONFIGURE_DEPENDS src/**/*.cpp)
+file(GLOB_RECURSE MMPR_TEST_SRC_FILES CONFIGURE_DEPENDS src/*.cpp src/**/*.cpp)
 add_executable(mmpr_test ${MMPR_TEST_SRC_FILES})
 target_link_libraries(mmpr_test
     PUBLIC

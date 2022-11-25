@@ -24,10 +24,12 @@ TEST(FileReader, ConstructorNonExistingFilepath) {
     EXPECT_THROW(FileReaderMock{"missing-file"}, std::runtime_error);
 }
 
+// TODO list files to test explicitly
 TEST(FileReader, GetReader) {
     std::vector<std::string> files;
     for (auto& p : std::filesystem::directory_iterator("tracefiles/")) {
         std::string file = p.path().string();
+
 #ifndef MMPR_USE_ZSTD
         // do not include compressed files if built without decompression support
         if (file.find(".zstd") != std::string::npos ||
@@ -35,6 +37,11 @@ TEST(FileReader, GetReader) {
             continue;
         }
 #endif
+
+        if (file.find("broken.pcap") != std::string::npos) {
+            continue;
+        }
+
         files.emplace_back(file);
     }
 
