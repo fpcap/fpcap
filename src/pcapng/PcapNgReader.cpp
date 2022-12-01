@@ -1,5 +1,6 @@
 #include "mmpr/pcapng/PcapNgReader.hpp"
 
+#include <iostream>
 #include <sstream>
 
 namespace mmpr {
@@ -48,10 +49,11 @@ bool PcapNgReader<TReader>::readNextPacket(Packet& packet) {
 
     // make sure there are enough bytes to read
     if (mReader.getSafeToReadSize() < 8) {
-        throw std::runtime_error("Expected to read at least one more block (8 bytes at "
-                                 "least), but there are only " +
-                                 std::to_string(mReader.getSafeToReadSize()) +
-                                 " bytes left in the file");
+        std::cerr << "Error: Expected to read at least one more block (8 bytes at "
+                     "least), but there are only "
+                  << mReader.getSafeToReadSize() << " bytes left in the file"
+                  << std::endl;
+        return false;
     }
 
     uint32_t blockType = *(uint32_t*)&mReader.data()[mReader.mOffset];
@@ -84,10 +86,11 @@ bool PcapNgReader<TReader>::readNextPacket(Packet& packet) {
 
         // make sure there are enough bytes to read
         if (mReader.getSafeToReadSize() < 8) {
-            throw std::runtime_error(
-                "Expected to read at least one more block (8 bytes at "
-                "least), but there are only " +
-                std::to_string(mReader.getSafeToReadSize()) + " bytes left in the file");
+            std::cerr << "Error: Expected to read at least one more block (8 bytes at "
+                         "least), but there are only "
+                      << mReader.getSafeToReadSize() << " bytes left in the file"
+                      << std::endl;
+            return false;
         }
 
         // try to read next block type

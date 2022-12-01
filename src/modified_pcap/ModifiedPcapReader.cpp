@@ -1,4 +1,5 @@
 #include "mmpr/modified_pcap/ModifiedPcapReader.hpp"
+#include <iostream>
 
 namespace mmpr {
 
@@ -32,10 +33,11 @@ bool ModifiedPcapReader<TReader>::readNextPacket(Packet& packet) {
 
     // make sure there are enough bytes to read
     if (mReader.getSafeToReadSize() < 24) {
-        throw std::runtime_error(
-            "Expected to read at least one more raw packet record (24 bytes "
-            "at least), but there are only " +
-            std::to_string(mReader.getSafeToReadSize()) + " bytes left in the file");
+        std::cerr << "Error: Expected to read at least one more raw packet record (24 "
+                     "bytes at least), but there are only "
+                  << mReader.getSafeToReadSize() << " bytes left in the file"
+                  << std::endl;
+        return false;
     }
 
     modified_pcap::PacketRecord packetRecord{};
