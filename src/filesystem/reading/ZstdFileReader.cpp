@@ -70,7 +70,7 @@ ZstdFileReader::ZstdFileReader(const std::string& filepath) : FileReader(filepat
 }
 
 ZstdFileReader::ZstdFileReader(ZstdFileReader&& other)
-    : FileReader(other.mFilepath),
+    : FileReader(other),
       mDecompressedData(std::move(other.mDecompressedData)),
       mDecompressedDataPtr(mDecompressedData.get()) {}
 
