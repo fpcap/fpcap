@@ -26,3 +26,14 @@ TEST(Mmpr, GetWriter) {
 TEST(Mmpr, GetWriterEmptyFilepath) {
     EXPECT_THROW(mmpr::Writer::getWriter(""), std::runtime_error);
 }
+
+TEST(Mmpr, CutShortPcap) {
+    auto reader = mmpr::Reader::getReader("tracefiles/RICS2021_787__fwscada_20200625_160926.pcap");
+
+    size_t packetCount = 0;
+    mmpr::Packet packet;
+    while (reader->readNextPacket(packet)) {
+        ++packetCount;
+    }
+    ASSERT_EQ(6718, packetCount);
+}

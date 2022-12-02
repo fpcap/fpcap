@@ -38,13 +38,23 @@ bool PcapReader<TReader>::readNextPacket(Packet& packet) {
     if (mReader.getSafeToReadSize() < 16) {
         std::cerr << "Error: Expected to read at least one more packet record (16 bytes "
                      "at least), but there are only "
-                  << mReader.getSafeToReadSize()
-                  << " bytes left in the file" << std::endl;
+                  << mReader.getSafeToReadSize() << " bytes left in the file"
+                  << std::endl;
         return false;
     }
 
     pcap::PacketRecord packetRecord{};
     PcapParser::readPacketRecord(&mReader.data()[mReader.mOffset], packetRecord);
+    mReader.mOffset += 16;
+
+    if (packetRecord.captureLength > (mReader.mFileSize - mReader.mOffset)) {
+        std::cerr << "Error: capture file appears to be cut short, trying to read "
+                  << packetRecord.captureLength << " bytes, but only "
+                  << (mReader.mFileSize - mReader.mOffset) << " are available" << std::endl;
+        mReader.mOffset = mReader.mFileSize;
+        return false;
+    }
+
     packet.timestampSeconds = packetRecord.timestampSeconds;
     packet.timestampMicroseconds = mTimestampFormat == pcap::FileHeader::MICROSECONDS
                                        ? packetRecord.timestampSubSeconds
@@ -53,7 +63,7 @@ bool PcapReader<TReader>::readNextPacket(Packet& packet) {
     packet.length = packetRecord.length;
     packet.data = packetRecord.data;
 
-    mReader.mOffset += 16 + packetRecord.captureLength;
+    mReader.mOffset += packetRecord.captureLength;
 
     return true;
 }
