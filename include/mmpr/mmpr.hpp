@@ -31,6 +31,7 @@ struct Packet {
     uint32_t timestampMicroseconds{0};
     uint32_t captureLength{0};
     uint32_t length{0};
+    uint16_t dataLinkType{0};
     int32_t interfaceIndex{-1};
     const uint8_t* data{nullptr};
 };
@@ -40,13 +41,19 @@ struct TraceInterface {
     TraceInterface(std::optional<std::string> name,
                    std::optional<std::string> description,
                    std::optional<std::string> filter,
-                   std::optional<std::string> os)
-        : name(name), description(description), filter(filter), os(os) {}
+                   std::optional<std::string> os,
+                   uint16_t dataLinkType)
+        : name(name),
+          description(description),
+          filter(filter),
+          os(os),
+          dataLinkType(dataLinkType) {}
 
     std::optional<std::string> name;
     std::optional<std::string> description;
     std::optional<std::string> filter;
     std::optional<std::string> os;
+    uint16_t dataLinkType{0};
 };
 
 /**
@@ -70,7 +77,6 @@ public:
     virtual size_t getFileSize() const = 0;
     virtual std::string getFilepath() const = 0;
     virtual size_t getCurrentOffset() const = 0;
-    virtual uint16_t getDataLinkType() const = 0;
 
     virtual std::string getComment() const {
         throw std::runtime_error("getComment() not implemented");
@@ -116,7 +122,7 @@ struct FileHeader {
     uint16_t majorVersion{0};
     uint16_t minorVersion{0};
     uint32_t snapLength{0};
-    uint16_t linkType{0};
+    uint16_t dataLinkType{0};
     uint16_t fcsSequence{0};
 };
 

@@ -31,7 +31,7 @@ TEST(FReadModifiedPcapReader, DLT) {
         uint64_t processedPackets{0};
         while (!reader.isExhausted()) {
             if (reader.readNextPacket(packet)) {
-                ASSERT_EQ(reader.getDataLinkType(), 101 /* Raw IP */);
+                ASSERT_EQ(packet.dataLinkType, 101 /* Raw IP */);
                 ++processedPackets;
             }
         }

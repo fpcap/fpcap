@@ -31,7 +31,7 @@ TEST(FReadPcapReader, DLT) {
         uint64_t processedPackets{0};
         while (!reader.isExhausted()) {
             if (reader.readNextPacket(packet)) {
-                ASSERT_EQ(reader.getDataLinkType(), 1 /* Ethernet (10Mb) */);
+                ASSERT_EQ(packet.dataLinkType, 1 /* Ethernet (10Mb) */);
                 ++processedPackets;
             }
         }
@@ -44,7 +44,7 @@ TEST(FReadPcapReader, DLT) {
         uint64_t processedPackets{0};
         while (!reader.isExhausted()) {
             if (reader.readNextPacket(packet)) {
-                ASSERT_EQ(reader.getDataLinkType(), 113 /* Linux Cooked */);
+                ASSERT_EQ(packet.dataLinkType, 113 /* Linux Cooked */);
                 ++processedPackets;
             }
         }

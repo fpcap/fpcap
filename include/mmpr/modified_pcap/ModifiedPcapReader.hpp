@@ -29,7 +29,6 @@ public:
     size_t getFileSize() const override { return mReader.mFileSize; }
     std::string getFilepath() const override { return mReader.mFilepath; }
     size_t getCurrentOffset() const override { return mReader.mOffset; }
-    uint16_t getDataLinkType() const override { return mDataLinkType; }
     std::vector<TraceInterface> getTraceInterfaces() const override {
         return std::vector<TraceInterface>();
     }
@@ -39,7 +38,7 @@ public:
 
 private:
     TReader mReader;
-    uint16_t mDataLinkType{101};
+    uint16_t mLinkType{0};
 };
 
 typedef ModifiedPcapReader<FReadFileReader> FReadModifiedPcapReader;

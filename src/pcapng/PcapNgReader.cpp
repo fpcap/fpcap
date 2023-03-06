@@ -71,10 +71,9 @@ bool PcapNgReader<TReader>::readNextPacket(Packet& packet) {
         } else if (blockType == MMPR_INTERFACE_DESCRIPTION_BLOCK) {
             pcapng::InterfaceDescriptionBlock idb{};
             PcapNgBlockParser::readIDB(&mReader.data()[mReader.mOffset], idb);
-            mDataLinkType = idb.linkType;
             mMetadata.timestampResolution = idb.options.timestampResolution;
             mTraceInterfaces.emplace_back(idb.options.name, idb.options.description,
-                                          idb.options.filter, idb.options.os);
+                                          idb.options.filter, idb.options.os, idb.linkType);
         }
 
         mReader.mOffset += blockTotalLength;
@@ -109,6 +108,7 @@ bool PcapNgReader<TReader>::readNextPacket(Packet& packet) {
         packet.length = epb.originalPacketLength;
         packet.data = epb.packetData;
         packet.interfaceIndex = epb.interfaceId;
+        packet.dataLinkType = mTraceInterfaces[packet.interfaceIndex].dataLinkType;
 
         mReader.mOffset += epb.blockTotalLength;
         break;
@@ -123,6 +123,7 @@ bool PcapNgReader<TReader>::readNextPacket(Packet& packet) {
         packet.length = pb.originalPacketLength;
         packet.data = pb.packetData;
         packet.interfaceIndex = pb.interfaceId;
+        packet.dataLinkType = mTraceInterfaces[packet.interfaceIndex].dataLinkType;
 
         mReader.mOffset += pb.blockTotalLength;
         break;
@@ -150,10 +151,9 @@ uint32_t PcapNgReader<TReader>::readBlock() {
     case MMPR_INTERFACE_DESCRIPTION_BLOCK: {
         pcapng::InterfaceDescriptionBlock idb{};
         PcapNgBlockParser::readIDB(&mReader.data()[mReader.mOffset], idb);
-        mDataLinkType = idb.linkType;
         mMetadata.timestampResolution = idb.options.timestampResolution;
         mTraceInterfaces.emplace_back(idb.options.name, idb.options.description,
-                                      idb.options.filter, idb.options.os);
+                                      idb.options.filter, idb.options.os, idb.linkType);
         break;
     }
     case MMPR_ENHANCED_PACKET_BLOCK: {

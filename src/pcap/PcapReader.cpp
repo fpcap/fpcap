@@ -7,7 +7,7 @@ template <typename TReader>
 PcapReader<TReader>::PcapReader(const std::string& filepath) : mReader(filepath) {
     pcap::FileHeader fileHeader{};
     PcapParser::readFileHeader(mReader.data(), fileHeader);
-    mDataLinkType = fileHeader.linkType;
+    mDataLinkType = fileHeader.dataLinkType;
     mTimestampFormat = fileHeader.timestampFormat;
     mReader.mOffset += 24;
 }
@@ -17,7 +17,7 @@ PcapReader<TReader>::PcapReader(TReader&& reader)
     : mReader(std::forward<TReader>(reader)) {
     pcap::FileHeader fileHeader{};
     PcapParser::readFileHeader(mReader.data(), fileHeader);
-    mDataLinkType = fileHeader.linkType;
+    mDataLinkType = fileHeader.dataLinkType;
     mTimestampFormat = fileHeader.timestampFormat;
     mReader.mOffset += 24;
 }
@@ -62,6 +62,7 @@ bool PcapReader<TReader>::readNextPacket(Packet& packet) {
     packet.captureLength = packetRecord.captureLength;
     packet.length = packetRecord.length;
     packet.data = packetRecord.data;
+    packet.dataLinkType = mDataLinkType;
 
     mReader.mOffset += packetRecord.captureLength;
 

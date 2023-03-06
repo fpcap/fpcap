@@ -24,7 +24,7 @@ void PcapParser::readFileHeader(const uint8_t* data, pcap::FileHeader& fh) {
     fh.minorVersion = *(const uint16_t*)&data[6];
 
     fh.snapLength = *(const uint32_t*)&data[16];
-    fh.linkType = *(const uint16_t*)&data[20];
+    fh.dataLinkType = *(const uint16_t*)&data[20];
     fh.fcsSequence = *(const uint16_t*)&data[22];
 
     MMPR_DEBUG_LOG_1("--- [File Header %p] ---\n", (void*)data);
@@ -35,7 +35,7 @@ void PcapParser::readFileHeader(const uint8_t* data, pcap::FileHeader& fh) {
     MMPR_DEBUG_LOG_2("[FH] Version: %u.%u\n", fh.majorVersion, fh.minorVersion);
     MMPR_DEBUG_LOG_1("[FH] Snap Length: %u\n", fh.snapLength);
     MMPR_DEBUG_LOG_1("[FH] FCS Sequence: %u\n", fh.fcsSequence);
-    MMPR_DEBUG_LOG_1("[FH] Link Type: %u\n", fh.linkType);
+    MMPR_DEBUG_LOG_1("[FH] Link Type: %u\n", fh.dataLinkType);
 }
 
 void PcapParser::readPacketRecord(const uint8_t* data, pcap::PacketRecord& pr) {

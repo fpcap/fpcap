@@ -52,8 +52,6 @@ public:
 
     size_t getCurrentOffset() const override { return mReader.mOffset; }
 
-    uint16_t getDataLinkType() const override { return mDataLinkType; }
-
     std::string getComment() const override { return mMetadata.comment; }
 
     std::string getOS() const override { return mMetadata.os; }
@@ -70,7 +68,6 @@ public:
 
 private:
     TReader mReader;
-    uint16_t mDataLinkType{0};
     std::vector<TraceInterface> mTraceInterfaces;
 
     struct PcapNgMetadata {
