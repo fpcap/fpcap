@@ -3,12 +3,12 @@ name: linux-build
 on: [ push, pull_request ]
 
 jobs:
-    debian-11-build:
+    debian-11:
         runs-on: ubuntu-latest
         steps:
             -   uses: actions/checkout@v3
             -   uses: ./.github/actions/debian-11-docker-action
-    ubuntu-latest-build:
+    ubuntu-latest:
         runs-on: ubuntu-latest
         steps:
             -   uses: actions/checkout@v3
@@ -26,7 +26,7 @@ jobs:
             -   name: Build
                 shell: bash
                 run: cmake --build ./cmake-build-release --target all -- -j 8
-    macos-latest-build:
+    macos-latest:
         runs-on: macos-latest
         steps:
             -   uses: actions/checkout@v3
@@ -40,7 +40,7 @@ jobs:
             -   name: Build
                 shell: bash
                 run: cmake --build ./cmake-build-release --target all -- -j 8
-    windows-latest-build:
+    windows-latest:
         runs-on: windows-latest
         steps:
             -   uses: actions/checkout@v3
