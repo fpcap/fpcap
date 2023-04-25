@@ -1,4 +1,4 @@
-name: linux-build
+name: build
 
 on: [ push, pull_request ]
 
@@ -19,12 +19,8 @@ jobs:
                     sudo apt update
                     sudo apt install -y build-essential gcc cmake g++ make
             -   name: Configure
-                shell: bash
-                run: |
-                    mkdir cmake-build-release
-                    cmake -DCMAKE_BUILD_TYPE=Release -B cmake-build-release .
+                run: cmake -DCMAKE_BUILD_TYPE=Release -B cmake-build-release .
             -   name: Build
-                shell: bash
                 run: cmake --build ./cmake-build-release --target all -- -j 8
     macos-latest:
         runs-on: macos-latest
@@ -33,12 +29,8 @@ jobs:
                 with:
                     submodules: 'recursive'
             -   name: Configure
-                shell: bash
-                run: |
-                    mkdir cmake-build-release
-                    cmake -DCMAKE_BUILD_TYPE=Release -B cmake-build-release .
+                run: cmake -DCMAKE_BUILD_TYPE=Release -B cmake-build-release .
             -   name: Build
-                shell: bash
                 run: cmake --build ./cmake-build-release --target all -- -j 8
     windows-latest:
         runs-on: windows-latest
@@ -47,10 +39,6 @@ jobs:
                 with:
                     submodules: 'recursive'
             -   name: Configure
-                shell: bash
-                run: |
-                    mkdir cmake-build-release
-                    cmake -DCMAKE_BUILD_TYPE=Release -B cmake-build-release .
+                run: cmake -DCMAKE_BUILD_TYPE=Release -B cmake-build-release .
             -   name: Build
-                shell: bash
                 run: cmake --build ./cmake-build-release --target ALL_BUILD -j 8
