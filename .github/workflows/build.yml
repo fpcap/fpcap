@@ -53,4 +53,4 @@ jobs:
                     cmake -DCMAKE_BUILD_TYPE=Release -B cmake-build-release .
             -   name: Build
                 shell: bash
-                run: cmake --build ./cmake-build-release --target all -j 8
+                run: cmake --build ./cmake-build-release --target ALL_BUILD -j 8
