@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
+message(STATUS "CMake ${CMAKE_VERSION}")
 
 project(mmpr VERSION 0.1.0 LANGUAGES CXX)
 
