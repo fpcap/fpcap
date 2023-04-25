@@ -1,6 +1,6 @@
 #include "mmpr/filesystem/reading/FReadFileReader.hpp"
 
-#ifndef __linux__
+#if defined(_WIN32) || defined(__APPLE__)
 #include <stdio.h>
 #endif
 
