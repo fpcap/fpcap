@@ -1,26 +1,56 @@
 name: linux-build
-on: [ push ]
+
+on: [ push, pull_request ]
+
 jobs:
-  debian-11-build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/debian-11-docker-action
-  ubuntu-latest-build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install C++ build environment
-        run: |
-          sudo apt update
-          sudo apt install -y build-essential gcc cmake g++ make
-      - name: Initialize git submodules
-        run: git submodule update --init --recursive
-      - name: Configure
-        shell: bash
-        run: |
-          mkdir build
-          cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=make -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -G "CodeBlocks - Unix Makefiles" -B build .
-      - name: Build
-        shell: bash
-        run: cmake --build ./build --target all -- -j 9
+    debian-11-build:
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v3
+            -   uses: ./.github/actions/debian-11-docker-action
+    ubuntu-latest-build:
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v3
+            -   name: Install C++ build environment
+                run: |
+                    sudo apt update
+                    sudo apt install -y build-essential gcc cmake g++ make
+            -   name: Initialize git submodules
+                run: git submodule update --init --recursive
+            -   name: Configure
+                shell: bash
+                run: |
+                    mkdir cmake-build-release
+                    cmake -DCMAKE_BUILD_TYPE=Release -B cmake-build-release .
+            -   name: Build
+                shell: bash
+                run: cmake --build ./cmake-build-release --target all -- -j 9
+    macos-latest-build:
+        runs-on: macos-latest
+        steps:
+            -   uses: actions/checkout@v3
+            -   name: Initialize git submodules
+                run: git submodule update --init --recursive
+            -   name: Configure
+                shell: bash
+                run: |
+                    mkdir cmake-build-release
+                    cmake -DCMAKE_BUILD_TYPE=Release -B cmake-build-release .
+            -   name: Build
+                shell: bash
+                run: cmake --build ./cmake-build-release --target all -- -j 9
+    windows-latest-build:
+        runs-on: windows-latest
+        steps:
+            -   uses: actions/checkout@v3
+            -   name: Initialize git submodules
+                run: git submodule update --init --recursive
+            -   name: Configure
+                shell: bash
+                run: |
+                    mkdir cmake-build-release
+                    cmake -DCMAKE_BUILD_TYPE=Release -B cmake-build-release .
+            -   name: Build
+                shell: bash
+                run: cmake --build ./cmake-build-release --target all -- -j 9
