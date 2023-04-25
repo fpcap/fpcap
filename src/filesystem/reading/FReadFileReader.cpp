@@ -1,11 +1,10 @@
 #include "mmpr/filesystem/reading/FReadFileReader.hpp"
 
-#ifdef _WIN32
+#ifndef __linux__
 #include <stdio.h>
 #endif
 
 namespace mmpr {
-
 
 FReadFileReader::FReadFileReader(const std::string& filepath) : FileReader(filepath) {
     mFileContent = std::make_unique<uint8_t[]>(mFileSize);
