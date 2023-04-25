@@ -25,7 +25,7 @@ jobs:
                     cmake -DCMAKE_BUILD_TYPE=Release -B cmake-build-release .
             -   name: Build
                 shell: bash
-                run: cmake --build ./cmake-build-release --target all -- -j 9
+                run: cmake --build ./cmake-build-release --target all -- -j 8
     macos-latest-build:
         runs-on: macos-latest
         steps:
@@ -39,7 +39,7 @@ jobs:
                     cmake -DCMAKE_BUILD_TYPE=Release -B cmake-build-release .
             -   name: Build
                 shell: bash
-                run: cmake --build ./cmake-build-release --target all -- -j 9
+                run: cmake --build ./cmake-build-release --target all -- -j 8
     windows-latest-build:
         runs-on: windows-latest
         steps:
@@ -53,4 +53,4 @@ jobs:
                     cmake -DCMAKE_BUILD_TYPE=Release -B cmake-build-release .
             -   name: Build
                 shell: bash
-                run: cmake --build ./cmake-build-release --target all -- -j 9
+                run: cmake --build ./cmake-build-release --target all -j 8
