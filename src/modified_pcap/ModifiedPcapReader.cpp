@@ -9,7 +9,8 @@ ModifiedPcapReader<TReader>::ModifiedPcapReader(const std::string& filepath)
     modified_pcap::FileHeader fileHeader{};
     ModifiedPcapParser::readFileHeader(mReader.data(), fileHeader);
     mReader.mOffset += 24;
-    mLinkType = fileHeader.linkType;
+    // TODO check if this field really is 32-bit
+    mLinkType = static_cast<uint16_t>(fileHeader.linkType);
 }
 
 template <typename TReader>
@@ -18,7 +19,8 @@ ModifiedPcapReader<TReader>::ModifiedPcapReader(TReader&& reader)
     modified_pcap::FileHeader fileHeader{};
     ModifiedPcapParser::readFileHeader(mReader.data(), fileHeader);
     mReader.mOffset += 24;
-    mLinkType = fileHeader.linkType;
+    // TODO check if this field really is 32-bit
+    mLinkType = static_cast<uint16_t>(fileHeader.linkType);
 }
 
 template <typename TReader>

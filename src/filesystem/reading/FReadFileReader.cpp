@@ -1,21 +1,15 @@
 #include "mmpr/filesystem/reading/FReadFileReader.hpp"
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__APPLE__)
 #include <stdio.h>
 #endif
 
 namespace mmpr {
 
-
 FReadFileReader::FReadFileReader(const std::string& filepath) : FileReader(filepath) {
     mFileContent = std::make_unique<uint8_t[]>(mFileSize);
 
-#ifdef __linux__
-    FILE* const inFile = fopen(mFilepath.c_str(), "rb");
-    if (fread(mFileContent.get(), 1, mFileSize, inFile) != mFileSize) {
-        throw std::runtime_error("fread error: " + std::string(strerror(errno)));
-    }
-#else
+#ifdef _WIN32
     FILE* inFile;
     errno_t err = fopen_s(&inFile, mFilepath.c_str(), "rb");
     if (err != 0) {
@@ -24,6 +18,12 @@ FReadFileReader::FReadFileReader(const std::string& filepath) : FileReader(filep
 
     if (fread(mFileContent.get(), 1, mFileSize, inFile) != mFileSize) {
         throw std::runtime_error("fread error: " + std::to_string(errno));
+    }
+
+#else
+    FILE* const inFile = fopen(mFilepath.c_str(), "rb");
+    if (fread(mFileContent.get(), 1, mFileSize, inFile) != mFileSize) {
+        throw std::runtime_error("fread error: " + std::string(strerror(errno)));
     }
 #endif
     fclose(inFile);
