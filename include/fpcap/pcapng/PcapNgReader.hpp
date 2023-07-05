@@ -1,18 +1,18 @@
-#ifndef MMPR_PCAPNGREADER_HPP
-#define MMPR_PCAPNGREADER_HPP
+#ifndef FPCAP_PCAPNGREADER_HPP
+#define FPCAP_PCAPNGREADER_HPP
 
-#include "mmpr/filesystem/reading/FReadFileReader.hpp"
-#include "mmpr/filesystem/reading/FileReader.hpp"
-#include "mmpr/filesystem/reading/MMapFileReader.hpp"
-#include "mmpr/filesystem/reading/ZstdFileReader.hpp"
-#include "mmpr/mmpr.hpp"
-#include "mmpr/pcapng/PcapNgBlockParser.hpp"
-#include "mmpr/util.hpp"
+#include "fpcap/fpcap.hpp"
+#include "fpcap/filesystem/reading/FReadFileReader.hpp"
+#include "fpcap/filesystem/reading/FileReader.hpp"
+#include "fpcap/filesystem/reading/MMapFileReader.hpp"
+#include "fpcap/filesystem/reading/ZstdFileReader.hpp"
+#include "fpcap/pcapng/PcapNgBlockParser.hpp"
+#include "fpcap/util.hpp"
 #include <algorithm>
 #include <filesystem>
 #include <stdexcept>
 
-namespace mmpr {
+namespace fpcap {
 
 template <typename TReader>
 class PcapNgReader : public Reader {
@@ -84,6 +84,6 @@ typedef PcapNgReader<FReadFileReader> FReadPcapNgReader;
 typedef PcapNgReader<MMapFileReader> MMPcapNgReader;
 typedef PcapNgReader<ZstdFileReader> ZstdPcapNgReader;
 
-} // namespace mmpr
+} // namespace fpcap
 
-#endif // MMPR_PCAPNGREADER_HPP
+#endif // FPCAP_PCAPNGREADER_HPP

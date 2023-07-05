@@ -1,9 +1,9 @@
-#include "mmpr/filesystem/writing/FileWriter.hpp"
+#include "fpcap/filesystem/writing/FileWriter.hpp"
 
-namespace mmpr {
+namespace fpcap {
 
 FileWriter::FileWriter(const std::string& filepath) : mFilepath(filepath) {}
 
 FileWriter::~FileWriter() {}
 
-} // namespace mmpr
+} // namespace fpcap

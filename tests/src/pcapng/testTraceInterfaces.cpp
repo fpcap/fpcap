@@ -1,10 +1,10 @@
 #include "gtest/gtest.h"
 
-#include "mmpr/pcapng/PcapNgReader.hpp"
+#include "fpcap/pcapng/PcapNgReader.hpp"
 #include <iostream>
 
 TEST(TraceInterfaces, ReadBlock) {
-    auto reader = mmpr::Reader::getReader("tracefiles/many_interfaces-1.pcapng");
+    auto reader = fpcap::Reader::getReader("tracefiles/many_interfaces-1.pcapng");
 
     while (!reader->isExhausted()) {
         reader->readBlock();
@@ -66,9 +66,9 @@ TEST(TraceInterfaces, ReadBlock) {
 }
 
 TEST(TraceInterfaces, ReadPacket) {
-    auto reader = mmpr::Reader::getReader("tracefiles/many_interfaces-1.pcapng");
+    auto reader = fpcap::Reader::getReader("tracefiles/many_interfaces-1.pcapng");
 
-    mmpr::Packet packet{};
+    fpcap::Packet packet{};
     while (!reader->isExhausted()) {
         if (reader->readNextPacket(packet)) {
             auto interfaceId = packet.interfaceIndex;

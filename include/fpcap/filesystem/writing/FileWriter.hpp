@@ -1,11 +1,11 @@
-#ifndef MMPR_FILEWRITER_HPP
-#define MMPR_FILEWRITER_HPP
+#ifndef FPCAP_FILEWRITER_HPP
+#define FPCAP_FILEWRITER_HPP
 
-#include "mmpr/mmpr.hpp"
+#include "fpcap/fpcap.hpp"
 #include <string>
 #include <vector>
 
-namespace mmpr {
+namespace fpcap {
 
 class FileWriter {
 public:
@@ -18,6 +18,6 @@ protected:
     const std::string mFilepath;
 };
 
-} // namespace mmpr
+} // namespace fpcap
 
-#endif // MMPR_FILEWRITER_HPP
+#endif // FPCAP_FILEWRITER_HPP

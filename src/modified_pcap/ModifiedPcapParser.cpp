@@ -1,10 +1,10 @@
-#include "mmpr/modified_pcap/ModifiedPcapParser.hpp"
+#include "fpcap/modified_pcap/ModifiedPcapParser.hpp"
 
 #ifdef _WIN32
 #include <winsock2.h>
 #endif
 
-namespace mmpr {
+namespace fpcap {
 
 void ModifiedPcapParser::readFileHeader(const uint8_t* data,
                                         modified_pcap::FileHeader& mpfh) {
@@ -35,12 +35,12 @@ void ModifiedPcapParser::readFileHeader(const uint8_t* data,
         mpfh.linkType = ntohl(mpfh.linkType);
     }
 
-    MMPR_DEBUG_LOG_1("--- [Modified PCAP File Header %p] ---\n", (void*)data);
-    MMPR_DEBUG_LOG_2("[MPFH] Version: %u.%u\n", mpfh.majorVersion, mpfh.minorVersion);
-    MMPR_DEBUG_LOG_1("[MPFH] This Zone: %i\n", mpfh.thiszone);
-    MMPR_DEBUG_LOG_1("[MPFH] Sigfigs: %u\n", mpfh.sigfigs);
-    MMPR_DEBUG_LOG_1("[MPFH] Snap Length: %u\n", mpfh.snapLength);
-    MMPR_DEBUG_LOG_1("[MPFH] Link Type: %u\n", mpfh.linkType);
+    FPCAP_DEBUG_LOG_1("--- [Modified PCAP File Header %p] ---\n", (void*)data);
+    FPCAP_DEBUG_LOG_2("[MPFH] Version: %u.%u\n", mpfh.majorVersion, mpfh.minorVersion);
+    FPCAP_DEBUG_LOG_1("[MPFH] This Zone: %i\n", mpfh.thiszone);
+    FPCAP_DEBUG_LOG_1("[MPFH] Sigfigs: %u\n", mpfh.sigfigs);
+    FPCAP_DEBUG_LOG_1("[MPFH] Snap Length: %u\n", mpfh.snapLength);
+    FPCAP_DEBUG_LOG_1("[MPFH] Link Type: %u\n", mpfh.linkType);
 }
 
 void ModifiedPcapParser::readPacketRecord(const uint8_t* data,
@@ -59,16 +59,16 @@ void ModifiedPcapParser::readPacketRecord(const uint8_t* data,
         mppr.data = &data[24];
     }
 
-    MMPR_DEBUG_LOG_1("--- [Modified PCAP Packet Record %p] ---\n", (void*)data);
-    MMPR_DEBUG_LOG_1("[MPPR] Timestamp Seconds: %u\n", mppr.timestampSeconds);
-    MMPR_DEBUG_LOG_1("[MPPR] Timestamp SubSeconds: %u\n", mppr.timestampSubSeconds);
-    MMPR_DEBUG_LOG_1("[MPPR] Capture Length: %u\n", mppr.captureLength);
-    MMPR_DEBUG_LOG_1("[MPPR] Length: %u\n", mppr.length);
-    MMPR_DEBUG_LOG_1("[MPPR] Interface Index: %u\n", mppr.interfaceIndex);
-    MMPR_DEBUG_LOG_1("[MPPR] Protocol: %u\n", mppr.protocol);
-    MMPR_DEBUG_LOG_1("[MPPR] Packet Type: %u\n", mppr.packetType);
-    MMPR_DEBUG_LOG_1("[MPPR] Padding: %u\n", mppr.padding);
-    MMPR_DEBUG_LOG_1("[MPPR] Data: %p\n", (void*)mppr.data);
+    FPCAP_DEBUG_LOG_1("--- [Modified PCAP Packet Record %p] ---\n", (void*)data);
+    FPCAP_DEBUG_LOG_1("[MPPR] Timestamp Seconds: %u\n", mppr.timestampSeconds);
+    FPCAP_DEBUG_LOG_1("[MPPR] Timestamp SubSeconds: %u\n", mppr.timestampSubSeconds);
+    FPCAP_DEBUG_LOG_1("[MPPR] Capture Length: %u\n", mppr.captureLength);
+    FPCAP_DEBUG_LOG_1("[MPPR] Length: %u\n", mppr.length);
+    FPCAP_DEBUG_LOG_1("[MPPR] Interface Index: %u\n", mppr.interfaceIndex);
+    FPCAP_DEBUG_LOG_1("[MPPR] Protocol: %u\n", mppr.protocol);
+    FPCAP_DEBUG_LOG_1("[MPPR] Packet Type: %u\n", mppr.packetType);
+    FPCAP_DEBUG_LOG_1("[MPPR] Padding: %u\n", mppr.padding);
+    FPCAP_DEBUG_LOG_1("[MPPR] Data: %p\n", (void*)mppr.data);
 }
 
 void ModifiedPcapParser::readPacketRecordBE(const uint8_t* data,
@@ -83,4 +83,4 @@ void ModifiedPcapParser::readPacketRecordBE(const uint8_t* data,
     mppr.protocol = ntohs(mppr.protocol);
 }
 
-} // namespace mmpr
+} // namespace fpcap

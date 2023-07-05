@@ -1,10 +1,10 @@
-#include "mmpr/filesystem/reading/FReadFileReader.hpp"
+#include "fpcap/filesystem/reading/FReadFileReader.hpp"
 
 #if defined(_WIN32) || defined(__APPLE__)
 #include <stdio.h>
 #endif
 
-namespace mmpr {
+namespace fpcap {
 
 FReadFileReader::FReadFileReader(const std::string& filepath) : FileReader(filepath) {
     mFileContent = std::make_unique<uint8_t[]>(mFileSize);
@@ -30,4 +30,4 @@ FReadFileReader::FReadFileReader(const std::string& filepath) : FileReader(filep
     mFileContentPtr = mFileContent.get();
 }
 
-} // namespace mmpr
+} // namespace fpcap

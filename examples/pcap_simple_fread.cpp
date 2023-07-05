@@ -1,4 +1,4 @@
-#include "mmpr/pcap/PcapReader.hpp"
+#include "fpcap/pcap/PcapReader.hpp"
 #include <chrono>
 #include <iostream>
 
@@ -10,14 +10,14 @@ int main() {
 
     // open file, map to memory and measure execution time
     auto start = high_resolution_clock::now();
-    mmpr::FReadPcapReader reader(filepath);
+    fpcap::FReadPcapReader reader(filepath);
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<milliseconds>(stop - start);
     cout << "Open file in " << duration.count() << "ms" << endl;
 
     // read all packets from the capture and measure execution time
     start = high_resolution_clock::now();
-    mmpr::Packet packet{};
+    fpcap::Packet packet{};
     uint64_t processedPackets{0};
     while (!reader.isExhausted()) {
         if (reader.readNextPacket(packet)) {

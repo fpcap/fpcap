@@ -1,6 +1,6 @@
-#include "mmpr/pcap/PcapWriter.hpp"
+#include "fpcap/pcap/PcapWriter.hpp"
 
-namespace mmpr {
+namespace fpcap {
 
 template <typename TWriter>
 PcapWriter<TWriter>::PcapWriter(const std::string& filepath) : mWriter(filepath) {
@@ -52,4 +52,4 @@ void PcapWriter<TWriter>::writePcapHeader() {
 
 template class PcapWriter<StreamFileWriter>;
 
-} // namespace mmpr
+} // namespace fpcap

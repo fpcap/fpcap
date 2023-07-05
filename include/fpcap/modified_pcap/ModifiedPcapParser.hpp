@@ -1,7 +1,7 @@
-#ifndef MMPR_MODIFIEDPCAPPARSER_HPP
-#define MMPR_MODIFIEDPCAPPARSER_HPP
+#ifndef FPCAP_MODIFIEDPCAPPARSER_HPP
+#define FPCAP_MODIFIEDPCAPPARSER_HPP
 
-#include "mmpr/mmpr.hpp"
+#include "fpcap/fpcap.hpp"
 #include <algorithm>
 #if __linux__
 #include <netinet/in.h>
@@ -12,7 +12,7 @@
 #include <sstream>
 #include <stdexcept>
 
-namespace mmpr {
+namespace fpcap {
 
 class ModifiedPcapParser {
 public:
@@ -66,6 +66,6 @@ public:
                                    modified_pcap::PacketRecord& mppr);
 };
 
-} // namespace mmpr
+} // namespace fpcap
 
-#endif // MMPR_MODIFIEDPCAPPARSER_HPP
+#endif // FPCAP_MODIFIEDPCAPPARSER_HPP

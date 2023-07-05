@@ -1,12 +1,12 @@
-#ifndef MMPR_ZSTDFILEREADER_HPP
-#define MMPR_ZSTDFILEREADER_HPP
+#ifndef FPCAP_ZSTDFILEREADER_HPP
+#define FPCAP_ZSTDFILEREADER_HPP
 
-#include "mmpr/filesystem/reading/FileReader.hpp"
+#include "fpcap/filesystem/reading/FileReader.hpp"
 #include <cstdint>
 #include <memory>
 #include <string>
 
-namespace mmpr {
+namespace fpcap {
 
 class ZstdFileReader : public FileReader {
 public:
@@ -21,6 +21,6 @@ private:
     const uint8_t* mDecompressedDataPtr;
 };
 
-} // namespace mmpr
+} // namespace fpcap
 
-#endif // MMPR_ZSTDFILEREADER_HPP
+#endif // FPCAP_ZSTDFILEREADER_HPP

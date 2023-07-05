@@ -1,4 +1,4 @@
-#include "mmpr/pcap/PcapReader.hpp"
+#include "fpcap/pcap/PcapReader.hpp"
 #include <chrono>
 #include <iostream>
 
@@ -9,10 +9,10 @@ int main() {
     string srcFilepath = "tracefiles/example.pcap";
     string dstFilepath = "example.copy.pcap";
 
-    auto reader = mmpr::Reader::getReader(srcFilepath);
-    auto writer = mmpr::Writer::getWriter(dstFilepath);
+    auto reader = fpcap::Reader::getReader(srcFilepath);
+    auto writer = fpcap::Writer::getWriter(dstFilepath);
 
-    mmpr::Packet packet{};
+    fpcap::Packet packet{};
     uint64_t processedPackets{0};
     while (!reader->isExhausted()) {
         if (reader->readNextPacket(packet)) {

@@ -1,6 +1,6 @@
-# MMPR - Memory-mapping Pcap & PcapNG reader
+# FPCAP - A fast and lightweight PCAP file reading library
 
-[![build](https://github.com/Schwaggot/mmpr/actions/workflows/build.yml/badge.svg)](https://github.com/Schwaggot/mmpr/actions/workflows/build.yml)
+[![build](https://github.com/fpcap/fpcap/actions/workflows/build.yml/badge.svg)](https://github.com/fpcap/fpcap/actions/workflows/build.yml)
 
 ## Features
 
@@ -18,7 +18,7 @@
 ```shell
 mkdir build && cd build
 cmake ..
-cmake --build . --target mmpr example-simple -- -j 4
+cmake --build . --target fpcap example-simple -- -j 4
 ```
 
 ## Requirements
@@ -98,11 +98,11 @@ docker build -t debian11-zstd-develop .
 ---------------------------------------------------------------------
 Benchmark                           Time             CPU   Iterations
 ---------------------------------------------------------------------
-mmpr (pcap)                  59666484 ns     12744900 ns           52
-mmpr-fread (pcap)             9108406 ns      1318842 ns          457
-mmpr (pcapng)                58144655 ns     12134124 ns           55
-mmpr-fread (pcapng)           8729187 ns      1195401 ns          592
-mmpr (pcapng.zst)             8381497 ns      1946854 ns          361
+fpcap (pcap)                  59666484 ns     12744900 ns           52
+fpcap-fread (pcap)             9108406 ns      1318842 ns          457
+fpcap (pcapng)                58144655 ns     12134124 ns           55
+fpcap-fread (pcapng)           8729187 ns      1195401 ns          592
+fpcap (pcapng.zst)             8381497 ns      1946854 ns          361
 PcapPlusPlus (pcap)          56237054 ns     11692277 ns           60
 PcapPlusPlus (pcapng)        58786941 ns     12942878 ns           51
 PcapPlusPlus (pcapng.zstd)    9824016 ns      3027536 ns          235

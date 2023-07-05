@@ -1,9 +1,9 @@
-#include "mmpr/pcapng/PcapNgReader.hpp"
+#include "fpcap/pcapng/PcapNgReader.hpp"
 
 #include <iostream>
 #include <sstream>
 
-namespace mmpr {
+namespace fpcap {
 
 template <typename TReader>
 PcapNgReader<TReader>::PcapNgReader(const std::string& filepath) : mReader(filepath) {
@@ -60,15 +60,15 @@ bool PcapNgReader<TReader>::readNextPacket(Packet& packet) {
     uint32_t blockTotalLength = *(uint32_t*)&mReader.data()[mReader.mOffset + 4];
 
     // TODO add support for Simple Packet Blocks
-    while (blockType != MMPR_ENHANCED_PACKET_BLOCK && blockType != MMPR_PACKET_BLOCK) {
-        if (blockType == MMPR_SECTION_HEADER_BLOCK) {
+    while (blockType != FPCAP_ENHANCED_PACKET_BLOCK && blockType != FPCAP_PACKET_BLOCK) {
+        if (blockType == FPCAP_SECTION_HEADER_BLOCK) {
             pcapng::SectionHeaderBlock shb{};
             PcapNgBlockParser::readSHB(&mReader.data()[mReader.mOffset], shb);
             mMetadata.comment = shb.options.comment;
             mMetadata.os = shb.options.os;
             mMetadata.hardware = shb.options.hardware;
             mMetadata.userApplication = shb.options.userApplication;
-        } else if (blockType == MMPR_INTERFACE_DESCRIPTION_BLOCK) {
+        } else if (blockType == FPCAP_INTERFACE_DESCRIPTION_BLOCK) {
             pcapng::InterfaceDescriptionBlock idb{};
             PcapNgBlockParser::readIDB(&mReader.data()[mReader.mOffset], idb);
             mMetadata.timestampResolution = idb.options.timestampResolution;
@@ -98,7 +98,7 @@ bool PcapNgReader<TReader>::readNextPacket(Packet& packet) {
     }
 
     switch (blockType) {
-    case MMPR_ENHANCED_PACKET_BLOCK: {
+    case FPCAP_ENHANCED_PACKET_BLOCK: {
         pcapng::EnhancedPacketBlock epb{};
         PcapNgBlockParser::readEPB(&mReader.data()[mReader.mOffset], epb);
         util::calculateTimestamps(mMetadata.timestampResolution, epb.timestampHigh,
@@ -113,7 +113,7 @@ bool PcapNgReader<TReader>::readNextPacket(Packet& packet) {
         mReader.mOffset += epb.blockTotalLength;
         break;
     }
-    case MMPR_PACKET_BLOCK: {
+    case FPCAP_PACKET_BLOCK: {
         pcapng::PacketBlock pb{};
         PcapNgBlockParser::readPB(&mReader.data()[mReader.mOffset], pb);
         util::calculateTimestamps(mMetadata.timestampResolution, pb.timestampHigh,
@@ -139,7 +139,7 @@ uint32_t PcapNgReader<TReader>::readBlock() {
     const auto blockTotalLength = *(const uint32_t*)&mReader.data()[mReader.mOffset + 4];
 
     switch (blockType) {
-    case MMPR_SECTION_HEADER_BLOCK: {
+    case FPCAP_SECTION_HEADER_BLOCK: {
         pcapng::SectionHeaderBlock shb{};
         PcapNgBlockParser::readSHB(&mReader.data()[mReader.mOffset], shb);
         mMetadata.comment = shb.options.comment;
@@ -148,7 +148,7 @@ uint32_t PcapNgReader<TReader>::readBlock() {
         mMetadata.userApplication = shb.options.userApplication;
         break;
     }
-    case MMPR_INTERFACE_DESCRIPTION_BLOCK: {
+    case FPCAP_INTERFACE_DESCRIPTION_BLOCK: {
         pcapng::InterfaceDescriptionBlock idb{};
         PcapNgBlockParser::readIDB(&mReader.data()[mReader.mOffset], idb);
         mMetadata.timestampResolution = idb.options.timestampResolution;
@@ -156,44 +156,44 @@ uint32_t PcapNgReader<TReader>::readBlock() {
                                       idb.options.filter, idb.options.os, idb.linkType);
         break;
     }
-    case MMPR_ENHANCED_PACKET_BLOCK: {
+    case FPCAP_ENHANCED_PACKET_BLOCK: {
         pcapng::EnhancedPacketBlock epb{};
         PcapNgBlockParser::readEPB(&mReader.data()[mReader.mOffset], epb);
         break;
     }
-    case MMPR_PACKET_BLOCK: {
+    case FPCAP_PACKET_BLOCK: {
         // deprecated in newer versions of PcapNG
         pcapng::PacketBlock pb{};
         PcapNgBlockParser::readPB(&mReader.data()[mReader.mOffset], pb);
         break;
     }
-    case MMPR_SIMPLE_PACKET_BLOCK: {
-        MMPR_WARN("Parsing of Simple Packet Blocks not implemented, skipping\n");
+    case FPCAP_SIMPLE_PACKET_BLOCK: {
+        FPCAP_WARN("Parsing of Simple Packet Blocks not implemented, skipping\n");
         break;
     }
-    case MMPR_NAME_RESOLUTION_BLOCK: {
-        MMPR_WARN("Parsing of Name Resolution Blocks not implemented, skipping\n");
+    case FPCAP_NAME_RESOLUTION_BLOCK: {
+        FPCAP_WARN("Parsing of Name Resolution Blocks not implemented, skipping\n");
         break;
     }
-    case MMPR_INTERFACE_STATISTICS_BLOCK: {
+    case FPCAP_INTERFACE_STATISTICS_BLOCK: {
         pcapng::InterfaceStatisticsBlock isb{};
         PcapNgBlockParser::readISB(&mReader.data()[mReader.mOffset], isb);
         break;
     }
-    case MMPR_DECRYPTION_SECRETS_BLOCK: {
-        MMPR_WARN("Parsing of Decryption Secrets Blocks not implemented, skipping\n");
+    case FPCAP_DECRYPTION_SECRETS_BLOCK: {
+        FPCAP_WARN("Parsing of Decryption Secrets Blocks not implemented, skipping\n");
         break;
     }
-    case MMPR_CUSTOM_CAN_COPY_BLOCK: {
-        MMPR_WARN("Parsing of Custom (Can Copy) Blocks not implemented, skipping\n");
+    case FPCAP_CUSTOM_CAN_COPY_BLOCK: {
+        FPCAP_WARN("Parsing of Custom (Can Copy) Blocks not implemented, skipping\n");
         break;
     }
-    case MMPR_CUSTOM_DO_NOT_COPY_BLOCK: {
-        MMPR_WARN("Parsing of Custom (Do Not Copy) Blocks not implemented, skipping\n");
+    case FPCAP_CUSTOM_DO_NOT_COPY_BLOCK: {
+        FPCAP_WARN("Parsing of Custom (Do Not Copy) Blocks not implemented, skipping\n");
         break;
     }
     default: {
-        MMPR_WARN_1("Encountered unknown block type: %u, skipping\n", blockType);
+        FPCAP_WARN_1("Encountered unknown block type: %u, skipping\n", blockType);
         break;
     }
     }
@@ -217,4 +217,4 @@ template class PcapNgReader<FReadFileReader>;
 template class PcapNgReader<MMapFileReader>;
 template class PcapNgReader<ZstdFileReader>;
 
-} // namespace mmpr
+} // namespace fpcap

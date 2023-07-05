@@ -1,12 +1,12 @@
-#ifndef MMPR_UTIL_HPP
-#define MMPR_UTIL_HPP
+#ifndef FPCAP_UTIL_HPP
+#define FPCAP_UTIL_HPP
 
 #include <cmath>
 #include <cstdint>
 #include <cstdio>
 #include <fstream>
 
-namespace mmpr {
+namespace fpcap {
 namespace util {
 
 /**
@@ -83,6 +83,6 @@ inline static void calculateTimestamps(uint32_t timestampResolution,
 }
 
 } // namespace util
-} // namespace mmpr
+} // namespace fpcap
 
-#endif // MMPR_UTIL_HPP
+#endif // FPCAP_UTIL_HPP

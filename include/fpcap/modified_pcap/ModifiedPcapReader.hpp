@@ -1,16 +1,16 @@
-#ifndef MMPR_MODIFIEDPCAPREADER_HPP
-#define MMPR_MODIFIEDPCAPREADER_HPP
+#ifndef FPCAP_MODIFIEDPCAPREADER_HPP
+#define FPCAP_MODIFIEDPCAPREADER_HPP
 
-#include "mmpr/filesystem/reading/FReadFileReader.hpp"
-#include "mmpr/filesystem/reading/FileReader.hpp"
-#include "mmpr/filesystem/reading/MMapFileReader.hpp"
-#include "mmpr/filesystem/reading/ZstdFileReader.hpp"
-#include "mmpr/mmpr.hpp"
-#include "mmpr/modified_pcap/ModifiedPcapParser.hpp"
+#include "fpcap/fpcap.hpp"
+#include "fpcap/filesystem/reading/FReadFileReader.hpp"
+#include "fpcap/filesystem/reading/FileReader.hpp"
+#include "fpcap/filesystem/reading/MMapFileReader.hpp"
+#include "fpcap/filesystem/reading/ZstdFileReader.hpp"
+#include "fpcap/modified_pcap/ModifiedPcapParser.hpp"
 #include <filesystem>
 #include <stdexcept>
 
-namespace mmpr {
+namespace fpcap {
 
 template <typename TReader>
 class ModifiedPcapReader : public Reader {
@@ -45,6 +45,6 @@ typedef ModifiedPcapReader<FReadFileReader> FReadModifiedPcapReader;
 typedef ModifiedPcapReader<MMapFileReader> MMModifiedPcapReader;
 typedef ModifiedPcapReader<ZstdFileReader> ZstdModifiedPcapReader;
 
-} // namespace mmpr
+} // namespace fpcap
 
-#endif // MMPR_MODIFIEDPCAPREADER_HPP
+#endif // FPCAP_MODIFIEDPCAPREADER_HPP

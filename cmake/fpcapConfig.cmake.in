@@ -1,0 +1,15 @@
+get_filename_component(FPCAP_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+include(CMakeFindDependencyMacro)
+
+list(APPEND CMAKE_MODULE_PATH ${FPCAP_CMAKE_DIR})
+# NOTE: to find FindZSTD.cmake
+if(FPCAP_USE_ZSTD)
+    find_dependency(ZSTD @MIN_ZSTD_VERSION@)
+    list(REMOVE_AT CMAKE_MODULE_PATH -1)
+endif()
+
+if(NOT TARGET fpcap::fpcap)
+    include("${FPCAP_CMAKE_DIR}/fpcapTargets.cmake")
+endif()
+
+set(FPCAP_LIBRARIES fpcap::fpcap)

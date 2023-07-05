@@ -1,11 +1,11 @@
-#ifndef MMPR_FILEREADER_HPP
-#define MMPR_FILEREADER_HPP
+#ifndef FPCAP_FILEREADER_HPP
+#define FPCAP_FILEREADER_HPP
 
-#include "mmpr/mmpr.hpp"
+#include "fpcap/fpcap.hpp"
 #include <filesystem>
 #include <string>
 
-namespace mmpr {
+namespace fpcap {
 
 class FileReader {
 public:
@@ -22,6 +22,6 @@ public:
     std::size_t mOffset{0};
 };
 
-} // namespace mmpr
+} // namespace fpcap
 
-#endif // MMPR_FILEREADER_HPP
+#endif // FPCAP_FILEREADER_HPP

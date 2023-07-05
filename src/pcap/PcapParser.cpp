@@ -1,6 +1,6 @@
-#include "mmpr/pcap/PcapParser.hpp"
+#include "fpcap/pcap/PcapParser.hpp"
 
-namespace mmpr {
+namespace fpcap {
 
 void PcapParser::readFileHeader(const uint8_t* data, pcap::FileHeader& fh) {
     auto magicNumber = *(const uint32_t*)&data[0];
@@ -27,15 +27,15 @@ void PcapParser::readFileHeader(const uint8_t* data, pcap::FileHeader& fh) {
     fh.dataLinkType = *(const uint16_t*)&data[20];
     fh.fcsSequence = *(const uint16_t*)&data[22];
 
-    MMPR_DEBUG_LOG_1("--- [File Header %p] ---\n", (void*)data);
-    MMPR_DEBUG_LOG_1("[FH] Timestamp Format: %s\n",
+    FPCAP_DEBUG_LOG_1("--- [File Header %p] ---\n", (void*)data);
+    FPCAP_DEBUG_LOG_1("[FH] Timestamp Format: %s\n",
                      fh.timestampFormat == pcap::FileHeader::MICROSECONDS
                          ? "MICROSECONDS"
                          : "NANOSECONDS");
-    MMPR_DEBUG_LOG_2("[FH] Version: %u.%u\n", fh.majorVersion, fh.minorVersion);
-    MMPR_DEBUG_LOG_1("[FH] Snap Length: %u\n", fh.snapLength);
-    MMPR_DEBUG_LOG_1("[FH] FCS Sequence: %u\n", fh.fcsSequence);
-    MMPR_DEBUG_LOG_1("[FH] Link Type: %u\n", fh.dataLinkType);
+    FPCAP_DEBUG_LOG_2("[FH] Version: %u.%u\n", fh.majorVersion, fh.minorVersion);
+    FPCAP_DEBUG_LOG_1("[FH] Snap Length: %u\n", fh.snapLength);
+    FPCAP_DEBUG_LOG_1("[FH] FCS Sequence: %u\n", fh.fcsSequence);
+    FPCAP_DEBUG_LOG_1("[FH] Link Type: %u\n", fh.dataLinkType);
 }
 
 void PcapParser::readPacketRecord(const uint8_t* data, pcap::PacketRecord& pr) {
@@ -47,12 +47,12 @@ void PcapParser::readPacketRecord(const uint8_t* data, pcap::PacketRecord& pr) {
         pr.data = &data[16];
     }
 
-    MMPR_DEBUG_LOG_1("--- [Packet Record %p] ---\n", (void*)data);
-    MMPR_DEBUG_LOG_1("[PR] Timestamp Seconds: %u\n", pr.timestampSeconds);
-    MMPR_DEBUG_LOG_1("[PR] Timestamp SubSeconds: %u\n", pr.timestampSubSeconds);
-    MMPR_DEBUG_LOG_1("[PR] Capture Length: %u\n", pr.captureLength);
-    MMPR_DEBUG_LOG_1("[PR] Length: %u\n", pr.length);
-    MMPR_DEBUG_LOG_1("[PR] Data: %p\n", (void*)pr.data);
+    FPCAP_DEBUG_LOG_1("--- [Packet Record %p] ---\n", (void*)data);
+    FPCAP_DEBUG_LOG_1("[PR] Timestamp Seconds: %u\n", pr.timestampSeconds);
+    FPCAP_DEBUG_LOG_1("[PR] Timestamp SubSeconds: %u\n", pr.timestampSubSeconds);
+    FPCAP_DEBUG_LOG_1("[PR] Capture Length: %u\n", pr.captureLength);
+    FPCAP_DEBUG_LOG_1("[PR] Length: %u\n", pr.length);
+    FPCAP_DEBUG_LOG_1("[PR] Data: %p\n", (void*)pr.data);
 }
 
-} // namespace mmpr
+} // namespace fpcap

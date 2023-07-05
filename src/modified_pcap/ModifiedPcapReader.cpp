@@ -1,7 +1,7 @@
-#include "mmpr/modified_pcap/ModifiedPcapReader.hpp"
+#include "fpcap/modified_pcap/ModifiedPcapReader.hpp"
 #include <iostream>
 
-namespace mmpr {
+namespace fpcap {
 
 template <typename TReader>
 ModifiedPcapReader<TReader>::ModifiedPcapReader(const std::string& filepath)
@@ -61,4 +61,4 @@ template class ModifiedPcapReader<FReadFileReader>;
 template class ModifiedPcapReader<MMapFileReader>;
 template class ModifiedPcapReader<ZstdFileReader>;
 
-} // namespace mmpr
+} // namespace fpcap

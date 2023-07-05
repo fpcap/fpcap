@@ -1,9 +1,9 @@
-#ifndef MMPR_PCAPNGBLOCKPARSER_HPP
-#define MMPR_PCAPNGBLOCKPARSER_HPP
+#ifndef FPCAP_PCAPNGBLOCKPARSER_HPP
+#define FPCAP_PCAPNGBLOCKPARSER_HPP
 
-#include "mmpr/mmpr.hpp"
+#include "fpcap/fpcap.hpp"
 
-namespace mmpr {
+namespace fpcap {
 
 class PcapNgBlockParser {
 public:
@@ -14,6 +14,6 @@ public:
     static void readISB(const uint8_t* data, pcapng::InterfaceStatisticsBlock& isb);
 };
 
-} // namespace mmpr
+} // namespace fpcap
 
-#endif // MMPR_PCAPNGBLOCKPARSER_HPP
+#endif // FPCAP_PCAPNGBLOCKPARSER_HPP

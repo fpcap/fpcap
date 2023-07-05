@@ -1,4 +1,4 @@
-#include "mmpr/pcapng/PcapNgReader.hpp"
+#include "fpcap/pcapng/PcapNgReader.hpp"
 #include <algorithm>
 #include <chrono>
 #include <iostream>
@@ -30,10 +30,10 @@ int main(int argc, char** argv) {
     auto start = high_resolution_clock::now();
 
     for (const auto& pcapFile : pcapFiles) {
-        std::unique_ptr<mmpr::Reader> reader = mmpr::Reader::getReader(pcapFile);
+        std::unique_ptr<fpcap::Reader> reader = fpcap::Reader::getReader(pcapFile);
         totalFileSize += reader->getFileSize();
 
-        mmpr::Packet packet;
+        fpcap::Packet packet;
         while (!reader->isExhausted()) {
             if (reader->readNextPacket(packet)) {
                 ++packets;

@@ -1,5 +1,5 @@
-#ifndef MMPR_FREADFILEREADER_HPP
-#define MMPR_FREADFILEREADER_HPP
+#ifndef FPCAP_FREADFILEREADER_HPP
+#define FPCAP_FREADFILEREADER_HPP
 
 #include "FileReader.hpp"
 #include <cstring>
@@ -11,7 +11,7 @@
 #include <string.h>
 #include <locale.h>
 
-namespace mmpr {
+namespace fpcap {
 
 class FReadFileReader : public FileReader {
 public:
@@ -24,6 +24,6 @@ private:
     const uint8_t* mFileContentPtr;
 };
 
-} // namespace mmpr
+} // namespace fpcap
 
-#endif // MMPR_FREADFILEREADER_HPP
+#endif // FPCAP_FREADFILEREADER_HPP

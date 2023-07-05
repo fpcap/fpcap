@@ -1,4 +1,4 @@
-#include "mmpr/pcapng/PcapNgReader.hpp"
+#include "fpcap/pcapng/PcapNgReader.hpp"
 #include <chrono>
 #include <iostream>
 
@@ -8,8 +8,8 @@ using namespace std::chrono;
 int main() {
     for (const string& filepath :
          {"tracefiles/pcapng-example.pcapng", "tracefiles/many_interfaces-1.pcapng"}) {
-        auto reader = mmpr::Reader::getReader(filepath);
-        mmpr::Packet packet{};
+        auto reader = fpcap::Reader::getReader(filepath);
+        fpcap::Packet packet{};
         uint64_t processedPackets{0};
         while (!reader->isExhausted()) {
             if (reader->readNextPacket(packet)) {

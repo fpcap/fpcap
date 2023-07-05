@@ -1,11 +1,11 @@
-#include "mmpr/mmpr.hpp"
+#include "fpcap/fpcap.hpp"
 
-#include "mmpr/filesystem/writing/StreamFileWriter.hpp"
-#include "mmpr/modified_pcap/ModifiedPcapReader.hpp"
-#include "mmpr/pcap/PcapReader.hpp"
-#include "mmpr/pcap/PcapWriter.hpp"
-#include "mmpr/pcapng/PcapNgReader.hpp"
-#include "mmpr/util.hpp"
+#include "fpcap/filesystem/writing/StreamFileWriter.hpp"
+#include "fpcap/modified_pcap/ModifiedPcapReader.hpp"
+#include "fpcap/pcap/PcapReader.hpp"
+#include "fpcap/pcap/PcapWriter.hpp"
+#include "fpcap/pcapng/PcapNgReader.hpp"
+#include "fpcap/util.hpp"
 #include <filesystem>
 #include <iostream>
 #include <memory>
@@ -13,7 +13,7 @@
 
 using namespace std;
 
-namespace mmpr {
+namespace fpcap {
 
 unique_ptr<Reader> Reader::getReader(const string& filepath) {
     if (filepath.empty()) {
@@ -68,4 +68,4 @@ unique_ptr<Writer> Writer::getWriter(const string& filepath) {
     return make_unique<StreamPcapWriter>(filepath);
 }
 
-} // namespace mmpr
+} // namespace fpcap

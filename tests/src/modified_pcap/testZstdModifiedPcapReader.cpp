@@ -1,29 +1,29 @@
 #include "gtest/gtest.h"
 
-#if MMPR_USE_ZSTD
+#if FPCAP_USE_ZSTD
 
-#include "mmpr/modified_pcap/ModifiedPcapReader.hpp"
+#include "fpcap/modified_pcap/ModifiedPcapReader.hpp"
 
 TEST(ZstdModifiedPcapReader, ConstructorSimple) {
-    mmpr::ZstdModifiedPcapReader reader{"tracefiles/fritzbox-ip.pcap.zst"};
+    fpcap::ZstdModifiedPcapReader reader{"tracefiles/fritzbox-ip.pcap.zst"};
     EXPECT_EQ(reader.getFilepath(), "tracefiles/fritzbox-ip.pcap.zst")
         << "Hint: make sure to execute unit tests from root directory";
 }
 
 TEST(ZstdModifiedPcapReader, ConstructorMissingFile) {
-    EXPECT_THROW(mmpr::ZstdModifiedPcapReader{"missing-file"}, std::runtime_error);
+    EXPECT_THROW(fpcap::ZstdModifiedPcapReader{"missing-file"}, std::runtime_error);
 }
 
 TEST(ZstdModifiedPcapReader, FaultyConstructor) {
-    EXPECT_THROW(mmpr::ZstdModifiedPcapReader{nullptr}, std::logic_error);
-    EXPECT_THROW(mmpr::ZstdModifiedPcapReader{""}, std::runtime_error);
+    EXPECT_THROW(fpcap::ZstdModifiedPcapReader{nullptr}, std::logic_error);
+    EXPECT_THROW(fpcap::ZstdModifiedPcapReader{""}, std::runtime_error);
 }
 
 TEST(ZstdModifiedPcapReader, DLT) {
     {
         // Standard Ethernet
-        mmpr::ZstdModifiedPcapReader reader{"tracefiles/fritzbox-ip.pcap.zst"};
-        mmpr::Packet packet;
+        fpcap::ZstdModifiedPcapReader reader{"tracefiles/fritzbox-ip.pcap.zst"};
+        fpcap::Packet packet;
         uint64_t processedPackets{0};
         while (!reader.isExhausted()) {
             if (reader.readNextPacket(packet)) {

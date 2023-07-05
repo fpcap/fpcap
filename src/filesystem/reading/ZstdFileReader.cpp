@@ -1,11 +1,11 @@
-#include "mmpr/filesystem/reading/ZstdFileReader.hpp"
+#include "fpcap/filesystem/reading/ZstdFileReader.hpp"
 
-#include "mmpr/filesystem/reading/FReadFileReader.hpp"
+#include "fpcap/filesystem/reading/FReadFileReader.hpp"
 #include "zstd.h"
 #include <algorithm>
 #include <sstream>
 
-namespace mmpr {
+namespace fpcap {
 
 ZstdFileReader::ZstdFileReader(const std::string& filepath) : FileReader(filepath) {
     FReadFileReader compressedFileReader(mFilepath);
@@ -74,4 +74,4 @@ ZstdFileReader::ZstdFileReader(ZstdFileReader&& other)
       mDecompressedData(std::move(other.mDecompressedData)),
       mDecompressedDataPtr(mDecompressedData.get()) {}
 
-} // namespace mmpr
+} // namespace fpcap

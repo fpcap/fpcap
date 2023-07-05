@@ -1,4 +1,4 @@
-#include "mmpr/filesystem/reading/FileReader.hpp"
+#include "fpcap/filesystem/reading/FileReader.hpp"
 
 #include <filesystem>
 #include <stdexcept>
@@ -7,7 +7,7 @@
 using namespace std;
 using namespace std::filesystem;
 
-namespace mmpr {
+namespace fpcap {
 
 FileReader::FileReader(const string& filepath)
     : mFilepath(filepath) {
@@ -30,4 +30,4 @@ size_t FileReader::getSafeToReadSize() const {
     }
 }
 
-} // namespace mmpr
+} // namespace fpcap

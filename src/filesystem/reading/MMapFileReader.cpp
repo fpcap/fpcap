@@ -1,6 +1,6 @@
-#include "mmpr/filesystem/reading/MMapFileReader.hpp"
+#include "fpcap/filesystem/reading/MMapFileReader.hpp"
 
-namespace mmpr {
+namespace fpcap {
 
 MMapFileReader::MMapFileReader(const std::string& filepath) : FileReader(filepath) {
 #if __linux__
@@ -49,4 +49,4 @@ MMapFileReader::MMapFileReader(const std::string& filepath) : FileReader(filepat
 #endif
 }
 
-} // namespace mmpr
+} // namespace fpcap

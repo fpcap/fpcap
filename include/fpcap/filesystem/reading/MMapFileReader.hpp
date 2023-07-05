@@ -1,5 +1,5 @@
-#ifndef MMPR_MMAPFILEREADER_HPP
-#define MMPR_MMAPFILEREADER_HPP
+#ifndef FPCAP_MMAPFILEREADER_HPP
+#define FPCAP_MMAPFILEREADER_HPP
 
 #include "FileReader.hpp"
 #include "ZstdFileReader.hpp"
@@ -18,7 +18,7 @@
 #include <windows.h>
 #endif
 
-namespace mmpr {
+namespace fpcap {
 
 #if _WIN32
 // Windows HANDLEs are not RAII compatible, therefore we need to wrap them
@@ -63,7 +63,7 @@ class MMapFileReader : public FileReader {
 public:
     MMapFileReader(const std::string& filepath);
 
-    MMapFileReader(mmpr::ZstdFileReader reader);
+    MMapFileReader(fpcap::ZstdFileReader reader);
 
 #if __linux__
     ~MMapFileReader() {
@@ -84,6 +84,6 @@ private:
     const uint8_t* mMappedMemory{nullptr};
 };
 
-} // namespace mmpr
+} // namespace fpcap
 
-#endif // MMPR_MMAPFILEREADER_HPP
+#endif // FPCAP_MMAPFILEREADER_HPP

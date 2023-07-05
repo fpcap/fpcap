@@ -1,10 +1,10 @@
-#ifndef MMPR_PCAPNGBLOCKOPTIONPARSER_HPP
-#define MMPR_PCAPNGBLOCKOPTIONPARSER_HPP
+#ifndef FPCAP_PCAPNGBLOCKOPTIONPARSER_HPP
+#define FPCAP_PCAPNGBLOCKOPTIONPARSER_HPP
 
-#include "mmpr/mmpr.hpp"
+#include "fpcap/fpcap.hpp"
 #include <cstddef>
 
-namespace mmpr {
+namespace fpcap {
 
 class PcapNgBlockOptionParser {
 public:
@@ -24,6 +24,6 @@ public:
     static std::string parseUTF8(const pcapng::Option& option);
 };
 
-} // namespace mmpr
+} // namespace fpcap
 
-#endif // MMPR_PCAPNGBLOCKOPTIONPARSER_HPP
+#endif // FPCAP_PCAPNGBLOCKOPTIONPARSER_HPP

@@ -1,12 +1,12 @@
-add_library(mmpr::mmpr STATIC IMPORTED)
+add_library(fpcap::fpcap STATIC IMPORTED)
 
-if(MMPR_USE_ZSTD)
-    set_target_properties(mmpr::mmpr PROPERTIES
+if(FPCAP_USE_ZSTD)
+    set_target_properties(fpcap::fpcap PROPERTIES
         INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
         INTERFACE_LINK_LIBRARIES "ZSTD::ZSTD"
     )
 else()
-    set_target_properties(mmpr::mmpr PROPERTIES
+    set_target_properties(fpcap::fpcap PROPERTIES
         INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
     )
 endif()

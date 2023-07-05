@@ -1,10 +1,10 @@
-#ifndef MMPR_STREAMFILEWRITER_HPP
-#define MMPR_STREAMFILEWRITER_HPP
+#ifndef FPCAP_STREAMFILEWRITER_HPP
+#define FPCAP_STREAMFILEWRITER_HPP
 
-#include "mmpr/filesystem/writing/FileWriter.hpp"
+#include "fpcap/filesystem/writing/FileWriter.hpp"
 #include <fstream>
 
-namespace mmpr {
+namespace fpcap {
 
 class StreamFileWriter : public FileWriter {
 public:
@@ -16,6 +16,6 @@ private:
     std::ofstream mOutputFileStream;
 };
 
-} // namespace mmpr
+} // namespace fpcap
 
-#endif // MMPR_STREAMFILEWRITER_HPP
+#endif // FPCAP_STREAMFILEWRITER_HPP

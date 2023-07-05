@@ -1,11 +1,11 @@
-#ifndef MMPR_PCAPWRITER_HPP
-#define MMPR_PCAPWRITER_HPP
+#ifndef FPCAP_PCAPWRITER_HPP
+#define FPCAP_PCAPWRITER_HPP
 
-#include "mmpr/filesystem/writing/FileWriter.hpp"
-#include "mmpr/filesystem/writing/StreamFileWriter.hpp"
-#include "mmpr/mmpr.hpp"
+#include "fpcap/fpcap.hpp"
+#include "fpcap/filesystem/writing/FileWriter.hpp"
+#include "fpcap/filesystem/writing/StreamFileWriter.hpp"
 
-namespace mmpr {
+namespace fpcap {
 
 template <typename TWriter>
 class PcapWriter : public Writer {
@@ -25,6 +25,6 @@ private:
 
 typedef PcapWriter<StreamFileWriter> StreamPcapWriter;
 
-} // namespace mmpr
+} // namespace fpcap
 
-#endif // MMPR_PCAPWRITER_HPP
+#endif // FPCAP_PCAPWRITER_HPP

@@ -1,10 +1,10 @@
-#include "mmpr/pcapng/PcapNgBlockParser.hpp"
+#include "fpcap/pcapng/PcapNgBlockParser.hpp"
 
-#include "mmpr/mmpr.hpp"
-#include "mmpr/pcapng/PcapNgBlockOptionParser.hpp"
-#include "mmpr/util.hpp"
+#include "fpcap/fpcap.hpp"
+#include "fpcap/pcapng/PcapNgBlockOptionParser.hpp"
+#include "fpcap/util.hpp"
 
-namespace mmpr {
+namespace fpcap {
 
 /**
  * 4.1.  Section Header Block
@@ -33,12 +33,12 @@ namespace mmpr {
  */
 void PcapNgBlockParser::readSHB(const uint8_t* data, pcapng::SectionHeaderBlock& shb) {
     auto blockType = *(const uint32_t*)&data[0];
-    MMPR_ASSERT(blockType == MMPR_SECTION_HEADER_BLOCK);
+    FPCAP_ASSERT(blockType == FPCAP_SECTION_HEADER_BLOCK);
 
     shb.blockTotalLength = *(const uint32_t*)&data[4];
 
     auto byteOrderMagic = *(const uint32_t*)&data[8];
-    MMPR_ASSERT(byteOrderMagic == 0x1A2B3C4D);
+    FPCAP_ASSERT(byteOrderMagic == 0x1A2B3C4D);
 
     shb.majorVersion = *(const uint16_t*)&data[12];
     shb.minorVersion = *(const uint16_t*)&data[14];
@@ -48,13 +48,13 @@ void PcapNgBlockParser::readSHB(const uint8_t* data, pcapng::SectionHeaderBlock&
     //      32-bits, this field is not guaranteed to be aligned to a 64-bit
     //      boundary.  This could be a problem on 64-bit processors.
     shb.sectionLength = *(const int64_t*)&data[16];
-    MMPR_ASSERT(shb.sectionLength != -1 ? shb.sectionLength % 4 == 0 : true);
+    FPCAP_ASSERT(shb.sectionLength != -1 ? shb.sectionLength % 4 == 0 : true);
 
-    MMPR_DEBUG_LOG_1("--- [Section Header Block %p] ---\n", (void*)data);
-    MMPR_DEBUG_LOG_1("[SHB] Block Total Length: %u\n", shb.blockTotalLength);
-    MMPR_DEBUG_LOG_1("[SHB] Byte-Order Magic: 0x%08X\n", byteOrderMagic);
-    MMPR_DEBUG_LOG_2("[SHB] Version: %u.%u\n", shb.majorVersion, shb.minorVersion);
-    MMPR_DEBUG_LOG_1("[SHB] Section Length: %li\n", static_cast<long>(shb.sectionLength));
+    FPCAP_DEBUG_LOG_1("--- [Section Header Block %p] ---\n", (void*)data);
+    FPCAP_DEBUG_LOG_1("[SHB] Block Total Length: %u\n", shb.blockTotalLength);
+    FPCAP_DEBUG_LOG_1("[SHB] Byte-Order Magic: 0x%08X\n", byteOrderMagic);
+    FPCAP_DEBUG_LOG_2("[SHB] Version: %u.%u\n", shb.majorVersion, shb.minorVersion);
+    FPCAP_DEBUG_LOG_1("[SHB] Section Length: %li\n", static_cast<long>(shb.sectionLength));
 
     // standard Section Header Block has size 28 (without any options)
     if (shb.blockTotalLength > 28) {
@@ -65,16 +65,16 @@ void PcapNgBlockParser::readSHB(const uint8_t* data, pcapng::SectionHeaderBlock&
             PcapNgBlockOptionParser::readSHBOption(data, option, 24 + readOptionsLength);
             readOptionsLength += option.totalLength();
             switch (option.type) {
-            case MMPR_BLOCK_OPTION_COMMENT:
+            case FPCAP_BLOCK_OPTION_COMMENT:
                 shb.options.comment = std::string((char*)option.value, option.length);
                 break;
-            case MMPR_BLOCK_OPTION_SHB_OS:
+            case FPCAP_BLOCK_OPTION_SHB_OS:
                 shb.options.os = std::string((char*)option.value, option.length);
                 break;
-            case MMPR_BLOCK_OPTION_SHB_HARDWARE:
+            case FPCAP_BLOCK_OPTION_SHB_HARDWARE:
                 shb.options.hardware = std::string((char*)option.value, option.length);
                 break;
-            case MMPR_BLOCK_OPTION_SHB_USERAPPL:
+            case FPCAP_BLOCK_OPTION_SHB_USERAPPL:
                 shb.options.userApplication =
                     std::string((char*)option.value, option.length);
                 break;
@@ -84,7 +84,7 @@ void PcapNgBlockParser::readSHB(const uint8_t* data, pcapng::SectionHeaderBlock&
 
     // make sure that the block actually ends with block total length
     auto blockTotalLength = *(const uint32_t*)&data[shb.blockTotalLength - 4];
-    MMPR_ASSERT(shb.blockTotalLength == blockTotalLength);
+    FPCAP_ASSERT(shb.blockTotalLength == blockTotalLength);
 }
 
 /**
@@ -111,16 +111,16 @@ void PcapNgBlockParser::readSHB(const uint8_t* data, pcapng::SectionHeaderBlock&
 void PcapNgBlockParser::readIDB(const uint8_t* data,
                                 pcapng::InterfaceDescriptionBlock& idb) {
     auto blockType = *(const uint32_t*)&data[0];
-    MMPR_ASSERT(blockType == MMPR_INTERFACE_DESCRIPTION_BLOCK);
+    FPCAP_ASSERT(blockType == FPCAP_INTERFACE_DESCRIPTION_BLOCK);
 
     idb.blockTotalLength = *(const uint32_t*)&data[4];
     idb.linkType = *(const uint16_t*)&data[8];
     idb.snapLen = *(const uint32_t*)&data[12];
 
-    MMPR_DEBUG_LOG_1("--- [Interface Description Block %p] ---\n", (void*)data);
-    MMPR_DEBUG_LOG_1("[IDB] Block Total Length: %u\n", idb.blockTotalLength);
-    MMPR_DEBUG_LOG_1("[IDB] LinkType: 0x%04X\n", idb.linkType);
-    MMPR_DEBUG_LOG_1("[IDB] SnapLen: %u\n", idb.snapLen);
+    FPCAP_DEBUG_LOG_1("--- [Interface Description Block %p] ---\n", (void*)data);
+    FPCAP_DEBUG_LOG_1("[IDB] Block Total Length: %u\n", idb.blockTotalLength);
+    FPCAP_DEBUG_LOG_1("[IDB] LinkType: 0x%04X\n", idb.linkType);
+    FPCAP_DEBUG_LOG_1("[IDB] SnapLen: %u\n", idb.snapLen);
 
     // standard Interface Description Block has size 20 (without any options)
     if (idb.blockTotalLength > 20) {
@@ -132,22 +132,22 @@ void PcapNgBlockParser::readIDB(const uint8_t* data,
                                                         16 + readOptionsLength);
             readOptionsLength += option.totalLength();
             switch (option.type) {
-            case MMPR_BLOCK_OPTION_IDB_TSRESOL:
-                MMPR_ASSERT(option.length == 1);
+            case FPCAP_BLOCK_OPTION_IDB_TSRESOL:
+                FPCAP_ASSERT(option.length == 1);
                 idb.options.timestampResolution = util::fromIfTsresolUInt(*option.value);
                 break;
-            case MMPR_BLOCK_OPTION_IDB_NAME:
+            case FPCAP_BLOCK_OPTION_IDB_NAME:
                 idb.options.name = PcapNgBlockOptionParser::parseUTF8(option);
                 break;
-            case MMPR_BLOCK_OPTION_IDB_DESCRIPTION:
+            case FPCAP_BLOCK_OPTION_IDB_DESCRIPTION:
                 idb.options.description = PcapNgBlockOptionParser::parseUTF8(option);
                 break;
-            case MMPR_BLOCK_OPTION_IDB_FILTER:
+            case FPCAP_BLOCK_OPTION_IDB_FILTER:
                 // skip first octet (filter code), interpret rest as string
                 idb.options.filter = std::string(
                     reinterpret_cast<const char*>(&option.value[1]), option.length - 1u);
                 break;
-            case MMPR_BLOCK_OPTION_IDB_OS:
+            case FPCAP_BLOCK_OPTION_IDB_OS:
                 idb.options.os = PcapNgBlockOptionParser::parseUTF8(option);
                 break;
             }
@@ -156,7 +156,7 @@ void PcapNgBlockParser::readIDB(const uint8_t* data,
 
     // make sure that the block actually ends with block total length
     auto blockTotalLength = *(const uint32_t*)&data[idb.blockTotalLength - 4u];
-    MMPR_ASSERT(idb.blockTotalLength == blockTotalLength);
+    FPCAP_ASSERT(idb.blockTotalLength == blockTotalLength);
 }
 
 /**
@@ -193,7 +193,7 @@ void PcapNgBlockParser::readIDB(const uint8_t* data,
  */
 void PcapNgBlockParser::readEPB(const uint8_t* data, pcapng::EnhancedPacketBlock& epb) {
     auto blockType = *(const uint32_t*)&data[0];
-    MMPR_ASSERT(blockType == MMPR_ENHANCED_PACKET_BLOCK);
+    FPCAP_ASSERT(blockType == FPCAP_ENHANCED_PACKET_BLOCK);
 
     epb.blockTotalLength = *(const uint32_t*)&data[4];
     epb.interfaceId = *(const uint32_t*)&data[8];
@@ -203,14 +203,14 @@ void PcapNgBlockParser::readEPB(const uint8_t* data, pcapng::EnhancedPacketBlock
     epb.originalPacketLength = *(const uint32_t*)&data[24];
     epb.packetData = &data[28];
 
-    MMPR_DEBUG_LOG_1("--- [Enhanced Packet Block @%p] ---\n", (void*)data);
-    MMPR_DEBUG_LOG_1("[EPB] Block Total Length: %u\n", epb.blockTotalLength);
-    MMPR_DEBUG_LOG_1("[EPB] Interface ID: 0x%08X\n", epb.interfaceId);
-    MMPR_DEBUG_LOG_1("[EPB] Timestamp (High): %u\n", epb.timestampHigh);
-    MMPR_DEBUG_LOG_1("[EPB] Timestamp (Low): %u\n", epb.timestampLow);
-    MMPR_DEBUG_LOG_1("[EPB] Captured Packet Length: %u\n", epb.capturePacketLength);
-    MMPR_DEBUG_LOG_1("[EPB] Original Packet Length: %u\n", epb.originalPacketLength);
-    MMPR_DEBUG_LOG_1("[EPB] Packet Data: %p\n", (void*)epb.packetData);
+    FPCAP_DEBUG_LOG_1("--- [Enhanced Packet Block @%p] ---\n", (void*)data);
+    FPCAP_DEBUG_LOG_1("[EPB] Block Total Length: %u\n", epb.blockTotalLength);
+    FPCAP_DEBUG_LOG_1("[EPB] Interface ID: 0x%08X\n", epb.interfaceId);
+    FPCAP_DEBUG_LOG_1("[EPB] Timestamp (High): %u\n", epb.timestampHigh);
+    FPCAP_DEBUG_LOG_1("[EPB] Timestamp (Low): %u\n", epb.timestampLow);
+    FPCAP_DEBUG_LOG_1("[EPB] Captured Packet Length: %u\n", epb.capturePacketLength);
+    FPCAP_DEBUG_LOG_1("[EPB] Original Packet Length: %u\n", epb.originalPacketLength);
+    FPCAP_DEBUG_LOG_1("[EPB] Packet Data: %p\n", (void*)epb.packetData);
 
     // packet data is padded to 32 bits, calculate the total size in memory (including
     // padding)
@@ -230,7 +230,7 @@ void PcapNgBlockParser::readEPB(const uint8_t* data, pcapng::EnhancedPacketBlock
 
     // make sure that the block actually ends with block total length
     auto blockTotalLength = *(const uint32_t*)&data[epb.blockTotalLength - 4u];
-    MMPR_ASSERT(epb.blockTotalLength == blockTotalLength);
+    FPCAP_ASSERT(epb.blockTotalLength == blockTotalLength);
 }
 
 /**
@@ -267,7 +267,7 @@ void PcapNgBlockParser::readEPB(const uint8_t* data, pcapng::EnhancedPacketBlock
  */
 void PcapNgBlockParser::readPB(const uint8_t* data, pcapng::PacketBlock& pb) {
     auto blockType = *(const uint32_t*)&data[0];
-    MMPR_ASSERT(blockType == MMPR_PACKET_BLOCK);
+    FPCAP_ASSERT(blockType == FPCAP_PACKET_BLOCK);
 
     pb.blockTotalLength = *(const uint32_t*)&data[4];
     pb.interfaceId = *(const uint16_t*)&data[8];
@@ -278,15 +278,15 @@ void PcapNgBlockParser::readPB(const uint8_t* data, pcapng::PacketBlock& pb) {
     pb.originalPacketLength = *(const uint32_t*)&data[24];
     pb.packetData = &data[28];
 
-    MMPR_DEBUG_LOG_1("--- [Packet Block @%p] ---\n", (void*)data);
-    MMPR_DEBUG_LOG_1("[PB] Block Total Length: %u\n", pb.blockTotalLength);
-    MMPR_DEBUG_LOG_1("[PB] Interface ID: 0x%04X\n", pb.interfaceId);
-    MMPR_DEBUG_LOG_1("[PB] Drops Count: 0x%04X\n", pb.dropsCount);
-    MMPR_DEBUG_LOG_1("[PB] Timestamp (High): %u\n", pb.timestampHigh);
-    MMPR_DEBUG_LOG_1("[PB] Timestamp (Low): %u\n", pb.timestampLow);
-    MMPR_DEBUG_LOG_1("[PB] Captured Packet Length: %u\n", pb.capturePacketLength);
-    MMPR_DEBUG_LOG_1("[PB] Original Packet Length: %u\n", pb.originalPacketLength);
-    MMPR_DEBUG_LOG_1("[PB] Packet Data: %p\n", (void*)pb.packetData);
+    FPCAP_DEBUG_LOG_1("--- [Packet Block @%p] ---\n", (void*)data);
+    FPCAP_DEBUG_LOG_1("[PB] Block Total Length: %u\n", pb.blockTotalLength);
+    FPCAP_DEBUG_LOG_1("[PB] Interface ID: 0x%04X\n", pb.interfaceId);
+    FPCAP_DEBUG_LOG_1("[PB] Drops Count: 0x%04X\n", pb.dropsCount);
+    FPCAP_DEBUG_LOG_1("[PB] Timestamp (High): %u\n", pb.timestampHigh);
+    FPCAP_DEBUG_LOG_1("[PB] Timestamp (Low): %u\n", pb.timestampLow);
+    FPCAP_DEBUG_LOG_1("[PB] Captured Packet Length: %u\n", pb.capturePacketLength);
+    FPCAP_DEBUG_LOG_1("[PB] Original Packet Length: %u\n", pb.originalPacketLength);
+    FPCAP_DEBUG_LOG_1("[PB] Packet Data: %p\n", (void*)pb.packetData);
 
     // packet data is padded to 32 bits, calculate the total size in memory (including
     // padding)
@@ -306,7 +306,7 @@ void PcapNgBlockParser::readPB(const uint8_t* data, pcapng::PacketBlock& pb) {
 
     // make sure that the block actually ends with block total length
     auto blockTotalLength = *(const uint32_t*)&data[pb.blockTotalLength - 4];
-    MMPR_ASSERT(pb.blockTotalLength == blockTotalLength);
+    FPCAP_ASSERT(pb.blockTotalLength == blockTotalLength);
 }
 
 /**
@@ -335,19 +335,19 @@ void PcapNgBlockParser::readPB(const uint8_t* data, pcapng::PacketBlock& pb) {
 void PcapNgBlockParser::readISB(const uint8_t* data,
                                 pcapng::InterfaceStatisticsBlock& isb) {
     auto blockType = *(const uint32_t*)&data[0];
-    MMPR_ASSERT(blockType == MMPR_INTERFACE_STATISTICS_BLOCK);
+    FPCAP_ASSERT(blockType == FPCAP_INTERFACE_STATISTICS_BLOCK);
 
     isb.blockTotalLength = *(const uint32_t*)&data[4];
     isb.interfaceId = *(const uint32_t*)&data[8];
     isb.timestampHigh = *(const uint32_t*)&data[12];
     isb.timestampLow = *(const uint32_t*)&data[16];
 
-    MMPR_DEBUG_LOG_1("--- [Interface Statistics Block @%p] ---\n", (void*)data);
-    MMPR_DEBUG_LOG_1("[ISB] Block Type: 0x%08X\n", blockType);
-    MMPR_DEBUG_LOG_1("[ISB] Block Total Length: %u\n", isb.blockTotalLength);
-    MMPR_DEBUG_LOG_1("[ISB] Interface ID: 0x%08X\n", isb.interfaceId);
-    MMPR_DEBUG_LOG_1("[ISB] Timestamp (High): %u\n", isb.timestampHigh);
-    MMPR_DEBUG_LOG_1("[ISB] Timestamp (Low): %u\n", isb.timestampLow);
+    FPCAP_DEBUG_LOG_1("--- [Interface Statistics Block @%p] ---\n", (void*)data);
+    FPCAP_DEBUG_LOG_1("[ISB] Block Type: 0x%08X\n", blockType);
+    FPCAP_DEBUG_LOG_1("[ISB] Block Total Length: %u\n", isb.blockTotalLength);
+    FPCAP_DEBUG_LOG_1("[ISB] Interface ID: 0x%08X\n", isb.interfaceId);
+    FPCAP_DEBUG_LOG_1("[ISB] Timestamp (High): %u\n", isb.timestampHigh);
+    FPCAP_DEBUG_LOG_1("[ISB] Timestamp (Low): %u\n", isb.timestampLow);
 
     // standard Interface Statistics Block has size 24 (without any options)
     if (isb.blockTotalLength > 20) {
@@ -362,7 +362,7 @@ void PcapNgBlockParser::readISB(const uint8_t* data,
 
     // make sure that the block actually ends with block total length
     auto blockTotalLength = *(const uint32_t*)&data[isb.blockTotalLength - 4];
-    MMPR_ASSERT(isb.blockTotalLength == blockTotalLength);
+    FPCAP_ASSERT(isb.blockTotalLength == blockTotalLength);
 }
 
-} // namespace mmpr
+} // namespace fpcap

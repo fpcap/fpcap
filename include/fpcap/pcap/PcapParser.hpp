@@ -1,11 +1,11 @@
-#ifndef MMPR_PCAPPARSER_HPP
-#define MMPR_PCAPPARSER_HPP
+#ifndef FPCAP_PCAPPARSER_HPP
+#define FPCAP_PCAPPARSER_HPP
 
-#include "mmpr/mmpr.hpp"
+#include "fpcap/fpcap.hpp"
 #include <algorithm>
 #include <sstream>
 
-namespace mmpr {
+namespace fpcap {
 class PcapParser {
 public:
     /**
@@ -50,6 +50,6 @@ public:
     static void readPacketRecord(const uint8_t* data, pcap::PacketRecord& pr);
 };
 
-} // namespace mmpr
+} // namespace fpcap
 
-#endif // MMPR_PCAPPARSER_HPP
+#endif // FPCAP_PCAPPARSER_HPP

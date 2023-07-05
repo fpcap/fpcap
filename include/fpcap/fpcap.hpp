@@ -1,5 +1,5 @@
-#ifndef MMPR_MMPR_HPP
-#define MMPR_MMPR_HPP
+#ifndef FPCAP_FPCAP_HPP
+#define FPCAP_FPCAP_HPP
 
 #include <cassert>
 #include <cstdint>
@@ -10,21 +10,21 @@
 #include <vector>
 
 #if DEBUG
-#define MMPR_DEBUG_LOG(format) printf(format);
-#define MMPR_DEBUG_LOG_1(format, val) printf(format, val);
-#define MMPR_DEBUG_LOG_2(format, val1, val2) printf(format, val1, val2);
-#define MMPR_ASSERT(x) assert(x)
+#define FPCAP_DEBUG_LOG(format) printf(format);
+#define FPCAP_DEBUG_LOG_1(format, val) printf(format, val);
+#define FPCAP_DEBUG_LOG_2(format, val1, val2) printf(format, val1, val2);
+#define FPCAP_ASSERT(x) assert(x)
 #else
-#define MMPR_DEBUG_LOG(format) while (0)
-#define MMPR_DEBUG_LOG_1(format, val) while (0)
-#define MMPR_DEBUG_LOG_2(format, val1, val2) while (0)
-#define MMPR_ASSERT(x) (void)(x)
+#define FPCAP_DEBUG_LOG(format) while (0)
+#define FPCAP_DEBUG_LOG_1(format, val) while (0)
+#define FPCAP_DEBUG_LOG_2(format, val1, val2) while (0)
+#define FPCAP_ASSERT(x) (void)(x)
 #endif
-#define MMPR_WARN(msg) fprintf(stderr, msg)
-#define MMPR_WARN_1(msg, val) fprintf(stderr, msg, val)
-#define MMPR_UNUSED(x) (void)(x)
+#define FPCAP_WARN(msg) fprintf(stderr, msg)
+#define FPCAP_WARN_1(msg, val) fprintf(stderr, msg, val)
+#define FPCAP_UNUSED(x) (void)(x)
 
-namespace mmpr {
+namespace fpcap {
 
 struct Packet {
     uint32_t timestampSeconds{0};
@@ -183,31 +183,31 @@ namespace pcapng {
 /**
  * Header Block Types, cf. https://pcapng.github.io/pcapng/draft-ietf-opsawg-pcapng.txt
  */
-#define MMPR_SECTION_HEADER_BLOCK 0x0A0D0D0A
-#define MMPR_INTERFACE_DESCRIPTION_BLOCK 1
-#define MMPR_PACKET_BLOCK 2 // deprecated in newer PcapNG versions
-#define MMPR_SIMPLE_PACKET_BLOCK 3
-#define MMPR_NAME_RESOLUTION_BLOCK 4
-#define MMPR_INTERFACE_STATISTICS_BLOCK 5
-#define MMPR_ENHANCED_PACKET_BLOCK 6
-#define MMPR_DECRYPTION_SECRETS_BLOCK 10
-#define MMPR_CUSTOM_CAN_COPY_BLOCK 0x00000BAD
-#define MMPR_CUSTOM_DO_NOT_COPY_BLOCK 0x40000BAD
+#define FPCAP_SECTION_HEADER_BLOCK 0x0A0D0D0A
+#define FPCAP_INTERFACE_DESCRIPTION_BLOCK 1
+#define FPCAP_PACKET_BLOCK 2 // deprecated in newer PcapNG versions
+#define FPCAP_SIMPLE_PACKET_BLOCK 3
+#define FPCAP_NAME_RESOLUTION_BLOCK 4
+#define FPCAP_INTERFACE_STATISTICS_BLOCK 5
+#define FPCAP_ENHANCED_PACKET_BLOCK 6
+#define FPCAP_DECRYPTION_SECRETS_BLOCK 10
+#define FPCAP_CUSTOM_CAN_COPY_BLOCK 0x00000BAD
+#define FPCAP_CUSTOM_DO_NOT_COPY_BLOCK 0x40000BAD
 
 /**
  * Block Options
  */
-#define MMPR_BLOCK_OPTION_END_OF_OPT 0
-#define MMPR_BLOCK_OPTION_COMMENT 1
-#define MMPR_BLOCK_OPTION_SHB_HARDWARE 2
-#define MMPR_BLOCK_OPTION_SHB_OS 3
-#define MMPR_BLOCK_OPTION_SHB_USERAPPL 4
+#define FPCAP_BLOCK_OPTION_END_OF_OPT 0
+#define FPCAP_BLOCK_OPTION_COMMENT 1
+#define FPCAP_BLOCK_OPTION_SHB_HARDWARE 2
+#define FPCAP_BLOCK_OPTION_SHB_OS 3
+#define FPCAP_BLOCK_OPTION_SHB_USERAPPL 4
 
-#define MMPR_BLOCK_OPTION_IDB_NAME 2
-#define MMPR_BLOCK_OPTION_IDB_DESCRIPTION 3
-#define MMPR_BLOCK_OPTION_IDB_TSRESOL 9
-#define MMPR_BLOCK_OPTION_IDB_FILTER 11
-#define MMPR_BLOCK_OPTION_IDB_OS 12
+#define FPCAP_BLOCK_OPTION_IDB_NAME 2
+#define FPCAP_BLOCK_OPTION_IDB_DESCRIPTION 3
+#define FPCAP_BLOCK_OPTION_IDB_TSRESOL 9
+#define FPCAP_BLOCK_OPTION_IDB_FILTER 11
+#define FPCAP_BLOCK_OPTION_IDB_OS 12
 
 struct Option {
     uint16_t type{0};
@@ -279,6 +279,6 @@ struct InterfaceStatisticsBlock {
 
 } // namespace pcapng
 
-} // namespace mmpr
+} // namespace fpcap
 
-#endif // MMPR_MMPR_HPP
+#endif // FPCAP_FPCAP_HPP
