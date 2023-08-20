@@ -1,3 +1,5 @@
+![](https://fpcap.net/images/fpcap_logo.svg)
+
 # FPCAP - A fast and lightweight PCAP file reading library
 
 [![build](https://github.com/fpcap/fpcap/actions/workflows/build.yml/badge.svg)](https://github.com/fpcap/fpcap/actions/workflows/build.yml)
