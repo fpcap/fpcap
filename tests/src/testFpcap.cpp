@@ -2,32 +2,32 @@
 
 #include "fpcap/fpcap.hpp"
 
-TEST(Mmpr, GetReader) {
+TEST(fpcap, GetReader) {
     ASSERT_NE(nullptr, fpcap::Reader::getReader("tracefiles/example.pcap"));
 }
 
-TEST(Mmpr, GetReaderEmptyFilepath) {
+TEST(fpcap, GetReaderEmptyFilepath) {
     EXPECT_THROW(fpcap::Reader::getReader(""), std::runtime_error);
 }
 
-TEST(Mmpr, GetReaderNonExistingFilepath) {
+TEST(fpcap, GetReaderNonExistingFilepath) {
     EXPECT_THROW(fpcap::Reader::getReader("missing-file"), std::runtime_error);
 }
 
-TEST(Mmpr, GetReaderBrokenFile) {
+TEST(fpcap, GetReaderBrokenFile) {
     EXPECT_THROW(fpcap::Reader::getReader("tracefiles/broken.pcap"), std::runtime_error);
 }
 
-TEST(Mmpr, GetWriter) {
+TEST(fpcap, GetWriter) {
     // TODO replace with something platform independent
     ASSERT_NE(nullptr,fpcap::Writer::getWriter(std::tmpnam(nullptr)));
 }
 
-TEST(Mmpr, GetWriterEmptyFilepath) {
+TEST(fpcap, GetWriterEmptyFilepath) {
     EXPECT_THROW(fpcap::Writer::getWriter(""), std::runtime_error);
 }
 
-TEST(Mmpr, CutShortPcap) {
+TEST(fpcap, CutShortPcap) {
     auto reader = fpcap::Reader::getReader("tracefiles/RICS2021_787__fwscada_20200625_160926.pcap");
 
     size_t packetCount = 0;
