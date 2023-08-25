@@ -9,7 +9,7 @@
 #include <fcntl.h>
 #include <filesystem>
 #include <stdexcept>
-#if __linux__
+#if __linux__ || __APPLE__
 #include <sys/mman.h>
 #include <unistd.h>
 #elif _WIN32
@@ -65,7 +65,7 @@ public:
 
     MMapFileReader(fpcap::ZstdFileReader reader);
 
-#if __linux__
+#if __linux__ || __APPLE__
     ~MMapFileReader() {
         munmap((void*)mMappedMemory, mFileSize);
         ::close(mFileDescriptor);
@@ -75,7 +75,7 @@ public:
     const uint8_t* data() const override { return mMappedMemory; }
 
 private:
-#if __linux__
+#if __linux__ || __APPLE__
     int mFileDescriptor{0};
 #elif _WIN32
     HandlePtr mFileHandle;

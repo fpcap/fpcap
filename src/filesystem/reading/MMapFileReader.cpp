@@ -3,7 +3,7 @@
 namespace fpcap {
 
 MMapFileReader::MMapFileReader(const std::string& filepath) : FileReader(filepath) {
-#if __linux__
+#if __linux__ || __APPLE__
     mFileDescriptor = ::open(mFilepath.c_str(), O_RDONLY, 0);
     if (mFileDescriptor < 0) {
         throw std::runtime_error("Error while reading file " +
