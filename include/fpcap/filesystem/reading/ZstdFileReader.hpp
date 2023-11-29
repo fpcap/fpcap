@@ -17,7 +17,7 @@ public:
     const uint8_t* data() const override { return mDecompressedDataPtr; }
 
 private:
-    std::unique_ptr<uint8_t> mDecompressedData;
+    std::unique_ptr<uint8_t []> mDecompressedData;
     const uint8_t* mDecompressedDataPtr;
 };
 
