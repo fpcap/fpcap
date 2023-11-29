@@ -42,7 +42,7 @@ ZstdFileReader::ZstdFileReader(const std::string& filepath) : FileReader(filepat
         throw std::runtime_error("decompressed size unknown");
     }
 
-    mDecompressedData = std::unique_ptr<uint8_t>(new uint8_t[decompressedFileSize]);
+    mDecompressedData = std::unique_ptr<uint8_t []>(new uint8_t[decompressedFileSize]);
     if (!mDecompressedData) {
         throw std::runtime_error("Unable to malloc " +
                                  std::to_string(decompressedFileSize) +
