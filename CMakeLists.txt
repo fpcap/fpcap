@@ -43,8 +43,8 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     # Visual Studio
     target_compile_options(fpcap PRIVATE /W4 /WX)
     add_definitions(-D_AMD64_=1) # TODO possibly there is a better way to solve the "No Target Architecture" error
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    # GCC, MinGW etc.
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    # GCC, MinGW etc. or Clang
     target_compile_options(fpcap PRIVATE -static-libstdc++ -Wall -Wextra -pedantic)
 endif()
 
