@@ -108,8 +108,6 @@ public:
     virtual ~Writer() = default;
 
     virtual void write(const Packet& packet) = 0;
-
-    static std::unique_ptr<Writer> getWriter(const std::string& filepath);
 };
 
 /**

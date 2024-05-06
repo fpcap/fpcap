@@ -1,6 +1,7 @@
 #include "fpcap/pcap/PcapReader.hpp"
+#include "fpcap/pcap/PcapWriter.hpp"
+
 #include <chrono>
-#include <iostream>
 
 using namespace std;
 using namespace std::chrono;
@@ -10,13 +11,13 @@ int main() {
     string dstFilepath = "example.copy.pcap";
 
     auto reader = fpcap::Reader::getReader(srcFilepath);
-    auto writer = fpcap::Writer::getWriter(dstFilepath);
+    fpcap::StreamPcapWriter writer(dstFilepath);
 
     fpcap::Packet packet{};
     uint64_t processedPackets{0};
     while (!reader->isExhausted()) {
         if (reader->readNextPacket(packet)) {
-            writer->write(packet);
+            writer.write(packet);
             processedPackets++;
         }
     }

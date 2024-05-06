@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.16)
-message(STATUS "CMake ${CMAKE_VERSION}")
 
 project(fpcap VERSION 0.1.0 LANGUAGES CXX)
 

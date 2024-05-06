@@ -2,6 +2,8 @@
 
 #include "fpcap/fpcap.hpp"
 
+#include <fpcap/pcap/PcapWriter.hpp>
+
 TEST(fpcap, GetReader) {
     ASSERT_NE(nullptr, fpcap::Reader::getReader("tracefiles/example.pcap"));
 }
@@ -16,15 +18,6 @@ TEST(fpcap, GetReaderNonExistingFilepath) {
 
 TEST(fpcap, GetReaderBrokenFile) {
     EXPECT_THROW(fpcap::Reader::getReader("tracefiles/broken.pcap"), std::runtime_error);
-}
-
-TEST(fpcap, GetWriter) {
-    // TODO replace with something platform independent
-    ASSERT_NE(nullptr,fpcap::Writer::getWriter(std::tmpnam(nullptr)));
-}
-
-TEST(fpcap, GetWriterEmptyFilepath) {
-    EXPECT_THROW(fpcap::Writer::getWriter(""), std::runtime_error);
 }
 
 TEST(fpcap, CutShortPcap) {

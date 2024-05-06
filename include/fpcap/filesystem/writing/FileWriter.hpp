@@ -13,6 +13,10 @@ public:
     virtual ~FileWriter();
 
     virtual void write(const uint8_t* data, size_t size) = 0;
+    virtual void write(int64_t data) = 0;
+    virtual void write(uint32_t data) = 0;
+    virtual void write(uint16_t data) = 0;
+    virtual void write(uint8_t data) = 0;
 
 protected:
     const std::string mFilepath;

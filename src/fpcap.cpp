@@ -1,13 +1,11 @@
 #include "fpcap/fpcap.hpp"
 
-#include "fpcap/filesystem/writing/StreamFileWriter.hpp"
 #include "fpcap/modified_pcap/ModifiedPcapReader.hpp"
 #include "fpcap/pcap/PcapReader.hpp"
-#include "fpcap/pcap/PcapWriter.hpp"
 #include "fpcap/pcapng/PcapNgReader.hpp"
 #include "fpcap/util.hpp"
+
 #include <filesystem>
-#include <iostream>
 #include <memory>
 #include <string>
 
@@ -24,7 +22,7 @@ unique_ptr<Reader> Reader::getReader(const string& filepath) {
         throw runtime_error("FileReader: could not find file \"" + filepath + "\"");
     }
 
-    uint32_t magicNumber = util::read32bitsFromFile(filepath);
+    const uint32_t magicNumber = util::read32bitsFromFile(filepath);
     switch (magicNumber) {
     case PCAP_MICROSECONDS:
     case PCAP_NANOSECONDS: {
@@ -38,7 +36,7 @@ unique_ptr<Reader> Reader::getReader(const string& filepath) {
     }
     case ZSTD: {
         ZstdFileReader compressedFileReader(filepath);
-        auto uncompressedMagicNumber = *(uint32_t*)compressedFileReader.data();
+        const auto uncompressedMagicNumber = *(uint32_t*)compressedFileReader.data();
         switch (uncompressedMagicNumber) {
         case PCAP_MICROSECONDS:
         case PCAP_NANOSECONDS: {
@@ -58,14 +56,6 @@ unique_ptr<Reader> Reader::getReader(const string& filepath) {
     default:
         throw runtime_error("Failed to determine file type based on first 32 bits");
     }
-}
-
-unique_ptr<Writer> Writer::getWriter(const string& filepath) {
-    if (filepath.empty()) {
-        throw runtime_error("cannot writer reader for empty filepath");
-    }
-
-    return make_unique<StreamPcapWriter>(filepath);
 }
 
 } // namespace fpcap

@@ -8,9 +8,13 @@ namespace fpcap {
 
 class StreamFileWriter : public FileWriter {
 public:
-    StreamFileWriter(const std::string& filepath);
+    explicit StreamFileWriter(const std::string& filepath);
 
     void write(const uint8_t* data, size_t size) override;
+    void write(int64_t data) override;
+    void write(uint32_t data) override;
+    void write(uint16_t data) override;
+    void write(uint8_t data) override;
 
 private:
     std::ofstream mOutputFileStream;
