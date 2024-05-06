@@ -1,5 +1,7 @@
 #include "fpcap/pcapng/PcapNgWriter.hpp"
 
+#include <chrono>
+
 namespace fpcap {
 
 template <typename TWriter>
