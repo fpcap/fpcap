@@ -1,4 +1,5 @@
-#include "fpcap/pcapng/PcapNgReader.hpp"
+#include <fpcap/pcapng/PcapNgReader.hpp>
+
 #include <chrono>
 #include <iostream>
 
@@ -6,11 +7,11 @@ using namespace std;
 using namespace std::chrono;
 
 int main() {
-    string filepath = "tracefiles/pcapng-example.pcapng";
+    const string filepath = "tracefiles/pcapng-example.pcapng";
 
     // open file, map to memory and measure execution time
     auto start = high_resolution_clock::now();
-    auto reader = fpcap::Reader::getReader(filepath);
+    const auto reader = fpcap::Reader::getReader(filepath);
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<milliseconds>(stop - start);
     cout << "Open and mapped file to memory in " << duration.count() << "ms" << endl;

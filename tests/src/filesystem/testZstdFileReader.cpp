@@ -1,6 +1,6 @@
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
-#include "fpcap/filesystem/reading/ZstdFileReader.hpp"
+#include <fpcap/filesystem/ZstdFileReader.hpp>
 
 TEST(ZstdFileReader, ConstructorEmptyFilepath) {
     EXPECT_THROW(fpcap::ZstdFileReader{""}, std::runtime_error);

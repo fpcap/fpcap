@@ -1,6 +1,6 @@
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
-#include "fpcap/pcapng/PcapNgReader.hpp"
+#include <fpcap/pcapng/PcapNgReader.hpp>
 #include <iostream>
 
 TEST(TraceInterfaces, ReadBlock) {
@@ -58,6 +58,7 @@ TEST(TraceInterfaces, ReadBlock) {
             ASSERT_EQ(*traceInterface.name, "p2p0")
                 << "interface: " << traceInterfaceIndex;
             break;
+        default: ;
         }
         ++traceInterfaceIndex;
     }
@@ -126,6 +127,7 @@ TEST(TraceInterfaces, ReadPacket) {
             ASSERT_EQ(*traceInterface.name, "p2p0")
                 << "interface: " << traceInterfaceIndex;
             break;
+        default: ;
         }
         ++traceInterfaceIndex;
     }

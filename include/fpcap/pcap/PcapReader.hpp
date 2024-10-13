@@ -1,28 +1,25 @@
 #ifndef FPCAP_PCAPREADER_HPP
 #define FPCAP_PCAPREADER_HPP
 
-#include "fpcap/fpcap.hpp"
-#include "fpcap/filesystem/reading/FReadFileReader.hpp"
-#include "fpcap/filesystem/reading/MMapFileReader.hpp"
-#include "fpcap/filesystem/reading/ZstdFileReader.hpp"
-#include "fpcap/pcap/PcapParser.hpp"
-#include "fpcap/util.hpp"
-#include <filesystem>
-#include <sstream>
-#include <stdexcept>
+#include <fpcap/filesystem/Reader.hpp>
+#include <fpcap/TraceInterface.hpp>
+#include <fpcap/filesystem/FReadFileReader.hpp>
+#include <fpcap/filesystem/MMapFileReader.hpp>
+#include <fpcap/filesystem/ZstdFileReader.hpp>
+#include <fpcap/pcap/PcapFileHeader.hpp>
+
 #include <string>
 
-namespace fpcap {
-
+namespace fpcap::pcap {
 template <typename TReader>
-class PcapReader : public Reader {
-    static_assert(std::is_base_of<FileReader, TReader>::value,
+class PcapReader final : public Reader {
+    static_assert(std::is_base_of_v<FileReader, TReader>,
                   "TReader must be a subclass of FileReader");
 
 public:
-    PcapReader(const std::string& filepath);
+    explicit PcapReader(const std::string& filepath);
 
-    PcapReader(TReader&& reader);
+    explicit PcapReader(TReader&& reader);
 
     bool isExhausted() const override;
 
@@ -31,9 +28,11 @@ public:
     size_t getFileSize() const override { return mReader.mFileSize; }
     std::string getFilepath() const override { return mReader.mFilepath; }
     size_t getCurrentOffset() const override { return mReader.mOffset; }
+
     std::vector<TraceInterface> getTraceInterfaces() const override {
         return std::vector<TraceInterface>();
     }
+
     TraceInterface getTraceInterface([[maybe_unused]] size_t id) const override {
         return {};
     }
@@ -47,7 +46,6 @@ private:
 typedef PcapReader<FReadFileReader> FReadPcapReader;
 typedef PcapReader<MMapFileReader> MMPcapReader;
 typedef PcapReader<ZstdFileReader> ZstdPcapReader;
-
-} // namespace fpcap
+} // namespace fpcap::pcap
 
 #endif // FPCAP_PCAPREADER_HPP

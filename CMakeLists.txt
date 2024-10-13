@@ -1,9 +1,9 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.29)
 message(STATUS "CMake ${CMAKE_VERSION}")
 
 project(fpcap VERSION 0.1.0 LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -29,7 +29,6 @@ file(GLOB_RECURSE FPCAP_SRC_FILES CONFIGURE_DEPENDS src/*.cpp)
 add_library(fpcap ${FPCAP_SRC_FILES})
 add_library(fpcap::fpcap ALIAS fpcap)
 
-target_compile_features(fpcap PUBLIC cxx_std_17)
 target_include_directories(fpcap
     PUBLIC
         $<INSTALL_INTERFACE:include>

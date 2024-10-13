@@ -1,28 +1,24 @@
 #ifndef FPCAP_PCAPNGREADER_HPP
 #define FPCAP_PCAPNGREADER_HPP
 
-#include "fpcap/fpcap.hpp"
-#include "fpcap/filesystem/reading/FReadFileReader.hpp"
-#include "fpcap/filesystem/reading/FileReader.hpp"
-#include "fpcap/filesystem/reading/MMapFileReader.hpp"
-#include "fpcap/filesystem/reading/ZstdFileReader.hpp"
-#include "fpcap/pcapng/PcapNgBlockParser.hpp"
-#include "fpcap/util.hpp"
-#include <algorithm>
+#include <fpcap/filesystem/Reader.hpp>
+#include <fpcap/filesystem/FReadFileReader.hpp>
+#include <fpcap/filesystem/FileReader.hpp>
+#include <fpcap/filesystem/MMapFileReader.hpp>
+#include <fpcap/filesystem/ZstdFileReader.hpp>
+
 #include <filesystem>
-#include <stdexcept>
 
-namespace fpcap {
-
+namespace fpcap::pcapng {
 template <typename TReader>
-class PcapNgReader : public Reader {
-    static_assert(std::is_base_of<FileReader, TReader>::value,
+class PcapNgReader final : public Reader {
+    static_assert(std::is_base_of_v<FileReader, TReader>,
                   "TReader must be a subclass of FileReader");
 
 public:
-    PcapNgReader(const std::string& filepath);
+    explicit PcapNgReader(const std::string& filepath);
 
-    PcapNgReader(TReader&& reader);
+    explicit PcapNgReader(TReader&& reader);
 
     bool isExhausted() const override;
 
@@ -83,7 +79,6 @@ private:
 typedef PcapNgReader<FReadFileReader> FReadPcapNgReader;
 typedef PcapNgReader<MMapFileReader> MMPcapNgReader;
 typedef PcapNgReader<ZstdFileReader> ZstdPcapNgReader;
-
-} // namespace fpcap
+} // namespace fpcap::pcapng
 
 #endif // FPCAP_PCAPNGREADER_HPP

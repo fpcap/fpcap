@@ -1,10 +1,14 @@
-#include "fpcap/filesystem/reading/MMapFileReader.hpp"
+#include "fpcap/filesystem/MMapFileReader.hpp"
+
+#include <cstring>
+#include <fcntl.h>
 
 namespace fpcap {
 
-MMapFileReader::MMapFileReader(const std::string& filepath) : FileReader(filepath) {
+MMapFileReader::MMapFileReader(const std::string& filepath)
+    : FileReader(filepath) {
 #if __linux__ || __APPLE__
-    mFileDescriptor = ::open(mFilepath.c_str(), O_RDONLY, 0);
+    mFileDescriptor = open(mFilepath.c_str(), O_RDONLY, 0);
     if (mFileDescriptor < 0) {
         throw std::runtime_error("Error while reading file " +
                                  std::filesystem::absolute(mFilepath).string() + ": " +
@@ -13,14 +17,14 @@ MMapFileReader::MMapFileReader(const std::string& filepath) : FileReader(filepat
 
     auto mmapResult = mmap(nullptr, mFileSize, PROT_READ, MAP_SHARED, mFileDescriptor, 0);
     if (mmapResult == MAP_FAILED) {
-        ::close(mFileDescriptor);
+        close(mFileDescriptor);
         throw std::runtime_error("Error while mapping file " +
                                  std::filesystem::absolute(mFilepath).string() + ": " +
                                  strerror(errno));
     }
 
     mOffset = 0;
-    mMappedMemory = reinterpret_cast<const uint8_t*>(mmapResult);
+    mMappedMemory = static_cast<const uint8_t*>(mmapResult);
 #elif _WIN32
     mFileHandle =
         HandlePtr(CreateFile(mFilepath.c_str(), GENERIC_READ,

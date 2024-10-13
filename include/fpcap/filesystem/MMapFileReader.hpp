@@ -1,14 +1,10 @@
 #ifndef FPCAP_MMAPFILEREADER_HPP
 #define FPCAP_MMAPFILEREADER_HPP
 
-#include "FileReader.hpp"
-#include "ZstdFileReader.hpp"
-#include <algorithm>
-#include <cerrno>
-#include <cstring>
-#include <fcntl.h>
+#include <fpcap/filesystem/FileReader.hpp>
+#include <fpcap/filesystem/ZstdFileReader.hpp>
+
 #include <filesystem>
-#include <stdexcept>
 #if __linux__ || __APPLE__
 #include <sys/mman.h>
 #include <unistd.h>
@@ -19,14 +15,16 @@
 #endif
 
 namespace fpcap {
-
 #if _WIN32
 // Windows HANDLEs are not RAII compatible, therefore we need to wrap them
 // See https://stackoverflow.com/a/34405788
 class WinHandle {
 public:
-    WinHandle(std::nullptr_t = nullptr) : value_(nullptr) {}
-    WinHandle(HANDLE value) : value_(value == INVALID_HANDLE_VALUE ? nullptr : value) {}
+    WinHandle(std::nullptr_t = nullptr) : value_(nullptr) {
+    }
+
+    WinHandle(HANDLE value) : value_(value == INVALID_HANDLE_VALUE ? nullptr : value) {
+    }
 
     explicit operator bool() const { return value_ != nullptr; }
     operator HANDLE() const { return value_; }
@@ -46,12 +44,15 @@ private:
 inline bool operator==(HANDLE l, WinHandle r) {
     return WinHandle(l) == r;
 }
+
 inline bool operator!=(HANDLE l, WinHandle r) {
     return !(l == r);
 }
+
 inline bool operator==(WinHandle l, HANDLE r) {
     return l == WinHandle(r);
 }
+
 inline bool operator!=(WinHandle l, HANDLE r) {
     return !(l == r);
 }
@@ -59,16 +60,16 @@ inline bool operator!=(WinHandle l, HANDLE r) {
 typedef std::unique_ptr<WinHandle, WinHandle::Deleter> HandlePtr;
 #endif
 
-class MMapFileReader : public FileReader {
+class MMapFileReader final : public FileReader {
 public:
-    MMapFileReader(const std::string& filepath);
+    explicit MMapFileReader(const std::string& filepath);
 
-    MMapFileReader(fpcap::ZstdFileReader reader);
+    explicit MMapFileReader(ZstdFileReader reader);
 
 #if __linux__ || __APPLE__
-    ~MMapFileReader() {
+    ~MMapFileReader() override {
         munmap((void*)mMappedMemory, mFileSize);
-        ::close(mFileDescriptor);
+        close(mFileDescriptor);
     }
 #endif
 
@@ -83,7 +84,6 @@ private:
 #endif
     const uint8_t* mMappedMemory{nullptr};
 };
-
 } // namespace fpcap
 
 #endif // FPCAP_MMAPFILEREADER_HPP

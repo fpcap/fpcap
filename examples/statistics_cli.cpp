@@ -1,4 +1,5 @@
-#include "fpcap/pcapng/PcapNgReader.hpp"
+#include <fpcap/pcapng/PcapNgReader.hpp>
+
 #include <algorithm>
 #include <chrono>
 #include <iostream>
@@ -6,7 +7,7 @@
 using namespace std;
 using namespace std::chrono;
 
-int main(int argc, char** argv) {
+int main(const int argc, char** argv) {
     vector<string> pcapFiles;
 
     for (size_t i = 1; i < argc; ++i) {
@@ -19,7 +20,7 @@ int main(int argc, char** argv) {
     }
 
     // sort files for deterministic results
-    std::sort(pcapFiles.begin(), pcapFiles.end());
+    ranges::sort(pcapFiles);
 
     // metrics to count
     uint64_t packets = 0;
@@ -27,7 +28,7 @@ int main(int argc, char** argv) {
     uint64_t capturedBytes = 0;
     uint64_t totalFileSize = 0;
 
-    auto start = high_resolution_clock::now();
+    const auto start = high_resolution_clock::now();
 
     for (const auto& pcapFile : pcapFiles) {
         std::unique_ptr<fpcap::Reader> reader = fpcap::Reader::getReader(pcapFile);
@@ -43,16 +44,16 @@ int main(int argc, char** argv) {
         }
     }
 
-    auto stop = high_resolution_clock::now();
-    uint64_t duration = duration_cast<nanoseconds>(stop - start).count();
+    const auto stop = high_resolution_clock::now();
+    const uint64_t duration = duration_cast<nanoseconds>(stop - start).count();
 
     cout << "Time elapsed: " << duration << "ns" << endl;
     cout << "Packets: " << packets << endl;
     cout << "Bytes: " << bytes << endl;
     cout << "Bytes (captured): " << capturedBytes << endl;
 
-    cout << (double)packets * 1000000000 / duration << " packets/s" << endl;
-    cout << (double)totalFileSize * 1000000000 / duration << " bytes/s" << endl;
+    cout << static_cast<double>(packets) * 1000000000 / duration << " packets/s" << endl;
+    cout << static_cast<double>(totalFileSize) * 1000000000 / duration << " bytes/s" << endl;
 
     return 0;
 }

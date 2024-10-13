@@ -1,4 +1,4 @@
-#include "fpcap/filesystem/writing/FileWriter.hpp"
+#include "fpcap/filesystem/FileWriter.hpp"
 
 namespace fpcap {
 

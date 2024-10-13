@@ -1,6 +1,6 @@
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
-#include "fpcap/filesystem/reading/FReadFileReader.hpp"
+#include <fpcap/filesystem/FReadFileReader.hpp>
 
 TEST(FReadFileReader, ConstructorEmptyFilepath) {
     EXPECT_THROW(fpcap::FReadFileReader{""}, std::runtime_error);

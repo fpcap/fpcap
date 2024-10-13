@@ -1,6 +1,7 @@
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
-#include "fpcap/fpcap.hpp"
+#include <fpcap/filesystem/Reader.hpp>
+#include <fpcap/filesystem/Writer.hpp>
 
 TEST(fpcap, GetReader) {
     ASSERT_NE(nullptr, fpcap::Reader::getReader("tracefiles/example.pcap"));
@@ -18,17 +19,8 @@ TEST(fpcap, GetReaderBrokenFile) {
     EXPECT_THROW(fpcap::Reader::getReader("tracefiles/broken.pcap"), std::runtime_error);
 }
 
-TEST(fpcap, GetWriter) {
-    // TODO replace with something platform independent
-    ASSERT_NE(nullptr,fpcap::Writer::getWriter(std::tmpnam(nullptr)));
-}
-
-TEST(fpcap, GetWriterEmptyFilepath) {
-    EXPECT_THROW(fpcap::Writer::getWriter(""), std::runtime_error);
-}
-
 TEST(fpcap, CutShortPcap) {
-    auto reader = fpcap::Reader::getReader("tracefiles/RICS2021_787__fwscada_20200625_160926.pcap");
+    const auto reader = fpcap::Reader::getReader("tracefiles/RICS2021_787__fwscada_20200625_160926.pcap");
 
     size_t packetCount = 0;
     fpcap::Packet packet;

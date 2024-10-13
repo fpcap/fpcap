@@ -1,15 +1,14 @@
 #ifndef FPCAP_FILEREADER_HPP
 #define FPCAP_FILEREADER_HPP
 
-#include "fpcap/fpcap.hpp"
 #include <filesystem>
 #include <string>
 
 namespace fpcap {
-
 class FileReader {
 public:
-    FileReader(const std::string& filepath);
+    explicit FileReader(const std::string& filepath);
+    virtual ~FileReader() = default;
 
     virtual const uint8_t* data() const = 0;
 
@@ -21,7 +20,6 @@ public:
     std::size_t mFileSize;
     std::size_t mOffset{0};
 };
-
 } // namespace fpcap
 
 #endif // FPCAP_FILEREADER_HPP

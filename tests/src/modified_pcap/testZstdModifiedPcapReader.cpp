@@ -1,8 +1,7 @@
-#include "gtest/gtest.h"
-
 #if FPCAP_USE_ZSTD
+#include <gtest/gtest.h>
 
-#include "fpcap/modified_pcap/ModifiedPcapReader.hpp"
+#include <fpcap/modified_pcap/ModifiedPcapReader.hpp>
 
 TEST(ZstdModifiedPcapReader, ConstructorSimple) {
     fpcap::ZstdModifiedPcapReader reader{"tracefiles/fritzbox-ip.pcap.zst"};

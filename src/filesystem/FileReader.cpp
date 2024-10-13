@@ -1,4 +1,4 @@
-#include "fpcap/filesystem/reading/FileReader.hpp"
+#include "fpcap/filesystem/FileReader.hpp"
 
 #include <filesystem>
 #include <stdexcept>
@@ -25,9 +25,9 @@ FileReader::FileReader(const string& filepath)
 size_t FileReader::getSafeToReadSize() const {
     if (mOffset >= mFileSize) {
         return 0;
-    } else {
-        return mFileSize - mOffset;
     }
+
+    return mFileSize - mOffset;
 }
 
 } // namespace fpcap

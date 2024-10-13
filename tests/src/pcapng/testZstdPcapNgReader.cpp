@@ -1,8 +1,8 @@
 #ifdef FPCAP_USE_ZSTD
 
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
-#include "fpcap/pcapng/PcapNgReader.hpp"
+#include <fpcap/pcapng/PcapNgReader.hpp>
 
 TEST(ZstdPcapNgReader, ConstructorSimple) {
     {

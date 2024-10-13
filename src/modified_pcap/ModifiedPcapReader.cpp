@@ -1,7 +1,11 @@
 #include "fpcap/modified_pcap/ModifiedPcapReader.hpp"
+
+#include <fpcap/modified_pcap/ModifiedPcapFileHeader.hpp>
+#include <fpcap/modified_pcap/ModifiedPcapParser.hpp>
+
 #include <iostream>
 
-namespace fpcap {
+namespace fpcap::modified_pcap {
 
 template <typename TReader>
 ModifiedPcapReader<TReader>::ModifiedPcapReader(const std::string& filepath)
@@ -38,9 +42,9 @@ bool ModifiedPcapReader<TReader>::readNextPacket(Packet& packet) {
     // make sure there are enough bytes to read
     if (mReader.getSafeToReadSize() < 24) {
         std::cerr << "Error: Expected to read at least one more raw packet record (24 "
-                     "bytes at least), but there are only "
-                  << mReader.getSafeToReadSize() << " bytes left in the file"
-                  << std::endl;
+            "bytes at least), but there are only "
+            << mReader.getSafeToReadSize() << " bytes left in the file"
+            << std::endl;
         return false;
     }
 

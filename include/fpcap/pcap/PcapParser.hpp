@@ -1,11 +1,12 @@
 #ifndef FPCAP_PCAPPARSER_HPP
 #define FPCAP_PCAPPARSER_HPP
 
-#include "fpcap/fpcap.hpp"
-#include <algorithm>
-#include <sstream>
+#include <fpcap/pcap/PcapFileHeader.hpp>
+#include <fpcap/pcap/PcapPacketRecord.hpp>
 
-namespace fpcap {
+#include <cstdint>
+
+namespace fpcap::pcap {
 class PcapParser {
 public:
     /**
@@ -27,7 +28,7 @@ public:
      *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
      *
      */
-    static void readFileHeader(const uint8_t* data, pcap::FileHeader& fh);
+    static void readFileHeader(const uint8_t* data, FileHeader& fh);
 
     /**
      *                         1                   2                   3
@@ -47,9 +48,8 @@ public:
      *    /                                                               /
      *    +---------------------------------------------------------------+
      */
-    static void readPacketRecord(const uint8_t* data, pcap::PacketRecord& pr);
+    static void readPacketRecord(const uint8_t* data, PacketRecord& pr);
 };
-
-} // namespace fpcap
+} // namespace fpcap::pcap
 
 #endif // FPCAP_PCAPPARSER_HPP

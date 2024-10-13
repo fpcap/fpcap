@@ -1,5 +1,6 @@
-#include "fpcap/filesystem/reading/FReadFileReader.hpp"
+#include "fpcap/filesystem/FReadFileReader.hpp"
 
+#include <cstring>
 #if defined(_WIN32) || defined(__APPLE__)
 #include <stdio.h>
 #endif

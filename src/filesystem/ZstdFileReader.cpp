@@ -1,16 +1,20 @@
-#include "fpcap/filesystem/reading/ZstdFileReader.hpp"
+#include "fpcap/filesystem/ZstdFileReader.hpp"
 
-#include "fpcap/filesystem/reading/FReadFileReader.hpp"
-#include "zstd.h"
+#include <fpcap/filesystem/FReadFileReader.hpp>
+#include <fpcap/MagicNumber.hpp>
+
+#include <zstd.h>
 #include <algorithm>
 #include <sstream>
 
+
 namespace fpcap {
 
-ZstdFileReader::ZstdFileReader(const std::string& filepath) : FileReader(filepath) {
-    FReadFileReader compressedFileReader(mFilepath);
-    auto compressedData = compressedFileReader.data();
-    auto compressedSize = compressedFileReader.mFileSize;
+ZstdFileReader::ZstdFileReader(const std::string& filepath)
+    : FileReader(filepath) {
+    const FReadFileReader compressedFileReader(mFilepath);
+    const auto compressedData = compressedFileReader.data();
+    const auto compressedSize = compressedFileReader.mFileSize;
 
     if (compressedSize < 4) {
         throw std::runtime_error("Not enough data to decompress, expected at least 4 "
@@ -18,11 +22,11 @@ ZstdFileReader::ZstdFileReader(const std::string& filepath) : FileReader(filepat
                                  std::to_string(compressedSize));
     }
 
-    uint32_t magicNumber = *(const uint32_t*)&compressedFileReader.data()[0];
-    if (magicNumber != ZSTD) {
+    if (const uint32_t magicNumber = *reinterpret_cast<const uint32_t*>(&
+        compressedFileReader.data()[0]); magicNumber != ZSTD) {
         std::stringstream sstream;
         sstream << std::hex << magicNumber;
-        std::string hex = sstream.str();
+        const std::string hex = sstream.str();
         throw std::runtime_error("Expected ZSTD format to start with appropriate magic "
                                  "number, instead got: 0x" +
                                  hex + ", possibly little/big endian issue");
@@ -34,7 +38,8 @@ ZstdFileReader::ZstdFileReader(const std::string& filepath) : FileReader(filepat
      * content size is always written into the header, either use streaming
      * decompression, or ZSTD_decompressBound().
      */
-    auto decompressedFileSize = ZSTD_getFrameContentSize(compressedData, compressedSize);
+    const auto decompressedFileSize = ZSTD_getFrameContentSize(
+        compressedData, compressedSize);
     if (decompressedFileSize == ZSTD_CONTENTSIZE_ERROR) {
         throw std::runtime_error("data is not compressed by zstd");
     }
@@ -54,7 +59,7 @@ ZstdFileReader::ZstdFileReader(const std::string& filepath) : FileReader(filepat
      * and use ZSTD_decompressDCtx(). If you want to set advanced parameters,
      * use ZSTD_DCtx_setParameter().
      */
-    size_t decompressedSize = ZSTD_decompress(
+    const size_t decompressedSize = ZSTD_decompress(
         mDecompressedData.get(), decompressedFileSize, compressedData, compressedSize);
     if (ZSTD_isError(decompressedSize)) {
         throw std::runtime_error(ZSTD_getErrorName(decompressedSize));
@@ -69,9 +74,10 @@ ZstdFileReader::ZstdFileReader(const std::string& filepath) : FileReader(filepat
     mFileSize = decompressedSize;
 }
 
-ZstdFileReader::ZstdFileReader(ZstdFileReader&& other)
+ZstdFileReader::ZstdFileReader(ZstdFileReader&& other) noexcept
     : FileReader(other),
       mDecompressedData(std::move(other.mDecompressedData)),
-      mDecompressedDataPtr(mDecompressedData.get()) {}
+      mDecompressedDataPtr(mDecompressedData.get()) {
+}
 
 } // namespace fpcap

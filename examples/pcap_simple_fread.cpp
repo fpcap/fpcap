@@ -1,4 +1,5 @@
-#include "fpcap/pcap/PcapReader.hpp"
+#include <fpcap/pcap/PcapReader.hpp>
+
 #include <chrono>
 #include <iostream>
 
@@ -6,11 +7,11 @@ using namespace std;
 using namespace std::chrono;
 
 int main() {
-    string filepath = "tracefiles/example.pcap";
+    const string filepath = "tracefiles/example.pcap";
 
     // open file, map to memory and measure execution time
     auto start = high_resolution_clock::now();
-    fpcap::FReadPcapReader reader(filepath);
+    fpcap::pcap::FReadPcapReader reader(filepath);
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<milliseconds>(stop - start);
     cout << "Open file in " << duration.count() << "ms" << endl;

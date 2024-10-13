@@ -1,17 +1,24 @@
 #include "fpcap/pcapng/PcapNgReader.hpp"
 
+#include <fpcap/pcapng/PcapNgBlockParser.hpp>
+#include <fpcap/util.hpp>
+#include <fpcap/pcapng/PcapNg.hpp>
+#include <fpcap/MagicNumber.hpp>
+#include <fpcap/Packet.hpp>
+
 #include <iostream>
 #include <sstream>
 
-namespace fpcap {
+namespace fpcap::pcapng {
 
 template <typename TReader>
-PcapNgReader<TReader>::PcapNgReader(const std::string& filepath) : mReader(filepath) {
-    uint32_t magicNumber = *(uint32_t*)mReader.data();
-    if (magicNumber != PCAPNG) {
+PcapNgReader<TReader>::PcapNgReader(const std::string& filepath)
+    : mReader(filepath) {
+    if (const uint32_t magicNumber = *reinterpret_cast<const uint32_t*>(mReader.data());
+        magicNumber != PCAPNG) {
         std::stringstream sstream;
         sstream << std::hex << magicNumber;
-        std::string hex = sstream.str();
+        const std::string hex = sstream.str();
         throw std::runtime_error(
             "Expected PcapNG format to start with appropriate magic "
             "number, instead got: 0x" +
@@ -22,16 +29,16 @@ PcapNgReader<TReader>::PcapNgReader(const std::string& filepath) : mReader(filep
 template <typename TReader>
 PcapNgReader<TReader>::PcapNgReader(TReader&& reader)
     : mReader(std::forward<TReader>(reader)) {
-    uint32_t magicNumber = *(uint32_t*)mReader.data();
-    if (magicNumber != PCAPNG) {
+    if (const uint32_t magicNumber = *reinterpret_cast<const uint32_t*>(mReader.data());
+        magicNumber != PCAPNG) {
         std::stringstream sstream;
         sstream << std::hex << magicNumber;
-        std::string hex = sstream.str();
+        const std::string hex = sstream.str();
         throw std::runtime_error(
             "Expected PcapNG format to start with appropriate magic "
             "number, instead got: 0x" +
             hex + ", possibly little/big endian issue while reading file " +
-            getFilepath());
+            PcapNgReader::getFilepath());
     }
 }
 
@@ -50,14 +57,16 @@ bool PcapNgReader<TReader>::readNextPacket(Packet& packet) {
     // make sure there are enough bytes to read
     if (mReader.getSafeToReadSize() < 8) {
         std::cerr << "Error: Expected to read at least one more block (8 bytes at "
-                     "least), but there are only "
-                  << mReader.getSafeToReadSize() << " bytes left in the file"
-                  << std::endl;
+            "least), but there are only "
+            << mReader.getSafeToReadSize() << " bytes left in the file"
+            << std::endl;
         return false;
     }
 
-    uint32_t blockType = *(uint32_t*)&mReader.data()[mReader.mOffset];
-    uint32_t blockTotalLength = *(uint32_t*)&mReader.data()[mReader.mOffset + 4];
+    uint32_t blockType = *reinterpret_cast<const uint32_t*>(&mReader.data()[mReader.
+        mOffset]);
+    uint32_t blockTotalLength = *reinterpret_cast<const uint32_t*>(&mReader.data()[
+        mReader.mOffset + 4]);
 
     // TODO add support for Simple Packet Blocks
     while (blockType != FPCAP_ENHANCED_PACKET_BLOCK && blockType != FPCAP_PACKET_BLOCK) {
@@ -73,7 +82,8 @@ bool PcapNgReader<TReader>::readNextPacket(Packet& packet) {
             PcapNgBlockParser::readIDB(&mReader.data()[mReader.mOffset], idb);
             mMetadata.timestampResolution = idb.options.timestampResolution;
             mTraceInterfaces.emplace_back(idb.options.name, idb.options.description,
-                                          idb.options.filter, idb.options.os, idb.linkType);
+                                          idb.options.filter, idb.options.os,
+                                          idb.linkType);
         }
 
         mReader.mOffset += blockTotalLength;
@@ -86,15 +96,16 @@ bool PcapNgReader<TReader>::readNextPacket(Packet& packet) {
         // make sure there are enough bytes to read
         if (mReader.getSafeToReadSize() < 8) {
             std::cerr << "Error: Expected to read at least one more block (8 bytes at "
-                         "least), but there are only "
-                      << mReader.getSafeToReadSize() << " bytes left in the file"
-                      << std::endl;
+                "least), but there are only "
+                << mReader.getSafeToReadSize() << " bytes left in the file"
+                << std::endl;
             return false;
         }
 
         // try to read next block type
-        blockType = *(const uint32_t*)&mReader.data()[mReader.mOffset];
-        blockTotalLength = *(const uint32_t*)&mReader.data()[mReader.mOffset + 4];
+        blockType = *reinterpret_cast<const uint32_t*>(&mReader.data()[mReader.mOffset]);
+        blockTotalLength = *reinterpret_cast<const uint32_t*>(&mReader.data()[
+            mReader.mOffset + 4]);
     }
 
     switch (blockType) {
@@ -128,6 +139,7 @@ bool PcapNgReader<TReader>::readNextPacket(Packet& packet) {
         mReader.mOffset += pb.blockTotalLength;
         break;
     }
+    default: ;
     }
 
     return true;
@@ -135,8 +147,10 @@ bool PcapNgReader<TReader>::readNextPacket(Packet& packet) {
 
 template <typename TReader>
 uint32_t PcapNgReader<TReader>::readBlock() {
-    const auto blockType = *(const uint32_t*)&mReader.data()[mReader.mOffset];
-    const auto blockTotalLength = *(const uint32_t*)&mReader.data()[mReader.mOffset + 4];
+    const auto blockType = *reinterpret_cast<const uint32_t*>(&mReader.data()[mReader.
+        mOffset]);
+    const auto blockTotalLength = *reinterpret_cast<const uint32_t*>(&mReader.data()[
+        mReader.mOffset + 4]);
 
     switch (blockType) {
     case FPCAP_SECTION_HEADER_BLOCK: {
@@ -199,7 +213,7 @@ uint32_t PcapNgReader<TReader>::readBlock() {
     }
 
     // skip to next block
-    mReader.mOffset += (size_t)blockTotalLength;
+    mReader.mOffset += static_cast<size_t>(blockTotalLength);
 
     return blockType;
 }

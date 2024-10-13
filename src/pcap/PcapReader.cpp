@@ -1,10 +1,14 @@
 #include "fpcap/pcap/PcapReader.hpp"
+
+#include <fpcap/pcap/PcapParser.hpp>
+
 #include <iostream>
 
-namespace fpcap {
+namespace fpcap::pcap {
 
 template <typename TReader>
-PcapReader<TReader>::PcapReader(const std::string& filepath) : mReader(filepath) {
+PcapReader<TReader>::PcapReader(const std::string& filepath)
+    : mReader(filepath) {
     pcap::FileHeader fileHeader{};
     PcapParser::readFileHeader(mReader.data(), fileHeader);
     mDataLinkType = fileHeader.dataLinkType;
@@ -37,9 +41,9 @@ bool PcapReader<TReader>::readNextPacket(Packet& packet) {
     // make sure there are enough bytes to read
     if (mReader.getSafeToReadSize() < 16) {
         std::cerr << "Error: Expected to read at least one more packet record (16 bytes "
-                     "at least), but there are only "
-                  << mReader.getSafeToReadSize() << " bytes left in the file"
-                  << std::endl;
+            "at least), but there are only "
+            << mReader.getSafeToReadSize() << " bytes left in the file"
+            << std::endl;
         return false;
     }
 
@@ -49,8 +53,8 @@ bool PcapReader<TReader>::readNextPacket(Packet& packet) {
 
     if (packetRecord.captureLength > (mReader.mFileSize - mReader.mOffset)) {
         std::cerr << "Error: capture file appears to be cut short, trying to read "
-                  << packetRecord.captureLength << " bytes, but only "
-                  << (mReader.mFileSize - mReader.mOffset) << " are available" << std::endl;
+            << packetRecord.captureLength << " bytes, but only "
+            << (mReader.mFileSize - mReader.mOffset) << " are available" << std::endl;
         mReader.mOffset = mReader.mFileSize;
         return false;
     }

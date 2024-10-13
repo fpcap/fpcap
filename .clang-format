@@ -11,5 +11,5 @@ IndentWidth: 4
 NamespaceIndentation: None
 PointerAlignment: Left
 SpacesInAngles: false
-Standard: c++17
+Standard: c++20
 UseTab: Never

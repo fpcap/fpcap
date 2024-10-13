@@ -1,13 +1,17 @@
-#include "gmock/gmock.h"
-#include "gtest/gtest.h"
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
-#include "fpcap/filesystem/reading/FileReader.hpp"
+#include <fpcap/filesystem/Reader.hpp>
+#include <fpcap/filesystem/FileReader.hpp>
+
 #include <filesystem>
 #include <iostream>
 
-class FileReaderMock : public fpcap::FileReader {
+class FileReaderMock final : public fpcap::FileReader {
 public:
-    FileReaderMock(const std::string& filepath) : fpcap::FileReader(filepath) {}
+    explicit FileReaderMock(const std::string& filepath)
+        : FileReader(filepath) {
+    }
 
     MOCK_METHOD(const uint8_t*, data, (), (const, override));
 };
@@ -48,7 +52,7 @@ TEST(FileReader, GetReader) {
     for (const std::string& file : files) {
         std::cout << "Reading file " << file << std::endl;
 
-        auto reader = fpcap::Reader::getReader(file);
+        const auto reader = fpcap::Reader::getReader(file);
         fpcap::Packet packet;
         uint64_t processedPackets{0};
         while (!reader->isExhausted()) {

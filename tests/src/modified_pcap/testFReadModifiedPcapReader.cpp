@@ -1,32 +1,35 @@
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
-#include "fpcap/modified_pcap/ModifiedPcapReader.hpp"
+#include <fpcap/modified_pcap/ModifiedPcapReader.hpp>
 
 TEST(FReadModifiedPcapReader, ConstructorSimple) {
-    fpcap::FReadModifiedPcapReader reader{"tracefiles/fritzbox-ip.pcap"};
+    const fpcap::modified_pcap::FReadModifiedPcapReader reader{
+        "tracefiles/fritzbox-ip.pcap"};
     EXPECT_EQ(reader.getFilepath(), "tracefiles/fritzbox-ip.pcap")
         << "Hint: make sure to execute unit tests from root directory";
 }
 
 TEST(FReadModifiedPcapReader, ConstructorMissingFile) {
-    EXPECT_THROW(fpcap::FReadModifiedPcapReader{"missing-file"}, std::runtime_error);
+    EXPECT_THROW(fpcap::modified_pcap::FReadModifiedPcapReader{"missing-file"},
+                 std::runtime_error);
 }
 
 #if __linux__
 // TODO this behaves strangely on Windows
 TEST(FReadModifiedPcapReader, FaultyConstructorNullptr) {
-    EXPECT_THROW(fpcap::FReadModifiedPcapReader{nullptr}, std::logic_error);
+    EXPECT_THROW(fpcap::modified_pcap::FReadModifiedPcapReader{nullptr}, std::logic_error);
 }
 #endif
 
 TEST(FReadModifiedPcapReader, FaultyConstructorEmptyFilepath) {
-    EXPECT_THROW(fpcap::FReadModifiedPcapReader{""}, std::runtime_error);
+    EXPECT_THROW(fpcap::modified_pcap::FReadModifiedPcapReader{""}, std::runtime_error);
 }
 
 TEST(FReadModifiedPcapReader, DLT) {
     {
         // Standard Ethernet
-        fpcap::FReadModifiedPcapReader reader{"tracefiles/fritzbox-ip.pcap"};
+        fpcap::modified_pcap::FReadModifiedPcapReader reader{
+            "tracefiles/fritzbox-ip.pcap"};
         fpcap::Packet packet;
         uint64_t processedPackets{0};
         while (!reader.isExhausted()) {

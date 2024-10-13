@@ -1,6 +1,6 @@
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
-#include "fpcap/filesystem/reading/MMapFileReader.hpp"
+#include <fpcap/filesystem/MMapFileReader.hpp>
 
 TEST(MMapFileReader, ConstructorEmptyFilepath) {
     EXPECT_THROW(fpcap::MMapFileReader{""}, std::runtime_error);

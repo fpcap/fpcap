@@ -1,19 +1,17 @@
 #ifndef FPCAP_MODIFIEDPCAPPARSER_HPP
 #define FPCAP_MODIFIEDPCAPPARSER_HPP
 
-#include "fpcap/fpcap.hpp"
-#include <algorithm>
+#include <fpcap/modified_pcap/ModifiedPcapFileHeader.hpp>
+#include <fpcap/modified_pcap/ModifiedPcapPacketRecord.hpp>
+
 #if __linux__
 #include <netinet/in.h>
 #elif _WIN32
 #include <winsock2.h>
 #include <windows.h>
 #endif
-#include <sstream>
-#include <stdexcept>
 
-namespace fpcap {
-
+namespace fpcap::modified_pcap {
 class ModifiedPcapParser {
 public:
     /**
@@ -36,7 +34,7 @@ public:
      *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
      *
      */
-    static void readFileHeader(const uint8_t* data, modified_pcap::FileHeader& mpfh);
+    static void readFileHeader(const uint8_t* data, FileHeader& mpfh);
 
     /**
      *                         1                   2                   3
@@ -60,12 +58,11 @@ public:
      *    /                                                               /
      *    +---------------------------------------------------------------+
      */
-    static void readPacketRecord(const uint8_t* data, modified_pcap::PacketRecord& mppr);
+    static void readPacketRecord(const uint8_t* data, PacketRecord& mppr);
 
     static void readPacketRecordBE(const uint8_t* data,
-                                   modified_pcap::PacketRecord& mppr);
+                                   PacketRecord& mppr);
 };
-
-} // namespace fpcap
+} // namespace fpcap::modified_pcap
 
 #endif // FPCAP_MODIFIEDPCAPPARSER_HPP

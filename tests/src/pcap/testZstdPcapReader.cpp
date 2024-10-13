@@ -1,8 +1,7 @@
-#include "gtest/gtest.h"
-
-#include "fpcap/pcap/PcapReader.hpp"
-
 #if FPCAP_USE_ZSTD
+#include <gtest/gtest.h>
+
+#include <fpcap/pcap/PcapReader.hpp>
 
 TEST(ZstdPcapReader, ConstructorSimple) {
     fpcap::ZstdPcapReader reader{"tracefiles/example.pcap.zst"};

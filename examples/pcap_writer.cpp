@@ -1,16 +1,16 @@
-#include "fpcap/pcap/PcapReader.hpp"
+#include <fpcap/pcap/PcapReader.hpp>
 #include <chrono>
-#include <iostream>
+#include <fpcap/filesystem/Writer.hpp>
 
 using namespace std;
 using namespace std::chrono;
 
 int main() {
-    string srcFilepath = "tracefiles/example.pcap";
-    string dstFilepath = "example.copy.pcap";
+    const string srcFilepath = "tracefiles/example.pcap";
+    const string dstFilepath = "example.copy.pcap";
 
-    auto reader = fpcap::Reader::getReader(srcFilepath);
-    auto writer = fpcap::Writer::getWriter(dstFilepath);
+    const auto reader = fpcap::Reader::getReader(srcFilepath);
+    const auto writer = fpcap::Writer::getWriter(dstFilepath);
 
     fpcap::Packet packet{};
     uint64_t processedPackets{0};
