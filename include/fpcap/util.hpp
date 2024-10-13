@@ -13,14 +13,13 @@
 #define FPCAP_DEBUG_LOG_2(format, val1, val2) printf(format, val1, val2);
 #define FPCAP_ASSERT(x) assert(x)
 #else
-#define FPCAP_DEBUG_LOG(format) while (0)
-#define FPCAP_DEBUG_LOG_1(format, val) while (0)
-#define FPCAP_DEBUG_LOG_2(format, val1, val2) while (0)
+#define FPCAP_DEBUG_LOG(format) (void)(format)
+#define FPCAP_DEBUG_LOG_1(format, val) (void)(format)
+#define FPCAP_DEBUG_LOG_2(format, val1, val2) (void)(format)
 #define FPCAP_ASSERT(x) (void)(x)
 #endif
 #define FPCAP_WARN(msg) fprintf(stderr, msg)
 #define FPCAP_WARN_1(msg, val) fprintf(stderr, msg, val)
-#define FPCAP_UNUSED(x) (void)(x)
 
 namespace fpcap::util {
 /**

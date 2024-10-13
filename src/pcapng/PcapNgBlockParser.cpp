@@ -3,7 +3,7 @@
 #include <fpcap/pcapng/PcapNgBlockOptionParser.hpp>
 #include <fpcap/pcapng/PcapNgSectionHeaderBlock.hpp>
 #include <fpcap/util.hpp>
-#include <fpcap/pcapng/PcapNg.hpp>
+#include <fpcap/pcapng/PcapNgBlockType.hpp>
 
 namespace fpcap::pcapng {
 
@@ -32,9 +32,9 @@ namespace fpcap::pcapng {
  *    |                      Block Total Length                       |
  *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
-void PcapNgBlockParser::readSHB(const uint8_t* data, pcapng::SectionHeaderBlock& shb) {
+void PcapNgBlockParser::readSHB(const uint8_t* data, SectionHeaderBlock& shb) {
     const auto blockType = *reinterpret_cast<const uint32_t*>(&data[0]);
-    FPCAP_ASSERT(blockType == FPCAP_SECTION_HEADER_BLOCK);
+    FPCAP_ASSERT(blockType == SECTION_HEADER_BLOCK);
 
     shb.blockTotalLength = *reinterpret_cast<const uint32_t*>(&data[4]);
 
@@ -64,23 +64,23 @@ void PcapNgBlockParser::readSHB(const uint8_t* data, pcapng::SectionHeaderBlock&
         const uint32_t totalOptionsLength = shb.blockTotalLength - 28;
         uint32_t readOptionsLength = 0;
         while (readOptionsLength < totalOptionsLength) {
-            pcapng::Option option{};
+            Option option{};
             PcapNgBlockOptionParser::readSHBOption(data, option, 24 + readOptionsLength);
             readOptionsLength += option.totalLength();
             switch (option.type) {
-            case FPCAP_BLOCK_OPTION_COMMENT:
+            case COMMENT:
                 shb.options.comment = std::string(
                     reinterpret_cast<const char*>(option.value), option.length);
                 break;
-            case FPCAP_BLOCK_OPTION_SHB_OS:
+            case SHB_OS:
                 shb.options.os = std::string(reinterpret_cast<const char*>(option.value),
                                              option.length);
                 break;
-            case FPCAP_BLOCK_OPTION_SHB_HARDWARE:
+            case SHB_HARDWARE:
                 shb.options.hardware = std::string(
                     reinterpret_cast<const char*>(option.value), option.length);
                 break;
-            case FPCAP_BLOCK_OPTION_SHB_USERAPPL:
+            case SHB_USERAPPL:
                 shb.options.userApplication =
                     std::string(reinterpret_cast<const char*>(option.value),
                                 option.length);
@@ -118,9 +118,9 @@ void PcapNgBlockParser::readSHB(const uint8_t* data, pcapng::SectionHeaderBlock&
  *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
 void PcapNgBlockParser::readIDB(const uint8_t* data,
-                                pcapng::InterfaceDescriptionBlock& idb) {
+                                InterfaceDescriptionBlock& idb) {
     const auto blockType = *reinterpret_cast<const uint32_t*>(&data[0]);
-    FPCAP_ASSERT(blockType == FPCAP_INTERFACE_DESCRIPTION_BLOCK);
+    FPCAP_ASSERT(blockType == INTERFACE_DESCRIPTION_BLOCK);
 
     idb.blockTotalLength = *reinterpret_cast<const uint32_t*>(&data[4]);
     idb.linkType = *reinterpret_cast<const uint16_t*>(&data[8]);
@@ -137,27 +137,27 @@ void PcapNgBlockParser::readIDB(const uint8_t* data,
         const uint32_t totalOptionsLength = idb.blockTotalLength - 20;
         uint32_t readOptionsLength = 0;
         while (readOptionsLength < totalOptionsLength) {
-            pcapng::Option option{};
+            Option option{};
             PcapNgBlockOptionParser::readIDBBlockOption(data, option,
                                                         16 + readOptionsLength);
             readOptionsLength += option.totalLength();
             switch (option.type) {
-            case FPCAP_BLOCK_OPTION_IDB_TSRESOL:
+            case IDB_TSRESOL:
                 FPCAP_ASSERT(option.length == 1);
                 idb.options.timestampResolution = util::fromIfTsresolUInt(*option.value);
                 break;
-            case FPCAP_BLOCK_OPTION_IDB_NAME:
+            case IDB_NAME:
                 idb.options.name = PcapNgBlockOptionParser::parseUTF8(option);
                 break;
-            case FPCAP_BLOCK_OPTION_IDB_DESCRIPTION:
+            case IDB_DESCRIPTION:
                 idb.options.description = PcapNgBlockOptionParser::parseUTF8(option);
                 break;
-            case FPCAP_BLOCK_OPTION_IDB_FILTER:
+            case IDB_FILTER:
                 // skip first octet (filter code), interpret rest as string
                 idb.options.filter = std::string(
                     reinterpret_cast<const char*>(&option.value[1]), option.length - 1u);
                 break;
-            case FPCAP_BLOCK_OPTION_IDB_OS:
+            case IDB_OS:
                 idb.options.os = PcapNgBlockOptionParser::parseUTF8(option);
                 break;
             default: ;
@@ -203,9 +203,9 @@ void PcapNgBlockParser::readIDB(const uint8_t* data,
  *    |                      Block Total Length                       |
  *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
-void PcapNgBlockParser::readEPB(const uint8_t* data, pcapng::EnhancedPacketBlock& epb) {
+void PcapNgBlockParser::readEPB(const uint8_t* data, EnhancedPacketBlock& epb) {
     const auto blockType = *reinterpret_cast<const uint32_t*>(&data[0]);
-    FPCAP_ASSERT(blockType == FPCAP_ENHANCED_PACKET_BLOCK);
+    FPCAP_ASSERT(blockType == ENHANCED_PACKET_BLOCK);
 
     epb.blockTotalLength = *reinterpret_cast<const uint32_t*>(&data[4]);
     epb.interfaceId = *reinterpret_cast<const uint32_t*>(&data[8]);
@@ -236,7 +236,7 @@ void PcapNgBlockParser::readEPB(const uint8_t* data, pcapng::EnhancedPacketBlock
             epb.blockTotalLength - 32u - packetDataTotalLength;
         uint32_t readOptionsLength = 0;
         while (readOptionsLength < totalOptionsLength) {
-            pcapng::Option option{};
+            Option option{};
             PcapNgBlockOptionParser::readEPBOption(
                 data, option, 32u + packetDataTotalLength + readOptionsLength);
             readOptionsLength += option.totalLength();
@@ -281,9 +281,9 @@ void PcapNgBlockParser::readEPB(const uint8_t* data, pcapng::EnhancedPacketBlock
  *    |                      Block Total Length                       |
  *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
-void PcapNgBlockParser::readPB(const uint8_t* data, pcapng::PacketBlock& pb) {
+void PcapNgBlockParser::readPB(const uint8_t* data, PacketBlock& pb) {
     const auto blockType = *reinterpret_cast<const uint32_t*>(&data[0]);
-    FPCAP_ASSERT(blockType == FPCAP_PACKET_BLOCK);
+    FPCAP_ASSERT(blockType == PACKET_BLOCK);
 
     pb.blockTotalLength = *reinterpret_cast<const uint32_t*>(&data[4]);
     pb.interfaceId = *reinterpret_cast<const uint16_t*>(&data[8]);
@@ -316,7 +316,7 @@ void PcapNgBlockParser::readPB(const uint8_t* data, pcapng::PacketBlock& pb) {
             pb.blockTotalLength - 32 - packetDataTotalLength;
         uint32_t readOptionsLength = 0;
         while (readOptionsLength < totalOptionsLength) {
-            pcapng::Option option{};
+            Option option{};
             PcapNgBlockOptionParser::readEPBOption(
                 data, option, 32 + packetDataTotalLength + readOptionsLength);
             readOptionsLength += option.totalLength();
@@ -353,9 +353,9 @@ void PcapNgBlockParser::readPB(const uint8_t* data, pcapng::PacketBlock& pb) {
  *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
 void PcapNgBlockParser::readISB(const uint8_t* data,
-                                pcapng::InterfaceStatisticsBlock& isb) {
+                                InterfaceStatisticsBlock& isb) {
     const auto blockType = *reinterpret_cast<const uint32_t*>(&data[0]);
-    FPCAP_ASSERT(blockType == FPCAP_INTERFACE_STATISTICS_BLOCK);
+    FPCAP_ASSERT(blockType == INTERFACE_STATISTICS_BLOCK);
 
     isb.blockTotalLength = *reinterpret_cast<const uint32_t*>(&data[4]);
     isb.interfaceId = *reinterpret_cast<const uint32_t*>(&data[8]);
@@ -375,7 +375,7 @@ void PcapNgBlockParser::readISB(const uint8_t* data,
         const uint32_t totalOptionsLength = isb.blockTotalLength - 20;
         uint32_t readOptionsLength = 0;
         while (readOptionsLength < totalOptionsLength) {
-            pcapng::Option option{};
+            Option option{};
             PcapNgBlockOptionParser::readISBOption(data, option, 16 + readOptionsLength);
             readOptionsLength += option.totalLength();
         }

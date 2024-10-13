@@ -3,22 +3,24 @@
 
 #include <cstdint>
 
+namespace fpcap::pcapng {
 /**
  * Block Options
  */
-#define FPCAP_BLOCK_OPTION_END_OF_OPT 0
-#define FPCAP_BLOCK_OPTION_COMMENT 1
-#define FPCAP_BLOCK_OPTION_SHB_HARDWARE 2
-#define FPCAP_BLOCK_OPTION_SHB_OS 3
-#define FPCAP_BLOCK_OPTION_SHB_USERAPPL 4
+enum BlockOptionType : uint16_t {
+    END_OF_OPT = 0,
+    COMMENT = 1,
+    SHB_HARDWARE = 2,
+    SHB_OS = 3,
+    SHB_USERAPPL = 4,
 
-#define FPCAP_BLOCK_OPTION_IDB_NAME 2
-#define FPCAP_BLOCK_OPTION_IDB_DESCRIPTION 3
-#define FPCAP_BLOCK_OPTION_IDB_TSRESOL 9
-#define FPCAP_BLOCK_OPTION_IDB_FILTER 11
-#define FPCAP_BLOCK_OPTION_IDB_OS 12
+    IDB_NAME = 2,
+    IDB_DESCRIPTION = 3,
+    IDB_TSRESOL = 9,
+    IDB_FILTER = 11,
+    IDB_OS = 12,
+};
 
-namespace fpcap::pcapng {
 struct Option {
     uint16_t type{0};
     uint16_t length{0};

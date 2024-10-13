@@ -2,7 +2,7 @@
 
 #include <fpcap/pcapng/PcapNgBlockParser.hpp>
 #include <fpcap/util.hpp>
-#include <fpcap/pcapng/PcapNg.hpp>
+#include <fpcap/pcapng/PcapNgBlockType.hpp>
 #include <fpcap/MagicNumber.hpp>
 #include <fpcap/Packet.hpp>
 
@@ -69,16 +69,16 @@ bool PcapNgReader<TReader>::readNextPacket(Packet& packet) {
         mReader.mOffset + 4]);
 
     // TODO add support for Simple Packet Blocks
-    while (blockType != FPCAP_ENHANCED_PACKET_BLOCK && blockType != FPCAP_PACKET_BLOCK) {
-        if (blockType == FPCAP_SECTION_HEADER_BLOCK) {
-            pcapng::SectionHeaderBlock shb{};
+    while (blockType != ENHANCED_PACKET_BLOCK && blockType != PACKET_BLOCK) {
+        if (blockType == SECTION_HEADER_BLOCK) {
+            SectionHeaderBlock shb{};
             PcapNgBlockParser::readSHB(&mReader.data()[mReader.mOffset], shb);
             mMetadata.comment = shb.options.comment;
             mMetadata.os = shb.options.os;
             mMetadata.hardware = shb.options.hardware;
             mMetadata.userApplication = shb.options.userApplication;
-        } else if (blockType == FPCAP_INTERFACE_DESCRIPTION_BLOCK) {
-            pcapng::InterfaceDescriptionBlock idb{};
+        } else if (blockType == INTERFACE_DESCRIPTION_BLOCK) {
+            InterfaceDescriptionBlock idb{};
             PcapNgBlockParser::readIDB(&mReader.data()[mReader.mOffset], idb);
             mMetadata.timestampResolution = idb.options.timestampResolution;
             mTraceInterfaces.emplace_back(idb.options.name, idb.options.description,
@@ -109,8 +109,8 @@ bool PcapNgReader<TReader>::readNextPacket(Packet& packet) {
     }
 
     switch (blockType) {
-    case FPCAP_ENHANCED_PACKET_BLOCK: {
-        pcapng::EnhancedPacketBlock epb{};
+    case ENHANCED_PACKET_BLOCK: {
+        EnhancedPacketBlock epb{};
         PcapNgBlockParser::readEPB(&mReader.data()[mReader.mOffset], epb);
         util::calculateTimestamps(mMetadata.timestampResolution, epb.timestampHigh,
                                   epb.timestampLow, &(packet.timestampSeconds),
@@ -124,8 +124,8 @@ bool PcapNgReader<TReader>::readNextPacket(Packet& packet) {
         mReader.mOffset += epb.blockTotalLength;
         break;
     }
-    case FPCAP_PACKET_BLOCK: {
-        pcapng::PacketBlock pb{};
+    case PACKET_BLOCK: {
+        PacketBlock pb{};
         PcapNgBlockParser::readPB(&mReader.data()[mReader.mOffset], pb);
         util::calculateTimestamps(mMetadata.timestampResolution, pb.timestampHigh,
                                   pb.timestampLow, &(packet.timestampSeconds),
@@ -153,8 +153,8 @@ uint32_t PcapNgReader<TReader>::readBlock() {
         mReader.mOffset + 4]);
 
     switch (blockType) {
-    case FPCAP_SECTION_HEADER_BLOCK: {
-        pcapng::SectionHeaderBlock shb{};
+    case SECTION_HEADER_BLOCK: {
+        SectionHeaderBlock shb{};
         PcapNgBlockParser::readSHB(&mReader.data()[mReader.mOffset], shb);
         mMetadata.comment = shb.options.comment;
         mMetadata.os = shb.options.os;
@@ -162,47 +162,47 @@ uint32_t PcapNgReader<TReader>::readBlock() {
         mMetadata.userApplication = shb.options.userApplication;
         break;
     }
-    case FPCAP_INTERFACE_DESCRIPTION_BLOCK: {
-        pcapng::InterfaceDescriptionBlock idb{};
+    case INTERFACE_DESCRIPTION_BLOCK: {
+        InterfaceDescriptionBlock idb{};
         PcapNgBlockParser::readIDB(&mReader.data()[mReader.mOffset], idb);
         mMetadata.timestampResolution = idb.options.timestampResolution;
         mTraceInterfaces.emplace_back(idb.options.name, idb.options.description,
                                       idb.options.filter, idb.options.os, idb.linkType);
         break;
     }
-    case FPCAP_ENHANCED_PACKET_BLOCK: {
-        pcapng::EnhancedPacketBlock epb{};
+    case ENHANCED_PACKET_BLOCK: {
+        EnhancedPacketBlock epb{};
         PcapNgBlockParser::readEPB(&mReader.data()[mReader.mOffset], epb);
         break;
     }
-    case FPCAP_PACKET_BLOCK: {
+    case PACKET_BLOCK: {
         // deprecated in newer versions of PcapNG
-        pcapng::PacketBlock pb{};
+        PacketBlock pb{};
         PcapNgBlockParser::readPB(&mReader.data()[mReader.mOffset], pb);
         break;
     }
-    case FPCAP_SIMPLE_PACKET_BLOCK: {
+    case SIMPLE_PACKET_BLOCK: {
         FPCAP_WARN("Parsing of Simple Packet Blocks not implemented, skipping\n");
         break;
     }
-    case FPCAP_NAME_RESOLUTION_BLOCK: {
+    case NAME_RESOLUTION_BLOCK: {
         FPCAP_WARN("Parsing of Name Resolution Blocks not implemented, skipping\n");
         break;
     }
-    case FPCAP_INTERFACE_STATISTICS_BLOCK: {
-        pcapng::InterfaceStatisticsBlock isb{};
+    case INTERFACE_STATISTICS_BLOCK: {
+        InterfaceStatisticsBlock isb{};
         PcapNgBlockParser::readISB(&mReader.data()[mReader.mOffset], isb);
         break;
     }
-    case FPCAP_DECRYPTION_SECRETS_BLOCK: {
+    case DECRYPTION_SECRETS_BLOCK: {
         FPCAP_WARN("Parsing of Decryption Secrets Blocks not implemented, skipping\n");
         break;
     }
-    case FPCAP_CUSTOM_CAN_COPY_BLOCK: {
+    case CUSTOM_CAN_COPY_BLOCK: {
         FPCAP_WARN("Parsing of Custom (Can Copy) Blocks not implemented, skipping\n");
         break;
     }
-    case FPCAP_CUSTOM_DO_NOT_COPY_BLOCK: {
+    case CUSTOM_DO_NOT_COPY_BLOCK: {
         FPCAP_WARN("Parsing of Custom (Do Not Copy) Blocks not implemented, skipping\n");
         break;
     }
@@ -219,7 +219,7 @@ uint32_t PcapNgReader<TReader>::readBlock() {
 }
 
 template <typename TReader>
-TraceInterface PcapNgReader<TReader>::getTraceInterface(size_t id) const {
+TraceInterface PcapNgReader<TReader>::getTraceInterface(const size_t id) const {
     if (id >= mTraceInterfaces.size()) {
         throw std::out_of_range("Trace interface index " + std::to_string(id) +
                                 " is out of range");
