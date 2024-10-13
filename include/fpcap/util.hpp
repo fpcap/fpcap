@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <fstream>
 #include <cassert>
+#include <optional>
 
 #if DEBUG
 #define FPCAP_DEBUG_LOG(format) printf(format);
@@ -27,15 +28,13 @@ namespace fpcap::util {
  * @param filepath Path to the file as string
  * @return The first 32 bits as unsigned
  */
-[[maybe_unused]] static uint32_t read32bitsFromFile(const std::string& filepath) {
+[[maybe_unused]] static std::optional<uint32_t> read32bitsFromFile(const std::string& filepath) {
     uint32_t magicNumber = 0;
     if (std::ifstream file(filepath, std::ios::in | std::ios::binary); file.is_open()) {
         file.read(reinterpret_cast<char*>(&magicNumber), sizeof(magicNumber));
+        return magicNumber;
     }
-    else {
-        throw std::runtime_error("Failed opening file to read first 32 bits");
-    }
-    return magicNumber;
+    return std::nullopt;
 }
 
 [[maybe_unused]] static void dumpMemory(const uint8_t* data, const size_t length) {

@@ -21,7 +21,12 @@ unique_ptr<Reader> Reader::getReader(const string& filepath) {
         throw runtime_error("FileReader: could not find file \"" + filepath + "\"");
     }
 
-    switch (util::read32bitsFromFile(filepath)) {
+    const auto fileMagic = util::read32bitsFromFile(filepath);
+    if (not fileMagic.has_value()) {
+        throw runtime_error("could not determine file type on first 32 bits");
+    }
+
+    switch (fileMagic.value()) {
     case PCAP_MICROSECONDS:
     case PCAP_NANOSECONDS: {
         return make_unique<pcap::MMPcapReader>(filepath);
@@ -43,15 +48,15 @@ unique_ptr<Reader> Reader::getReader(const string& filepath) {
             return make_unique<pcapng::ZstdPcapNgReader>(std::move(compressedFileReader));
         }
         case MODIFIED_PCAP: {
-            return make_unique<modified_pcap::ZstdModifiedPcapReader>(std::move(compressedFileReader));
+            return make_unique<modified_pcap::ZstdModifiedPcapReader>(
+                std::move(compressedFileReader));
         }
         default:
-            throw runtime_error("Failed to determine file type after decompression based "
-                "on first 32 bits");
+            throw runtime_error("failed to determine file type after decompression");
         }
     }
     default:
-        throw runtime_error("Failed to determine file type based on first 32 bits");
+        throw runtime_error("unsupported file type");
     }
 }
 }
