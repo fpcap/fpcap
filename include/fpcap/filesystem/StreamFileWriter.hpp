@@ -8,7 +8,7 @@
 namespace fpcap {
 class StreamFileWriter final : public FileWriter {
 public:
-    explicit StreamFileWriter(const std::string& filepath);
+    explicit StreamFileWriter(const std::string& filepath, bool append);
 
     void write(const uint8_t* data, size_t size) override;
 

@@ -2,12 +2,14 @@
 
 namespace fpcap {
 
-StreamFileWriter::StreamFileWriter(const std::string& filepath)
+StreamFileWriter::StreamFileWriter(const std::string& filepath, bool append)
     : FileWriter(filepath),
-      mOutputFileStream(mFilepath) {
+      mOutputFileStream(mFilepath,
+                        append ? std::ofstream::binary | std::ofstream::app
+                               : std::ofstream::binary) {
     if (not mOutputFileStream.is_open()) {
-        throw std::runtime_error(
-            "could not open output stream: " + std::string(strerror(errno)));
+        throw std::runtime_error("could not open output stream: " +
+                                 std::string(strerror(errno)));
     }
 }
 

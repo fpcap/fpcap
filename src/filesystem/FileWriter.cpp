@@ -2,7 +2,8 @@
 
 namespace fpcap {
 
-FileWriter::FileWriter(const std::string& filepath) : mFilepath(filepath) {}
+FileWriter::FileWriter(const std::string& filepath)
+    : mFilepath(filepath) {}
 
 FileWriter::~FileWriter() {}
 

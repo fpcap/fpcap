@@ -13,7 +13,7 @@ class PcapWriter final : public Writer {
                   "TWriter must be a subclass of FileWriter");
 
 public:
-    explicit PcapWriter(const std::string& filepath);
+    explicit PcapWriter(const std::string& filepath, bool append);
 
     void write(const Packet& packet) override;
 

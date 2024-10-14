@@ -5,10 +5,10 @@ using namespace std;
 
 int main() {
     const string srcFilepath = "tracefiles/example.pcap";
-    const string dstFilepath = "example.copy.pcap";
+    const string dstFilepath = "example.copy2.pcap";
 
     fpcap::PacketReader reader(srcFilepath);
-    const auto writer = fpcap::Writer::getWriter(dstFilepath);
+    const auto writer = fpcap::Writer::getWriter(dstFilepath, false);
 
     fpcap::Packet packet{};
     uint64_t processedPackets{0};

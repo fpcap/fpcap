@@ -1,22 +1,29 @@
 #include "fpcap/pcap/PcapWriter.hpp"
 
 #include <fpcap/MagicNumber.hpp>
-
+#include <iostream>
 namespace fpcap::pcap {
 
 template <typename TWriter>
-PcapWriter<TWriter>::PcapWriter(const std::string& filepath)
-    : mWriter(filepath) {
-    writePcapHeader();
+PcapWriter<TWriter>::PcapWriter(const std::string& filepath, bool append)
+    : mWriter(filepath, append) {
+    if (not append) {
+        std::cout << "WRITING HEADER because not append" << std::endl;
+        writePcapHeader();
+    }
+    if (append and not std::filesystem::exists(filepath)) {
+        std::cout << "WRITING HEADER because append but files not exists" << std::endl;
+        writePcapHeader();
+    }
 }
 
 template <typename TWriter>
 void PcapWriter<TWriter>::write(const Packet& packet) {
     struct PcapPacketHeader {
-        uint32_t timestampSeconds; /* timestamp seconds */
+        uint32_t timestampSeconds;      /* timestamp seconds */
         uint32_t timestampMicroseconds; /* timestamp microseconds */
-        uint32_t captureLength; /* number of octets of packet saved in file */
-        uint32_t length; /* actual length of packet */
+        uint32_t captureLength;         /* number of octets of packet saved in file */
+        uint32_t length;                /* actual length of packet */
     };
 
     PcapPacketHeader pcapPacketHeader;
@@ -33,12 +40,12 @@ void PcapWriter<TWriter>::write(const Packet& packet) {
 template <typename TWriter>
 void PcapWriter<TWriter>::writePcapHeader() {
     struct PcapHeader {
-        uint32_t magicNumber; // magic number
+        uint32_t magicNumber;  // magic number
         uint16_t versionMajor; // major version number
         uint16_t versionMinor; // minor version number
-        int32_t thisZone; // GMT to local correction
-        uint32_t sigfigs; // accuracy of timestamps
-        uint32_t snapLength; // max length of captured packets, in octets
+        int32_t thisZone;      // GMT to local correction
+        uint32_t sigfigs;      // accuracy of timestamps
+        uint32_t snapLength;   // max length of captured packets, in octets
         uint32_t dataLinkType; // data link type
     };
 
@@ -46,14 +53,14 @@ void PcapWriter<TWriter>::writePcapHeader() {
     pcapHeader.magicNumber = PCAP_MICROSECONDS;
     pcapHeader.versionMajor = 2;
     pcapHeader.versionMinor = 4;
-    pcapHeader.thisZone = 0; // TODO account for timezone offset
-    pcapHeader.sigfigs = 0; // in practice all tools set this to 0
+    pcapHeader.thisZone = 0;       // TODO account for timezone offset
+    pcapHeader.sigfigs = 0;        // in practice all tools set this to 0
     pcapHeader.snapLength = 65535; // TODO support different snap lengths
-    pcapHeader.dataLinkType = 1; // TODO support more link types than DLT_EN10MB
+    pcapHeader.dataLinkType = 1;   // TODO support more link types than DLT_EN10MB
 
     mWriter.write(reinterpret_cast<const uint8_t*>(&pcapHeader), sizeof(pcapHeader));
 }
 
 template class PcapWriter<StreamFileWriter>;
 
-} // namespace fpcap
+} // namespace fpcap::pcap
