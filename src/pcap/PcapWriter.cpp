@@ -8,11 +8,13 @@ template <typename TWriter>
 PcapWriter<TWriter>::PcapWriter(const std::string& filepath, bool append)
     : mWriter(filepath, append) {
     if (not append) {
-        std::cout << "WRITING HEADER because not append" << std::endl;
+        // in normal write mode always write the header
         writePcapHeader();
-    }
-    if (append and not std::filesystem::exists(filepath)) {
-        std::cout << "WRITING HEADER because append but files not exists" << std::endl;
+    } else if (not std::filesystem::exists(filepath)) {
+        // in append mode write header if file does not exist yet
+        writePcapHeader();
+    } else if (std::filesystem::file_size(filepath) == 0) {
+        // in append mode write header if file exists but is empty
         writePcapHeader();
     }
 }
