@@ -11,8 +11,8 @@ StreamFileWriter::StreamFileWriter(const std::string& filepath, bool append)
                             ? std::ofstream::binary | std::ofstream::app
                             : std::ofstream::binary) {
     if (not mOutputFileStream.is_open()) {
-        throw std::runtime_error("could not open output stream: " +
-                                 std::string(std::strerror(errno)));
+        throw std::system_error(errno, std::system_category(),
+                                "could not open output stream");
     }
 }
 
