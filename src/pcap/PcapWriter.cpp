@@ -2,6 +2,8 @@
 
 #include <fpcap/MagicNumber.hpp>
 #include <iostream>
+#include <filesystem>
+
 namespace fpcap::pcap {
 
 template <typename TWriter>
