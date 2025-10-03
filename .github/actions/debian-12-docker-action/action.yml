@@ -1,0 +1,5 @@
+name: 'debian-12-docker-action'
+description: 'Sets up a debian 12 (bookworm) docker image with C++/CMake environment'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
