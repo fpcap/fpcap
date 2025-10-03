@@ -1,4 +1,3 @@
-FROM debian:bullseye
-RUN apt update
-RUN apt install -y build-essential gcc g++ make cmake
-RUN apt install -y git
+FROM debian:bullseye-slim
+
+RUN apt update && apt install -y build-essential gcc g++ make cmake git && rm -rf /var/lib/apt/lists/*
