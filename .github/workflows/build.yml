@@ -13,6 +13,11 @@ jobs:
         steps:
             -   uses: actions/checkout@v3
             -   uses: ./.github/actions/debian-12-docker-action
+    debian-13:
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v3
+            -   uses: ./.github/actions/debian-13-docker-action
     ubuntu-latest:
         runs-on: ubuntu-latest
         steps:
