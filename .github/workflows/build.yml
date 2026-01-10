@@ -6,7 +6,7 @@ jobs:
     debian-11:
         runs-on: ubuntu-latest
         steps:
-            -   uses: actions/checkout@v3
+            -   uses: actions/checkout@v4
             -   uses: ./.github/actions/debian-11-docker-action
     debian-12:
         runs-on: ubuntu-latest
@@ -21,7 +21,7 @@ jobs:
     ubuntu-latest:
         runs-on: ubuntu-latest
         steps:
-            -   uses: actions/checkout@v3
+            -   uses: actions/checkout@v4
                 with:
                     submodules: 'recursive'
             -   name: Install C++ build environment
@@ -35,7 +35,7 @@ jobs:
     macos-latest:
         runs-on: macos-latest
         steps:
-            -   uses: actions/checkout@v3
+            -   uses: actions/checkout@v4
                 with:
                     submodules: 'recursive'
             -   name: Configure
@@ -45,7 +45,7 @@ jobs:
     windows-latest:
         runs-on: windows-latest
         steps:
-            -   uses: actions/checkout@v3
+            -   uses: actions/checkout@v4
                 with:
                     submodules: 'recursive'
             -   name: Configure
