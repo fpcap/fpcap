@@ -83,7 +83,7 @@ namespace fpcap::util {
     }
 
     // most significant bit is 1, rest of bits is negative power of 2
-    return 2 << remainingBits;
+    return 1u << remainingBits;
 }
 
 [[maybe_unused]] static void calculateTimestamps(const uint32_t timestampResolution,

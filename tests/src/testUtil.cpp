@@ -92,9 +92,8 @@ TEST(Util, FromIfTsresolUIntPowerOf10_Nanoseconds) {
 
 TEST(Util, FromIfTsresolUIntPowerOf2) {
     // Value 0x86 (MSB=1, remaining=6) means 2^6 = 64
-    // Note: the implementation returns 2 << remainingBits which is 2^(remainingBits+1)
     const uint32_t result = fpcap::util::fromIfTsresolUInt(0x86);
-    EXPECT_EQ(result, 2u << 6); // 128
+    EXPECT_EQ(result, 1u << 6); // 64
 }
 
 // calculateTimestamps tests
