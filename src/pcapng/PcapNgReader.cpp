@@ -1,10 +1,10 @@
 #include "fpcap/pcapng/PcapNgReader.hpp"
 
-#include <fpcap/pcapng/PcapNgBlockParser.hpp>
-#include <fpcap/util.hpp>
-#include <fpcap/pcapng/PcapNgBlockType.hpp>
 #include <fpcap/MagicNumber.hpp>
 #include <fpcap/Packet.hpp>
+#include <fpcap/pcapng/PcapNgBlockParser.hpp>
+#include <fpcap/pcapng/PcapNgBlockType.hpp>
+#include <fpcap/util.hpp>
 
 #include <iostream>
 #include <sstream>
@@ -12,8 +12,7 @@
 namespace fpcap::pcapng {
 
 template <typename TReader>
-PcapNgReader<TReader>::PcapNgReader(const std::string& filepath)
-    : mReader(filepath) {
+PcapNgReader<TReader>::PcapNgReader(const std::string& filepath) : mReader(filepath) {
     if (const uint32_t magicNumber = *reinterpret_cast<const uint32_t*>(mReader.data());
         magicNumber != PCAPNG) {
         std::stringstream sstream;
@@ -57,19 +56,19 @@ bool PcapNgReader<TReader>::readNextPacket(Packet& packet) {
     // make sure there are enough bytes to read
     if (mReader.getSafeToReadSize() < 8) {
         std::cerr << "Error: Expected to read at least one more block (8 bytes at "
-            "least), but there are only "
-            << mReader.getSafeToReadSize() << " bytes left in the file"
-            << std::endl;
+                     "least), but there are only "
+                  << mReader.getSafeToReadSize() << " bytes left in the file"
+                  << std::endl;
         return false;
     }
 
-    uint32_t blockType = *reinterpret_cast<const uint32_t*>(&mReader.data()[mReader.
-        mOffset]);
-    uint32_t blockTotalLength = *reinterpret_cast<const uint32_t*>(&mReader.data()[
-        mReader.mOffset + 4]);
+    uint32_t blockType =
+        *reinterpret_cast<const uint32_t*>(&mReader.data()[mReader.mOffset]);
+    uint32_t blockTotalLength =
+        *reinterpret_cast<const uint32_t*>(&mReader.data()[mReader.mOffset + 4]);
 
-    // TODO add support for Simple Packet Blocks
-    while (blockType != ENHANCED_PACKET_BLOCK && blockType != PACKET_BLOCK) {
+    while (blockType != ENHANCED_PACKET_BLOCK && blockType != PACKET_BLOCK &&
+           blockType != SIMPLE_PACKET_BLOCK) {
         if (blockType == SECTION_HEADER_BLOCK) {
             SectionHeaderBlock shb{};
             PcapNgBlockParser::readSHB(&mReader.data()[mReader.mOffset], shb);
@@ -95,16 +94,16 @@ bool PcapNgReader<TReader>::readNextPacket(Packet& packet) {
         // make sure there are enough bytes to read
         if (mReader.getSafeToReadSize() < 8) {
             std::cerr << "Error: Expected to read at least one more block (8 bytes at "
-                "least), but there are only "
-                << mReader.getSafeToReadSize() << " bytes left in the file"
-                << std::endl;
+                         "least), but there are only "
+                      << mReader.getSafeToReadSize() << " bytes left in the file"
+                      << std::endl;
             return false;
         }
 
         // try to read next block type
         blockType = *reinterpret_cast<const uint32_t*>(&mReader.data()[mReader.mOffset]);
-        blockTotalLength = *reinterpret_cast<const uint32_t*>(&mReader.data()[
-            mReader.mOffset + 4]);
+        blockTotalLength =
+            *reinterpret_cast<const uint32_t*>(&mReader.data()[mReader.mOffset + 4]);
     }
 
     switch (blockType) {
@@ -113,9 +112,10 @@ bool PcapNgReader<TReader>::readNextPacket(Packet& packet) {
         PcapNgBlockParser::readEPB(&mReader.data()[mReader.mOffset], epb);
         packet.interfaceIndex = epb.interfaceId;
         packet.dataLinkType = mTraceInterfaces[packet.interfaceIndex].dataLinkType;
-        util::calculateTimestamps(mTraceInterfaces[packet.interfaceIndex].timestampResolution,
-                                  epb.timestampHigh, epb.timestampLow,
-                                  &(packet.timestampSeconds), &(packet.timestampMicroseconds));
+        util::calculateTimestamps(
+            mTraceInterfaces[packet.interfaceIndex].timestampResolution,
+            epb.timestampHigh, epb.timestampLow, &(packet.timestampSeconds),
+            &(packet.timestampMicroseconds));
         packet.captureLength = epb.capturePacketLength;
         packet.length = epb.originalPacketLength;
         packet.data = epb.packetData;
@@ -128,9 +128,9 @@ bool PcapNgReader<TReader>::readNextPacket(Packet& packet) {
         PcapNgBlockParser::readPB(&mReader.data()[mReader.mOffset], pb);
         packet.interfaceIndex = pb.interfaceId;
         packet.dataLinkType = mTraceInterfaces[packet.interfaceIndex].dataLinkType;
-        util::calculateTimestamps(mTraceInterfaces[packet.interfaceIndex].timestampResolution,
-                                  pb.timestampHigh, pb.timestampLow,
-                                  &(packet.timestampSeconds), &(packet.timestampMicroseconds));
+        util::calculateTimestamps(
+            mTraceInterfaces[packet.interfaceIndex].timestampResolution, pb.timestampHigh,
+            pb.timestampLow, &(packet.timestampSeconds), &(packet.timestampMicroseconds));
         packet.captureLength = pb.capturePacketLength;
         packet.length = pb.originalPacketLength;
         packet.data = pb.packetData;
@@ -138,7 +138,26 @@ bool PcapNgReader<TReader>::readNextPacket(Packet& packet) {
         mReader.mOffset += pb.blockTotalLength;
         break;
     }
-    default: ;
+    case SIMPLE_PACKET_BLOCK: {
+        SimplePacketBlock spb{};
+        PcapNgBlockParser::readSPB(&mReader.data()[mReader.mOffset], spb);
+        // SPB implicitly refers to interface 0
+        packet.interfaceIndex = 0;
+        packet.dataLinkType =
+            mTraceInterfaces.empty() ? 1 : mTraceInterfaces[0].dataLinkType;
+        // SPB has no timestamp fields
+        packet.timestampSeconds = 0;
+        packet.timestampMicroseconds = 0;
+        // Captured length is derived from block total length minus header (12) and footer
+        // (4)
+        packet.captureLength = spb.blockTotalLength - 16;
+        packet.length = spb.originalPacketLength;
+        packet.data = spb.packetData;
+
+        mReader.mOffset += spb.blockTotalLength;
+        break;
+    }
+    default:;
     }
 
     return true;
@@ -146,10 +165,10 @@ bool PcapNgReader<TReader>::readNextPacket(Packet& packet) {
 
 template <typename TReader>
 uint32_t PcapNgReader<TReader>::readBlock() {
-    const auto blockType = *reinterpret_cast<const uint32_t*>(&mReader.data()[mReader.
-        mOffset]);
-    const auto blockTotalLength = *reinterpret_cast<const uint32_t*>(&mReader.data()[
-        mReader.mOffset + 4]);
+    const auto blockType =
+        *reinterpret_cast<const uint32_t*>(&mReader.data()[mReader.mOffset]);
+    const auto blockTotalLength =
+        *reinterpret_cast<const uint32_t*>(&mReader.data()[mReader.mOffset + 4]);
 
     switch (blockType) {
     case SECTION_HEADER_BLOCK: {
@@ -165,8 +184,8 @@ uint32_t PcapNgReader<TReader>::readBlock() {
         InterfaceDescriptionBlock idb{};
         PcapNgBlockParser::readIDB(&mReader.data()[mReader.mOffset], idb);
         mTraceInterfaces.emplace_back(idb.options.name, idb.options.description,
-                                      idb.options.filter, idb.options.os,
-                                      idb.linkType, idb.options.timestampResolution);
+                                      idb.options.filter, idb.options.os, idb.linkType,
+                                      idb.options.timestampResolution);
         break;
     }
     case ENHANCED_PACKET_BLOCK: {
@@ -181,7 +200,8 @@ uint32_t PcapNgReader<TReader>::readBlock() {
         break;
     }
     case SIMPLE_PACKET_BLOCK: {
-        FPCAP_WARN("Parsing of Simple Packet Blocks not implemented, skipping\n");
+        SimplePacketBlock spb{};
+        PcapNgBlockParser::readSPB(&mReader.data()[mReader.mOffset], spb);
         break;
     }
     case NAME_RESOLUTION_BLOCK: {
@@ -230,4 +250,4 @@ template class PcapNgReader<FReadFileReader>;
 template class PcapNgReader<MMapFileReader>;
 template class PcapNgReader<ZstdFileReader>;
 
-} // namespace fpcap
+} // namespace fpcap::pcapng

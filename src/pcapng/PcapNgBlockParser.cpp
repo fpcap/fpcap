@@ -1,9 +1,9 @@
 #include "fpcap/pcapng/PcapNgBlockParser.hpp"
 
 #include <fpcap/pcapng/PcapNgBlockOptionParser.hpp>
+#include <fpcap/pcapng/PcapNgBlockType.hpp>
 #include <fpcap/pcapng/PcapNgSectionHeaderBlock.hpp>
 #include <fpcap/util.hpp>
-#include <fpcap/pcapng/PcapNgBlockType.hpp>
 
 namespace fpcap::pcapng {
 
@@ -81,18 +81,17 @@ void PcapNgBlockParser::readSHB(const uint8_t* data, SectionHeaderBlock& shb) {
                     reinterpret_cast<const char*>(option.value), option.length);
                 break;
             case SHB_USERAPPL:
-                shb.options.userApplication =
-                    std::string(reinterpret_cast<const char*>(option.value),
-                                option.length);
+                shb.options.userApplication = std::string(
+                    reinterpret_cast<const char*>(option.value), option.length);
                 break;
-            default: ;
+            default:;
             }
         }
     }
 
     // make sure that the block actually ends with block total length
-    const auto blockTotalLength = *reinterpret_cast<const uint32_t*>(&data[
-        shb.blockTotalLength - 4]);
+    const auto blockTotalLength =
+        *reinterpret_cast<const uint32_t*>(&data[shb.blockTotalLength - 4]);
     FPCAP_ASSERT(shb.blockTotalLength == blockTotalLength);
 }
 
@@ -117,8 +116,7 @@ void PcapNgBlockParser::readSHB(const uint8_t* data, SectionHeaderBlock& shb) {
  *    |                      Block Total Length                       |
  *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
-void PcapNgBlockParser::readIDB(const uint8_t* data,
-                                InterfaceDescriptionBlock& idb) {
+void PcapNgBlockParser::readIDB(const uint8_t* data, InterfaceDescriptionBlock& idb) {
     const auto blockType = *reinterpret_cast<const uint32_t*>(&data[0]);
     FPCAP_ASSERT(blockType == INTERFACE_DESCRIPTION_BLOCK);
 
@@ -160,14 +158,14 @@ void PcapNgBlockParser::readIDB(const uint8_t* data,
             case IDB_OS:
                 idb.options.os = PcapNgBlockOptionParser::parseUTF8(option);
                 break;
-            default: ;
+            default:;
             }
         }
     }
 
     // make sure that the block actually ends with block total length
-    const auto blockTotalLength = *reinterpret_cast<const uint32_t*>(&data[
-        idb.blockTotalLength - 4u]);
+    const auto blockTotalLength =
+        *reinterpret_cast<const uint32_t*>(&data[idb.blockTotalLength - 4u]);
     FPCAP_ASSERT(idb.blockTotalLength == blockTotalLength);
 }
 
@@ -244,8 +242,8 @@ void PcapNgBlockParser::readEPB(const uint8_t* data, EnhancedPacketBlock& epb) {
     }
 
     // make sure that the block actually ends with block total length
-    const auto blockTotalLength = *reinterpret_cast<const uint32_t*>(&data[
-        epb.blockTotalLength - 4u]);
+    const auto blockTotalLength =
+        *reinterpret_cast<const uint32_t*>(&data[epb.blockTotalLength - 4u]);
     FPCAP_ASSERT(epb.blockTotalLength == blockTotalLength);
 }
 
@@ -324,9 +322,50 @@ void PcapNgBlockParser::readPB(const uint8_t* data, PacketBlock& pb) {
     }
 
     // make sure that the block actually ends with block total length
-    const auto blockTotalLength = *reinterpret_cast<const uint32_t*>(&data[
-        pb.blockTotalLength - 4]);
+    const auto blockTotalLength =
+        *reinterpret_cast<const uint32_t*>(&data[pb.blockTotalLength - 4]);
     FPCAP_ASSERT(pb.blockTotalLength == blockTotalLength);
+}
+
+/**
+ * 4.4.  Simple Packet Block
+ *
+ *                         1                   2                   3
+ *     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *  0 |                    Block Type = 0x00000003                    |
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *  4 |                      Block Total Length                       |
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *  8 |                    Original Packet Length                     |
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * 12 /                                                               /
+ *    /                          Packet Data                          /
+ *    /              variable length, padded to 32 bits               /
+ *    /                                                               /
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *    |                      Block Total Length                       |
+ *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ */
+void PcapNgBlockParser::readSPB(const uint8_t* data, SimplePacketBlock& spb) {
+    const auto blockType = *reinterpret_cast<const uint32_t*>(&data[0]);
+    FPCAP_ASSERT(blockType == SIMPLE_PACKET_BLOCK);
+
+    spb.blockTotalLength = *reinterpret_cast<const uint32_t*>(&data[4]);
+    spb.originalPacketLength = *reinterpret_cast<const uint32_t*>(&data[8]);
+    spb.packetData = &data[12];
+
+    FPCAP_DEBUG_LOG_1("--- [Simple Packet Block @%p] ---\n",
+                      reinterpret_cast<const void*>(data));
+    FPCAP_DEBUG_LOG_1("[SPB] Block Total Length: %u\n", spb.blockTotalLength);
+    FPCAP_DEBUG_LOG_1("[SPB] Original Packet Length: %u\n", spb.originalPacketLength);
+    FPCAP_DEBUG_LOG_1("[SPB] Packet Data: %p\n",
+                      reinterpret_cast<const void*>(spb.packetData));
+
+    // make sure that the block actually ends with block total length
+    const auto blockTotalLength =
+        *reinterpret_cast<const uint32_t*>(&data[spb.blockTotalLength - 4]);
+    FPCAP_ASSERT(spb.blockTotalLength == blockTotalLength);
 }
 
 /**
@@ -352,8 +391,7 @@ void PcapNgBlockParser::readPB(const uint8_t* data, PacketBlock& pb) {
  *    |                      Block Total Length                       |
  *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
-void PcapNgBlockParser::readISB(const uint8_t* data,
-                                InterfaceStatisticsBlock& isb) {
+void PcapNgBlockParser::readISB(const uint8_t* data, InterfaceStatisticsBlock& isb) {
     const auto blockType = *reinterpret_cast<const uint32_t*>(&data[0]);
     FPCAP_ASSERT(blockType == INTERFACE_STATISTICS_BLOCK);
 
@@ -382,9 +420,9 @@ void PcapNgBlockParser::readISB(const uint8_t* data,
     }
 
     // make sure that the block actually ends with block total length
-    const auto blockTotalLength = *reinterpret_cast<const uint32_t*>(&data[
-        isb.blockTotalLength - 4]);
+    const auto blockTotalLength =
+        *reinterpret_cast<const uint32_t*>(&data[isb.blockTotalLength - 4]);
     FPCAP_ASSERT(isb.blockTotalLength == blockTotalLength);
 }
 
-} // namespace fpcap
+} // namespace fpcap::pcapng
