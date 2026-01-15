@@ -107,12 +107,12 @@ TEST(Util, CalculateTimestampsMicroseconds) {
     constexpr uint32_t timestampLow = fullTimestamp & 0xFFFFFFFF;
 
     uint32_t seconds = 0;
-    uint32_t microseconds = 0;
+    uint32_t subseconds = 0;
     fpcap::util::calculateTimestamps(timestampResolution, timestampHigh, timestampLow,
-                                     &seconds, &microseconds);
+                                     &seconds, &subseconds);
 
     EXPECT_EQ(seconds, 1234567890u);
-    EXPECT_EQ(microseconds, 123456u);
+    EXPECT_EQ(subseconds, 123456u);
 }
 
 TEST(Util, CalculateTimestampsNanoseconds) {

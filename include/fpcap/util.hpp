@@ -90,11 +90,11 @@ namespace fpcap::util {
                                                  const uint32_t timestampHigh,
                                                  const uint32_t timestampLow,
                                                  uint32_t* timestampSeconds,
-                                                 uint32_t* timestampMicroseconds) {
+                                                 uint32_t* timestampSubseconds) {
     const uint64_t timestamp = static_cast<uint64_t>(timestampHigh) << 32 | timestampLow;
     const uint64_t sec = timestamp / timestampResolution;
     *timestampSeconds = static_cast<uint32_t>(sec);
-    *timestampMicroseconds = static_cast<uint32_t>(timestamp - sec * timestampResolution);
+    *timestampSubseconds = static_cast<uint32_t>(timestamp - sec * timestampResolution);
 }
 }
 
