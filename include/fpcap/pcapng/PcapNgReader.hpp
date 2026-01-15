@@ -71,8 +71,6 @@ private:
         std::string os;
         std::string hardware;
         std::string userApplication;
-        // TODO support if_tsresol per interface
-        uint32_t timestampResolution{1000000 /* 10^6 */};
     } mMetadata{};
 };
 

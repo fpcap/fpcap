@@ -80,10 +80,9 @@ bool PcapNgReader<TReader>::readNextPacket(Packet& packet) {
         } else if (blockType == INTERFACE_DESCRIPTION_BLOCK) {
             InterfaceDescriptionBlock idb{};
             PcapNgBlockParser::readIDB(&mReader.data()[mReader.mOffset], idb);
-            mMetadata.timestampResolution = idb.options.timestampResolution;
             mTraceInterfaces.emplace_back(idb.options.name, idb.options.description,
                                           idb.options.filter, idb.options.os,
-                                          idb.linkType);
+                                          idb.linkType, idb.options.timestampResolution);
         }
 
         mReader.mOffset += blockTotalLength;
@@ -112,14 +111,14 @@ bool PcapNgReader<TReader>::readNextPacket(Packet& packet) {
     case ENHANCED_PACKET_BLOCK: {
         EnhancedPacketBlock epb{};
         PcapNgBlockParser::readEPB(&mReader.data()[mReader.mOffset], epb);
-        util::calculateTimestamps(mMetadata.timestampResolution, epb.timestampHigh,
-                                  epb.timestampLow, &(packet.timestampSeconds),
-                                  &(packet.timestampMicroseconds));
+        packet.interfaceIndex = epb.interfaceId;
+        packet.dataLinkType = mTraceInterfaces[packet.interfaceIndex].dataLinkType;
+        util::calculateTimestamps(mTraceInterfaces[packet.interfaceIndex].timestampResolution,
+                                  epb.timestampHigh, epb.timestampLow,
+                                  &(packet.timestampSeconds), &(packet.timestampMicroseconds));
         packet.captureLength = epb.capturePacketLength;
         packet.length = epb.originalPacketLength;
         packet.data = epb.packetData;
-        packet.interfaceIndex = epb.interfaceId;
-        packet.dataLinkType = mTraceInterfaces[packet.interfaceIndex].dataLinkType;
 
         mReader.mOffset += epb.blockTotalLength;
         break;
@@ -127,14 +126,14 @@ bool PcapNgReader<TReader>::readNextPacket(Packet& packet) {
     case PACKET_BLOCK: {
         PacketBlock pb{};
         PcapNgBlockParser::readPB(&mReader.data()[mReader.mOffset], pb);
-        util::calculateTimestamps(mMetadata.timestampResolution, pb.timestampHigh,
-                                  pb.timestampLow, &(packet.timestampSeconds),
-                                  &(packet.timestampMicroseconds));
+        packet.interfaceIndex = pb.interfaceId;
+        packet.dataLinkType = mTraceInterfaces[packet.interfaceIndex].dataLinkType;
+        util::calculateTimestamps(mTraceInterfaces[packet.interfaceIndex].timestampResolution,
+                                  pb.timestampHigh, pb.timestampLow,
+                                  &(packet.timestampSeconds), &(packet.timestampMicroseconds));
         packet.captureLength = pb.capturePacketLength;
         packet.length = pb.originalPacketLength;
         packet.data = pb.packetData;
-        packet.interfaceIndex = pb.interfaceId;
-        packet.dataLinkType = mTraceInterfaces[packet.interfaceIndex].dataLinkType;
 
         mReader.mOffset += pb.blockTotalLength;
         break;
@@ -165,9 +164,9 @@ uint32_t PcapNgReader<TReader>::readBlock() {
     case INTERFACE_DESCRIPTION_BLOCK: {
         InterfaceDescriptionBlock idb{};
         PcapNgBlockParser::readIDB(&mReader.data()[mReader.mOffset], idb);
-        mMetadata.timestampResolution = idb.options.timestampResolution;
         mTraceInterfaces.emplace_back(idb.options.name, idb.options.description,
-                                      idb.options.filter, idb.options.os, idb.linkType);
+                                      idb.options.filter, idb.options.os,
+                                      idb.linkType, idb.options.timestampResolution);
         break;
     }
     case ENHANCED_PACKET_BLOCK: {
