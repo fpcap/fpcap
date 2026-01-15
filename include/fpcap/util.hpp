@@ -1,11 +1,11 @@
 #ifndef FPCAP_UTIL_HPP
 #define FPCAP_UTIL_HPP
 
+#include <cassert>
 #include <cmath>
 #include <cstdint>
 #include <cstdio>
 #include <fstream>
-#include <cassert>
 #include <optional>
 
 #if DEBUG
@@ -28,7 +28,8 @@ namespace fpcap::util {
  * @param filepath Path to the file as string
  * @return The first 32 bits as unsigned
  */
-[[maybe_unused]] static std::optional<uint32_t> read32bitsFromFile(const std::string& filepath) {
+[[maybe_unused]] static std::optional<uint32_t>
+read32bitsFromFile(const std::string& filepath) {
     uint32_t magicNumber = 0;
     if (std::ifstream file(filepath, std::ios::in | std::ios::binary); file.is_open()) {
         file.read(reinterpret_cast<char*>(&magicNumber), sizeof(magicNumber));
@@ -42,11 +43,9 @@ namespace fpcap::util {
         printf("%02hhx", data[i - 1]);
         if (i % 16 == 0) {
             putchar('\n');
-        }
-        else if (i % 8 == 0) {
+        } else if (i % 8 == 0) {
             printf("  ");
-        }
-        else {
+        } else {
             putchar(' ');
         }
     }
@@ -57,22 +56,19 @@ namespace fpcap::util {
     const uint8_t mostSignificantBit = value & 0x80u;
     const uint8_t remainingBits = value & 0x7Fu;
 
-    // TODO test this code
     if (mostSignificantBit == 0) {
         // most significant bit is 0, rest of bits is negative power of 10
         return std::pow(10, -remainingBits);
     }
-    else {
-        // most significant bit is 1, rest of bits is negative power of 2
-        return std::pow(2, -remainingBits);
-    }
+
+    // most significant bit is 1, rest of bits is negative power of 2
+    return std::pow(2, -remainingBits);
 }
 
 [[maybe_unused]] static uint32_t fromIfTsresolUInt(const uint8_t value) {
     const uint8_t mostSignificantBit = value & 0x80u;
     const uint8_t remainingBits = value & 0x7Fu;
 
-    // TODO test this code
     if (mostSignificantBit == 0) {
         // most significant bit is 0, rest of bits is negative power of 10
         uint32_t result = 1;
@@ -96,6 +92,6 @@ namespace fpcap::util {
     *timestampSeconds = static_cast<uint32_t>(sec);
     *timestampSubseconds = static_cast<uint32_t>(timestamp - sec * timestampResolution);
 }
-}
+} // namespace fpcap::util
 
 #endif // FPCAP_UTIL_HPP
