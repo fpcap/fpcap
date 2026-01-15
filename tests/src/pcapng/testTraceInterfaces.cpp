@@ -132,3 +132,18 @@ TEST(TraceInterfaces, ReadPacket) {
         ++traceInterfaceIndex;
     }
 }
+
+TEST(TraceInterfaces, TimestampResolution) {
+    const auto reader = fpcap::Reader::getReader("tracefiles/many_interfaces-1.pcapng");
+
+    while (!reader->isExhausted()) {
+        reader->readBlock();
+    }
+
+    ASSERT_EQ(reader->getTraceInterfaces().size(), 11);
+
+    for (const auto& iface : reader->getTraceInterfaces()) {
+        // Default is microseconds (10^6) if not specified in IDB
+        EXPECT_EQ(iface.timestampResolution, 1000000u);
+    }
+}
