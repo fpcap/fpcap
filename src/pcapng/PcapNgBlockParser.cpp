@@ -5,6 +5,8 @@
 #include <fpcap/pcapng/PcapNgSectionHeaderBlock.hpp>
 #include <fpcap/util.hpp>
 
+#include <cstring>
+
 namespace fpcap::pcapng {
 
 /**
@@ -44,11 +46,11 @@ void PcapNgBlockParser::readSHB(const uint8_t* data, SectionHeaderBlock& shb) {
     shb.majorVersion = *reinterpret_cast<const uint16_t*>(&data[12]);
     shb.minorVersion = *reinterpret_cast<const uint16_t*>(&data[14]);
 
-    // TODO: Also, special care should be taken in accessing this
-    //      field: since the alignment of all the blocks in the file is
-    //      32-bits, this field is not guaranteed to be aligned to a 64-bit
-    //      boundary.  This could be a problem on 64-bit processors.
-    shb.sectionLength = *reinterpret_cast<const int64_t*>(&data[16]);
+    // Use memcpy for safe unaligned 64-bit access. Per PCAPNG spec Section 4.1:
+    // "special care should be taken in accessing this field: since the alignment
+    // of all the blocks in the file is 32-bits, this field is not guaranteed to
+    // be aligned to a 64-bit boundary. This could be a problem on 64-bit processors."
+    std::memcpy(&shb.sectionLength, &data[16], sizeof(shb.sectionLength));
     FPCAP_ASSERT(shb.sectionLength != -1 ? shb.sectionLength % 4 == 0 : true);
 
     FPCAP_DEBUG_LOG_1("--- [Section Header Block %p] ---\n",
