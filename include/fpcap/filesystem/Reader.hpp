@@ -2,6 +2,7 @@
 #define FPCAP_READER_HPP
 
 #include <fpcap/Packet.hpp>
+#include <fpcap/PacketIterator.hpp>
 #include <fpcap/TraceInterface.hpp>
 
 #include <cstdint>
@@ -47,6 +48,9 @@ public:
     virtual TraceInterface getTraceInterface(size_t) const {
         throw std::runtime_error("getTraceInterface(size_t) not implemented");
     }
+
+    PacketIterator begin() { return PacketIterator([this](Packet& p) { return readNextPacket(p); }); }
+    std::default_sentinel_t end() { return {}; }
 
     static std::unique_ptr<Reader> getReader(const std::string& filepath);
 };
