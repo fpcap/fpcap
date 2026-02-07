@@ -1,54 +1,57 @@
 name: build
 
-on: [ push, pull_request ]
+on: [push, pull_request]
 
 jobs:
-    debian-11:
+    debian:
         runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - version: "11"
+                      image: debian:bullseye-slim
+                    - version: "12"
+                      image: debian:bookworm-slim
+                    - version: "13"
+                      image: debian:trixie-slim
+        container:
+            image: ${{ matrix.image }}
+        name: debian-${{ matrix.version }}
         steps:
-            -   uses: actions/checkout@v3
-            -   uses: ./.github/actions/debian-11-docker-action
-    debian-12:
-        runs-on: ubuntu-latest
+            - name: Install build tools
+              run: apt update && apt install -y build-essential gcc g++ make cmake git
+            - uses: actions/checkout@v3
+              with:
+                  submodules: 'recursive'
+            - name: Configure
+              run: cmake -DCMAKE_BUILD_TYPE=Release -B cmake-build-release .
+            - name: Build
+              run: cmake --build ./cmake-build-release --target all -j 8
+
+    native:
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - os: ubuntu-latest
+                      target: all
+                    - os: macos-latest
+                      target: all
+                    - os: windows-latest
+                      target: ALL_BUILD
+        runs-on: ${{ matrix.os }}
+        name: ${{ matrix.os }}
         steps:
-            -   uses: actions/checkout@v3
-            -   uses: ./.github/actions/debian-12-docker-action
-    debian-13:
-        runs-on: ubuntu-latest
-        steps:
-            -   uses: actions/checkout@v3
-            -   uses: ./.github/actions/debian-13-docker-action
-    ubuntu-latest:
-        runs-on: ubuntu-latest
-        steps:
-            -   uses: actions/checkout@v3
-                with:
-                    submodules: 'recursive'
-            -   name: Install C++ build environment
-                run: |
-                    sudo apt update
-                    sudo apt install -y build-essential gcc cmake g++ make
-            -   name: Configure
-                run: cmake -DCMAKE_BUILD_TYPE=Release -B cmake-build-release .
-            -   name: Build
-                run: cmake --build ./cmake-build-release --target all -- -j 8
-    macos-latest:
-        runs-on: macos-latest
-        steps:
-            -   uses: actions/checkout@v3
-                with:
-                    submodules: 'recursive'
-            -   name: Configure
-                run: cmake -DCMAKE_BUILD_TYPE=Release -B cmake-build-release .
-            -   name: Build
-                run: cmake --build ./cmake-build-release --target all -- -j 8
-    windows-latest:
-        runs-on: windows-latest
-        steps:
-            -   uses: actions/checkout@v3
-                with:
-                    submodules: 'recursive'
-            -   name: Configure
-                run: cmake -DCMAKE_BUILD_TYPE=Release -B cmake-build-release .
-            -   name: Build
-                run: cmake --build ./cmake-build-release --target ALL_BUILD -j 8
+            - uses: actions/checkout@v3
+              with:
+                  submodules: 'recursive'
+            - name: Install build tools
+              if: matrix.os == 'ubuntu-latest'
+              run: |
+                  sudo apt update
+                  sudo apt install -y build-essential gcc cmake g++ make
+            - name: Configure
+              run: cmake -DCMAKE_BUILD_TYPE=Release -B cmake-build-release .
+            - name: Build
+              run: cmake --build ./cmake-build-release --target ${{ matrix.target }} -j 8

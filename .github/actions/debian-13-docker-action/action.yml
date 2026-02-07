@@ -1,5 +1,0 @@
-name: 'debian-13-docker-action'
-description: 'Sets up a debian 13 (trixie) docker image with C++/CMake environment'
-runs:
-  using: 'docker'
-  image: 'Dockerfile'
