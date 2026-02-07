@@ -2,9 +2,15 @@
 
 #include <fpcap/filesystem/Writer.hpp>
 
+#include <cstdlib>
+#include <filesystem>
+#include <string>
+
 TEST(fpcap, GetWriter) {
-    // TODO replace with something platform independent
-    ASSERT_NE(nullptr,fpcap::Writer::getWriter(std::tmpnam(nullptr)));
+    const std::string tempFile = (std::filesystem::temp_directory_path() /
+            ("fpcap_test_" + std::to_string(std::rand()) + ".tmp"))
+        .string();
+    ASSERT_NE(nullptr, fpcap::Writer::getWriter(tempFile));
 }
 
 TEST(fpcap, GetWriterEmptyFilepath) {

@@ -10,12 +10,9 @@
 
 namespace {
 std::string createTempFilename() {
-    auto path = std::filesystem::temp_directory_path() / "fpcap_test_XXXXXX.pcap";
-    std::string result = path.string();
-    // Make unique by adding random suffix
-    result = std::filesystem::temp_directory_path() /
-             ("fpcap_test_" + std::to_string(std::rand()) + ".pcap");
-    return result;
+    return (std::filesystem::temp_directory_path() /
+            ("fpcap_test_" + std::to_string(std::rand()) + ".pcap"))
+        .string();
 }
 
 void removeFile(const std::string& filepath) {
@@ -40,10 +37,12 @@ TEST(PcapWriter, WritesValidPcapHeader) {
     }
 
     // Read and verify magic number
-    std::ifstream file(tempFile, std::ios::binary);
-    uint32_t magic = 0;
-    file.read(reinterpret_cast<char*>(&magic), sizeof(magic));
-    EXPECT_EQ(magic, fpcap::PCAP_MICROSECONDS);
+    {
+        std::ifstream file(tempFile, std::ios::binary);
+        uint32_t magic = 0;
+        file.read(reinterpret_cast<char*>(&magic), sizeof(magic));
+        EXPECT_EQ(magic, fpcap::PCAP_MICROSECONDS);
+    }
 
     removeFile(tempFile);
 }
@@ -99,25 +98,28 @@ TEST(PcapWriter, RoundtripReadWrite) {
     }
 
     // Read back and verify
-    fpcap::pcap::MMPcapReader reader{tempFile};
-    fpcap::Packet readPacket;
-    uint64_t count = 0;
+    {
+        fpcap::pcap::MMPcapReader reader{tempFile};
+        fpcap::Packet readPacket;
+        uint64_t count = 0;
 
-    while (!reader.isExhausted()) {
-        if (reader.readNextPacket(readPacket)) {
-            if (count == 0) {
-                EXPECT_EQ(readPacket.timestampSeconds, 100u);
-                EXPECT_EQ(readPacket.timestampMicroseconds, 200u);
-                EXPECT_EQ(readPacket.captureLength, 4u);
-            } else if (count == 1) {
-                EXPECT_EQ(readPacket.timestampSeconds, 101u);
-                EXPECT_EQ(readPacket.timestampMicroseconds, 300u);
-                EXPECT_EQ(readPacket.captureLength, 6u);
+        while (!reader.isExhausted()) {
+            if (reader.readNextPacket(readPacket)) {
+                if (count == 0) {
+                    EXPECT_EQ(readPacket.timestampSeconds, 100u);
+                    EXPECT_EQ(readPacket.timestampMicroseconds, 200u);
+                    EXPECT_EQ(readPacket.captureLength, 4u);
+                }
+                else if (count == 1) {
+                    EXPECT_EQ(readPacket.timestampSeconds, 101u);
+                    EXPECT_EQ(readPacket.timestampMicroseconds, 300u);
+                    EXPECT_EQ(readPacket.captureLength, 6u);
+                }
+                ++count;
             }
-            ++count;
         }
+        ASSERT_EQ(count, 2u);
     }
-    ASSERT_EQ(count, 2u);
 
     removeFile(tempFile);
 }
@@ -168,15 +170,17 @@ TEST(PcapWriter, AppendModeExistingFile) {
     EXPECT_EQ(sizeAfterSecond, sizeAfterFirst + 20u);
 
     // Verify we can read both packets
-    fpcap::pcap::MMPcapReader reader{tempFile};
-    fpcap::Packet readPacket;
-    uint64_t count = 0;
-    while (!reader.isExhausted()) {
-        if (reader.readNextPacket(readPacket)) {
-            ++count;
+    {
+        fpcap::pcap::MMPcapReader reader{tempFile};
+        fpcap::Packet readPacket;
+        uint64_t count = 0;
+        while (!reader.isExhausted()) {
+            if (reader.readNextPacket(readPacket)) {
+                ++count;
+            }
         }
+        ASSERT_EQ(count, 2u);
     }
-    ASSERT_EQ(count, 2u);
 
     removeFile(tempFile);
 }
