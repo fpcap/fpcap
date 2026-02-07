@@ -1,10 +1,10 @@
-if(CMAKE_PROJECT_NAME STREQUAL "fpcap")
-    # Add googletest directly to our build. This defines
-    # the gtest and gtest_main targets.
-    add_subdirectory(libs/googletest EXCLUDE_FROM_ALL)
-else()
-    find_package(GTest REQUIRED)
-endif()
+include(FetchContent)
+FetchContent_Declare(
+    googletest
+    GIT_REPOSITORY https://github.com/google/googletest.git
+    GIT_TAG        v1.17.0
+)
+FetchContent_MakeAvailable(googletest)
 
 file(GLOB_RECURSE FPCAP_TEST_SRC_FILES CONFIGURE_DEPENDS src/*.cpp src/**/*.cpp)
 add_executable(fpcap_test ${FPCAP_TEST_SRC_FILES})

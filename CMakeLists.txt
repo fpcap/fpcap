@@ -16,12 +16,19 @@ else()
     option(FPCAP_BUILD_EXAMPLES "Build examples" OFF)
 endif()
 
-set(ZSTD_BUILD_STATIC ON)
-set(ZSTD_BUILD_SHARED OFF)
-set(ZSTD_LEGACY_SUPPORT OFF)
-set(ZSTD_BUILD_PROGRAMS OFF)
-set(ZSTD_BUILD_TESTS OFF)
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/libs/zstd/build/cmake")
+include(FetchContent)
+FetchContent_Declare(
+    zstd
+    GIT_REPOSITORY https://github.com/facebook/zstd.git
+    GIT_TAG        v1.5.7
+    SOURCE_SUBDIR  build/cmake
+)
+set(ZSTD_BUILD_STATIC ON CACHE BOOL "" FORCE)
+set(ZSTD_BUILD_SHARED OFF CACHE BOOL "" FORCE)
+set(ZSTD_LEGACY_SUPPORT OFF CACHE BOOL "" FORCE)
+set(ZSTD_BUILD_PROGRAMS OFF CACHE BOOL "" FORCE)
+set(ZSTD_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(zstd)
 
 # fpcap library target
 file(GLOB_RECURSE FPCAP_SRC_FILES CONFIGURE_DEPENDS src/*.cpp)
@@ -32,8 +39,6 @@ target_include_directories(fpcap
     PUBLIC
         $<INSTALL_INTERFACE:include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    PRIVATE
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/libs/zstd/lib>
 )
 target_link_libraries(fpcap PRIVATE libzstd_static)
 
