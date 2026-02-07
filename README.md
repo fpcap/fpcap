@@ -15,6 +15,26 @@
 - Rudimentary support for block options
 - Zstd de-compression support (file-endings .zst or .zstd)
 
+## Example
+
+```c++
+#include <fpcap/fpcap.hpp>
+...
+fpcap::PacketReader reader("myfile.pcap");
+for (const fpcap::Packet& packet : reader) {
+    // Access packet header information
+    // uint32_t timestampSeconds
+    // uint32_t timestampMicroseconds
+    // uint32_t captureLength
+    // uint32_t length
+    // uint16_t dataLinkType
+
+    // Access the actual byte data
+    const uint8_t* data = packet.data;
+    ...
+}
+```
+
 ## Build
 
 ```shell
