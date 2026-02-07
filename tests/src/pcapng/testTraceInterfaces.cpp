@@ -1,7 +1,24 @@
 #include <gtest/gtest.h>
 
+#include <fpcap/PacketReader.hpp>
 #include <fpcap/pcapng/PcapNgReader.hpp>
 #include <iostream>
+
+TEST(TraceInterfaces, AvailableBeforeReadingPackets) {
+    // Regression test: getTraceInterfaces() must return the correct interfaces
+    // immediately after construction, without reading any packets first.
+    // In PcapNG, SHB and IDB blocks always precede packet blocks.
+    const auto reader = fpcap::Reader::getReader("tracefiles/many_interfaces-1.pcapng");
+    ASSERT_EQ(reader->getTraceInterfaces().size(), 11);
+    EXPECT_EQ(*reader->getTraceInterfaces()[0].name, "en0");
+}
+
+TEST(TraceInterfaces, AvailableBeforeReadingPacketsPacketReader) {
+    // Same test via the PacketReader API
+    const fpcap::PacketReader reader{"tracefiles/many_interfaces-1.pcapng"};
+    ASSERT_EQ(reader.getTraceInterfaces().size(), 11);
+    EXPECT_EQ(*reader.getTraceInterfaces()[0].name, "en0");
+}
 
 TEST(TraceInterfaces, ReadBlock) {
     auto reader = fpcap::Reader::getReader("tracefiles/many_interfaces-1.pcapng");

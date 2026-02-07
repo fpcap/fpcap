@@ -62,6 +62,13 @@ public:
 
     TraceInterface getTraceInterface(size_t id) const override;
 
+    /**
+     * Eagerly reads all blocks preceding the first packet block (SHB, IDBs, etc.),
+     * populating metadata and trace interfaces so they are available immediately
+     * after construction.
+     */
+    void readPreamble();
+
 private:
     TReader mReader;
     std::vector<TraceInterface> mTraceInterfaces;

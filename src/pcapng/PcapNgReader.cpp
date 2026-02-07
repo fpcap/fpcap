@@ -10,7 +10,6 @@
 #include <sstream>
 
 namespace fpcap::pcapng {
-
 template <typename TReader>
 PcapNgReader<TReader>::PcapNgReader(const std::string& filepath) : mReader(filepath) {
     if (const uint32_t magicNumber = *reinterpret_cast<const uint32_t*>(mReader.data());
@@ -23,6 +22,7 @@ PcapNgReader<TReader>::PcapNgReader(const std::string& filepath) : mReader(filep
             "number, instead got: 0x" +
             hex + ", possibly little/big endian issue while reading file " + filepath);
     }
+    readPreamble();
 }
 
 template <typename TReader>
@@ -38,6 +38,23 @@ PcapNgReader<TReader>::PcapNgReader(TReader&& reader)
             "number, instead got: 0x" +
             hex + ", possibly little/big endian issue while reading file " +
             PcapNgReader::getFilepath());
+    }
+    readPreamble();
+}
+
+template <typename TReader>
+void PcapNgReader<TReader>::readPreamble() {
+    while (!isExhausted() && mReader.getSafeToReadSize() >= 8) {
+        const uint32_t blockType =
+            *reinterpret_cast<const uint32_t*>(&mReader.data()[mReader.mOffset]);
+
+        // stop before the first packet block
+        if (blockType == ENHANCED_PACKET_BLOCK || blockType == PACKET_BLOCK ||
+            blockType == SIMPLE_PACKET_BLOCK) {
+            break;
+        }
+
+        readBlock();
     }
 }
 
@@ -56,9 +73,9 @@ bool PcapNgReader<TReader>::readNextPacket(Packet& packet) {
     // make sure there are enough bytes to read
     if (mReader.getSafeToReadSize() < 8) {
         std::cerr << "Error: Expected to read at least one more block (8 bytes at "
-                     "least), but there are only "
-                  << mReader.getSafeToReadSize() << " bytes left in the file"
-                  << std::endl;
+            "least), but there are only "
+            << mReader.getSafeToReadSize() << " bytes left in the file"
+            << std::endl;
         return false;
     }
 
@@ -68,7 +85,7 @@ bool PcapNgReader<TReader>::readNextPacket(Packet& packet) {
         *reinterpret_cast<const uint32_t*>(&mReader.data()[mReader.mOffset + 4]);
 
     while (blockType != ENHANCED_PACKET_BLOCK && blockType != PACKET_BLOCK &&
-           blockType != SIMPLE_PACKET_BLOCK) {
+        blockType != SIMPLE_PACKET_BLOCK) {
         if (blockType == SECTION_HEADER_BLOCK) {
             SectionHeaderBlock shb{};
             PcapNgBlockParser::readSHB(&mReader.data()[mReader.mOffset], shb);
@@ -76,7 +93,8 @@ bool PcapNgReader<TReader>::readNextPacket(Packet& packet) {
             mMetadata.os = shb.options.os;
             mMetadata.hardware = shb.options.hardware;
             mMetadata.userApplication = shb.options.userApplication;
-        } else if (blockType == INTERFACE_DESCRIPTION_BLOCK) {
+        }
+        else if (blockType == INTERFACE_DESCRIPTION_BLOCK) {
             InterfaceDescriptionBlock idb{};
             PcapNgBlockParser::readIDB(&mReader.data()[mReader.mOffset], idb);
             mTraceInterfaces.emplace_back(idb.options.name, idb.options.description,
@@ -94,9 +112,9 @@ bool PcapNgReader<TReader>::readNextPacket(Packet& packet) {
         // make sure there are enough bytes to read
         if (mReader.getSafeToReadSize() < 8) {
             std::cerr << "Error: Expected to read at least one more block (8 bytes at "
-                         "least), but there are only "
-                      << mReader.getSafeToReadSize() << " bytes left in the file"
-                      << std::endl;
+                "least), but there are only "
+                << mReader.getSafeToReadSize() << " bytes left in the file"
+                << std::endl;
             return false;
         }
 
@@ -157,7 +175,7 @@ bool PcapNgReader<TReader>::readNextPacket(Packet& packet) {
         mReader.mOffset += spb.blockTotalLength;
         break;
     }
-    default:;
+    default: ;
     }
 
     return true;
@@ -241,7 +259,7 @@ template <typename TReader>
 TraceInterface PcapNgReader<TReader>::getTraceInterface(const size_t id) const {
     if (id >= mTraceInterfaces.size()) {
         throw std::out_of_range("Trace interface index " + std::to_string(id) +
-                                " is out of range");
+            " is out of range");
     }
     return mTraceInterfaces[id];
 }
@@ -249,5 +267,4 @@ TraceInterface PcapNgReader<TReader>::getTraceInterface(const size_t id) const {
 template class PcapNgReader<FReadFileReader>;
 template class PcapNgReader<MMapFileReader>;
 template class PcapNgReader<ZstdFileReader>;
-
 } // namespace fpcap::pcapng
