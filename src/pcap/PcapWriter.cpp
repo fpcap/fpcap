@@ -1,6 +1,6 @@
 #include "fpcap/pcap/PcapWriter.hpp"
 
-#include <fpcap/MagicNumber.hpp>
+#include <fpcap/Constants.hpp>
 #include <iostream>
 #include <filesystem>
 
@@ -60,7 +60,7 @@ void PcapWriter<TWriter>::writePcapHeader() {
     pcapHeader.thisZone = 0;       // TODO account for timezone offset
     pcapHeader.sigfigs = 0;        // in practice all tools set this to 0
     pcapHeader.snapLength = 65535; // TODO support different snap lengths
-    pcapHeader.dataLinkType = 1;   // TODO support more link types than DLT_EN10MB
+    pcapHeader.dataLinkType = DLT_EN10MB;
 
     mWriter.write(reinterpret_cast<const uint8_t*>(&pcapHeader), sizeof(pcapHeader));
 }

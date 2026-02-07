@@ -1,6 +1,6 @@
 #include "fpcap/modified_pcap/ModifiedPcapParser.hpp"
 
-#include <fpcap/MagicNumber.hpp>
+#include <fpcap/Constants.hpp>
 #include <fpcap/util.hpp>
 
 #include <sstream>

@@ -1,7 +1,7 @@
 #include "fpcap/filesystem/ZstdFileReader.hpp"
 
 #include <fpcap/filesystem/FReadFileReader.hpp>
-#include <fpcap/MagicNumber.hpp>
+#include <fpcap/Constants.hpp>
 
 #include <zstd.h>
 #include <algorithm>

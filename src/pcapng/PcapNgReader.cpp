@@ -1,6 +1,6 @@
 #include "fpcap/pcapng/PcapNgReader.hpp"
 
-#include <fpcap/MagicNumber.hpp>
+#include <fpcap/Constants.hpp>
 #include <fpcap/Packet.hpp>
 #include <fpcap/pcapng/PcapNgBlockParser.hpp>
 #include <fpcap/pcapng/PcapNgBlockType.hpp>

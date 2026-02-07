@@ -25,5 +25,8 @@ target_link_libraries(fpcap_example_pcap_simple_mm PRIVATE fpcap)
 add_executable(fpcap_example_pcap_writer pcap_writer.cpp)
 target_link_libraries(fpcap_example_pcap_writer PRIVATE fpcap)
 
+add_executable(fpcap_example_pcapng_writer pcapng_writer.cpp)
+target_link_libraries(fpcap_example_pcapng_writer PRIVATE fpcap)
+
 add_executable(fpcap_statistics_cli statistics_cli.cpp)
 target_link_libraries(fpcap_statistics_cli PRIVATE fpcap)

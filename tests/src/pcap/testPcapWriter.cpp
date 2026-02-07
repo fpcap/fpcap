@@ -2,7 +2,7 @@
 
 #include <fpcap/pcap/PcapWriter.hpp>
 #include <fpcap/pcap/PcapReader.hpp>
-#include <fpcap/MagicNumber.hpp>
+#include <fpcap/Constants.hpp>
 
 #include <cstdio>
 #include <filesystem>

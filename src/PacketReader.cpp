@@ -1,7 +1,7 @@
 #include "fpcap/PacketReader.hpp"
 
 #include <fpcap/util.hpp>
-#include <fpcap/MagicNumber.hpp>
+#include <fpcap/Constants.hpp>
 
 #include <filesystem>
 

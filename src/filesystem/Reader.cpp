@@ -1,7 +1,7 @@
 #include "fpcap/filesystem/Reader.hpp"
 
 #include <fpcap/util.hpp>
-#include <fpcap/MagicNumber.hpp>
+#include <fpcap/Constants.hpp>
 
 #include <filesystem>
 #include <fpcap/modified_pcap/ModifiedPcapReader.hpp>

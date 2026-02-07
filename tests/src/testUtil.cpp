@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <fpcap/MagicNumber.hpp>
+#include <fpcap/Constants.hpp>
 #include <fpcap/util.hpp>
 
 #include <cmath>
