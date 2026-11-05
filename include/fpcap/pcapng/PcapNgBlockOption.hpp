@@ -19,6 +19,14 @@ enum BlockOptionType : uint16_t {
     IDB_TSRESOL = 9,
     IDB_FILTER = 11,
     IDB_OS = 12,
+
+    ISB_STARTTIME = 2,
+    ISB_ENDTIME = 3,
+    ISB_IFRECV = 4,
+    ISB_IFDROP = 5,
+    ISB_FILTERACCEPT = 6,
+    ISB_OSDROP = 7,
+    ISB_USRDELIV = 8,
 };
 
 struct Option {

@@ -3,6 +3,7 @@
 #include <fpcap/util.hpp>
 
 #include <cmath>
+#include <cstring>
 
 namespace fpcap::pcapng {
 
@@ -273,61 +274,29 @@ void PcapNgBlockOptionParser::readISBOption(const uint8_t* data,
                                             const size_t offset) {
     readOption(data, option, offset);
 
-    // TODO check if pre-defined options have the correct length, e.g., uint32_t = 4
     switch (option.type) {
-    case 2: {
-        // isb_starttime: time the capture started
+    case ISB_STARTTIME: {
         // TODO parse isb_starttime timestamp
         break;
     }
-    case 3: {
-        // isb_endtime: time the capture ended
-        // TODO parse isb_starttime timestamp
+    case ISB_ENDTIME: {
+        // TODO parse isb_endtime timestamp
         break;
     }
-    case 4: {
-        // isb_ifrecv: number of packets received from the physical interface
-        //             starting from the beginning of the capture
-        [[maybe_unused]] const uint64_t ifrecv = *reinterpret_cast<const uint64_t*>(option
-            .value);
-        FPCAP_DEBUG_LOG_1("[ISB][OPT] Received Packets: %lu\n",
-                          static_cast<unsigned long>(ifrecv));
-        return;
-    }
-    case 5: {
-        // isb_ifdrop: number of packets dropped by the interface due to lack of
-        //             resources starting from the beginning of the capture
-        [[maybe_unused]] const uint64_t ifdrop = *reinterpret_cast<const uint64_t*>(option
-            .value);
-        FPCAP_DEBUG_LOG_1("[ISB][OPT] Dropped Packets (Interface): %lu\n",
-                          static_cast<unsigned long>(ifdrop));
-        return;
-    }
-    case 6: {
-        // isb_filteraccept: number of packets accepted by filter starting from
-        //                   the beginning of the capture
-        [[maybe_unused]] const uint64_t filteraccept = *reinterpret_cast<const uint64_t*>(
-            option.value);
-        FPCAP_DEBUG_LOG_1("[ISB][OPT] Filtered Packets: %lu\n",
-                          static_cast<unsigned long>(filteraccept));
-        return;
-    }
-    case 7: {
-        // isb_osdrop: number of packets dropped by the operating system starting
-        //             from the beginning of the capture
-        [[maybe_unused]] const uint64_t osdrop = *reinterpret_cast<const uint64_t*>(option
-            .value);
-        FPCAP_DEBUG_LOG_1("[ISB][OPT] Dropped Packets (OS): %lu\n",
-                          static_cast<unsigned long>(osdrop));
-        return;
-    }
-    case 8: {
-        // isb_usrdeliv: number of packets delivered to the user starting from the
-        //               beginning of the capture
-        [[maybe_unused]] const uint64_t usrdeliv = *reinterpret_cast<const uint64_t*>(
-            option.value);
-        FPCAP_DEBUG_LOG_1("[ISB][OPT] Packets Delivered to User: %lu\n",
-                          static_cast<unsigned long>(usrdeliv));
+    case ISB_IFRECV:
+    case ISB_IFDROP:
+    case ISB_FILTERACCEPT:
+    case ISB_OSDROP:
+    case ISB_USRDELIV: {
+        // packet counters since the start of the capture
+        if (option.length != sizeof(uint64_t)) {
+            break;
+        }
+        [[maybe_unused]] constexpr const char* names[] = {
+            "Received Packets", "Dropped Packets (Interface)", "Filtered Packets",
+            "Dropped Packets (OS)", "Packets Delivered to User"};
+        FPCAP_DEBUG_LOG_2("[ISB][OPT] %s: %lu\n", names[option.type - ISB_IFRECV],
+                          static_cast<unsigned long>(parseUInt64(option)));
         return;
     }
     default: {
@@ -341,6 +310,12 @@ void PcapNgBlockOptionParser::readISBOption(const uint8_t* data,
 
 std::string PcapNgBlockOptionParser::parseUTF8(const Option& option) {
     return std::string(reinterpret_cast<const char*>(option.value), option.length);
+}
+
+uint64_t PcapNgBlockOptionParser::parseUInt64(const Option& option) {
+    uint64_t value;
+    std::memcpy(&value, option.value, sizeof(value));
+    return value;
 }
 
 } // namespace fpcap

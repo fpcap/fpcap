@@ -410,14 +410,43 @@ void PcapNgBlockParser::readISB(const uint8_t* data, InterfaceStatisticsBlock& i
     FPCAP_DEBUG_LOG_1("[ISB] Timestamp (High): %u\n", isb.timestampHigh);
     FPCAP_DEBUG_LOG_1("[ISB] Timestamp (Low): %u\n", isb.timestampLow);
 
+    isb.options = {};
     // standard Interface Statistics Block has size 24 (without any options)
-    if (isb.blockTotalLength > 20) {
-        const uint32_t totalOptionsLength = isb.blockTotalLength - 20;
+    if (isb.blockTotalLength > 24) {
+        const uint32_t totalOptionsLength = isb.blockTotalLength - 24;
         uint32_t readOptionsLength = 0;
-        while (readOptionsLength < totalOptionsLength) {
+        while (readOptionsLength + 4 <= totalOptionsLength) {
             Option option{};
-            PcapNgBlockOptionParser::readISBOption(data, option, 16 + readOptionsLength);
+            PcapNgBlockOptionParser::readOption(data, option, 20 + readOptionsLength);
+            if (option.type == END_OF_OPT ||
+                option.length > totalOptionsLength - readOptionsLength - 4) {
+                break;
+            }
+            PcapNgBlockOptionParser::readISBOption(data, option, 20 + readOptionsLength);
             readOptionsLength += option.totalLength();
+
+            std::optional<uint64_t>* counter = nullptr;
+            switch (option.type) {
+            case ISB_IFRECV:
+                counter = &isb.options.receivedPackets;
+                break;
+            case ISB_IFDROP:
+                counter = &isb.options.interfaceDroppedPackets;
+                break;
+            case ISB_FILTERACCEPT:
+                counter = &isb.options.filterAcceptedPackets;
+                break;
+            case ISB_OSDROP:
+                counter = &isb.options.osDroppedPackets;
+                break;
+            case ISB_USRDELIV:
+                counter = &isb.options.deliveredPackets;
+                break;
+            default:;
+            }
+            if (counter && option.length == sizeof(uint64_t)) {
+                *counter = PcapNgBlockOptionParser::parseUInt64(option);
+            }
         }
     }
 

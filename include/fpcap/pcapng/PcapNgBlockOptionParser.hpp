@@ -24,6 +24,11 @@ public:
      * @return string value
      */
     static std::string parseUTF8(const Option& option);
+
+    /**
+     * Reads an unaligned 64-bit value; the caller must check that option.length is 8.
+     */
+    static uint64_t parseUInt64(const Option& option);
 };
 
 } // namespace fpcap::pcapng
