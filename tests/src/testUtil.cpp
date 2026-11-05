@@ -144,3 +144,110 @@ TEST(Util, CalculateTimestampsZero) {
     EXPECT_EQ(seconds, 0u);
     EXPECT_EQ(microseconds, 0u);
 }
+
+// fromIfTsresolUInt range checks
+
+TEST(Util, FromIfTsresolUIntPowerOf10_Seconds) {
+    EXPECT_EQ(fpcap::util::fromIfTsresolUInt(0x00), 1u);
+}
+
+TEST(Util, FromIfTsresolUIntPowerOf10_TooFineThrows) {
+    // 10^-10 and finer do not fit into 32 bits; previously these silently wrapped
+    // around (e.g. 0x0A -> 1410065408) or became 0 for exponents >= 32.
+    EXPECT_THROW(fpcap::util::fromIfTsresolUInt(0x0A), std::runtime_error);
+    EXPECT_THROW(fpcap::util::fromIfTsresolUInt(0x20), std::runtime_error);
+    EXPECT_THROW(fpcap::util::fromIfTsresolUInt(0x7F), std::runtime_error);
+}
+
+TEST(Util, FromIfTsresolUIntPowerOf2_Boundaries) {
+    EXPECT_EQ(fpcap::util::fromIfTsresolUInt(0x80), 1u);
+    EXPECT_EQ(fpcap::util::fromIfTsresolUInt(0x80 | 31), 1u << 31);
+}
+
+TEST(Util, FromIfTsresolUIntPowerOf2_TooFineThrows) {
+    // 1u << 32 and beyond is undefined behaviour
+    EXPECT_THROW(fpcap::util::fromIfTsresolUInt(0x80 | 32), std::runtime_error);
+    EXPECT_THROW(fpcap::util::fromIfTsresolUInt(0xFF), std::runtime_error);
+}
+
+TEST(Util, FromIfTsresolUIntAllValidValuesAreNonZero) {
+    for (uint32_t value = 0; value <= 0xFF; ++value) {
+        const auto byte = static_cast<uint8_t>(value);
+        try {
+            EXPECT_NE(fpcap::util::fromIfTsresolUInt(byte), 0u) << "value: " << value;
+        } catch (const std::runtime_error&) {
+            // rejected values are fine, they must just never yield a zero resolution
+        }
+    }
+}
+
+// calculateTimestamps edge cases
+
+TEST(Util, CalculateTimestampsZeroResolutionThrows) {
+    uint32_t seconds = 0;
+    uint32_t subseconds = 0;
+    EXPECT_THROW(fpcap::util::calculateTimestamps(0, 0, 1, &seconds, &subseconds),
+                 std::runtime_error);
+}
+
+TEST(Util, CalculateTimestampsPowerOf2) {
+    // 2^-10 resolution: 1024 ticks per second, 5.5 seconds
+    constexpr uint32_t timestampResolution = 1024;
+    uint32_t seconds = 0;
+    uint32_t subseconds = 0;
+    fpcap::util::calculateTimestamps(timestampResolution, 0, 5 * 1024 + 512, &seconds,
+                                     &subseconds);
+    EXPECT_EQ(seconds, 5u);
+    EXPECT_EQ(subseconds, 512u);
+}
+
+// subsecondsToMicroseconds tests
+
+TEST(Util, SubsecondsToMicroseconds) {
+    using fpcap::util::subsecondsToMicroseconds;
+    EXPECT_EQ(subsecondsToMicroseconds(123456, 1'000'000), 123456u);
+    EXPECT_EQ(subsecondsToMicroseconds(123456789, 1'000'000'000), 123456u); // truncates
+    EXPECT_EQ(subsecondsToMicroseconds(999999999, 1'000'000'000), 999999u);
+    EXPECT_EQ(subsecondsToMicroseconds(250, 1'000), 250000u);            // milliseconds
+    EXPECT_EQ(subsecondsToMicroseconds(0, 1), 0u);                      // seconds
+    EXPECT_EQ(subsecondsToMicroseconds(512, 1024), 500000u);            // 2^-10
+    EXPECT_EQ(subsecondsToMicroseconds((1u << 31) - 1, 1u << 31), 999999u); // 2^-31
+}
+
+TEST(Util, SubsecondsToMicrosecondsZeroResolutionThrows) {
+    EXPECT_THROW(fpcap::util::subsecondsToMicroseconds(1, 0), std::runtime_error);
+}
+
+// calculateTimestampsMicroseconds tests
+
+TEST(Util, CalculateTimestampsMicrosecondsFromNanoseconds) {
+    // Regression test: a nanosecond resolution timestamp must yield microseconds, not
+    // nanoseconds, since Packet::timestampMicroseconds is in microseconds.
+    constexpr uint32_t timestampResolution = 1'000'000'000;
+    constexpr uint64_t fullTimestamp = 1234567890ULL * 1'000'000'000 + 123456789;
+    constexpr uint32_t timestampHigh = fullTimestamp >> 32;
+    constexpr uint32_t timestampLow = fullTimestamp & 0xFFFFFFFF;
+
+    uint32_t seconds = 0;
+    uint32_t microseconds = 0;
+    fpcap::util::calculateTimestampsMicroseconds(timestampResolution, timestampHigh,
+                                                 timestampLow, &seconds, &microseconds);
+
+    EXPECT_EQ(seconds, 1234567890u);
+    EXPECT_EQ(microseconds, 123456u);
+}
+
+TEST(Util, CalculateTimestampsMicrosecondsFromMicroseconds) {
+    constexpr uint32_t timestampResolution = 1'000'000;
+    constexpr uint64_t fullTimestamp = 1234567890ULL * 1'000'000 + 123456;
+    constexpr uint32_t timestampHigh = fullTimestamp >> 32;
+    constexpr uint32_t timestampLow = fullTimestamp & 0xFFFFFFFF;
+
+    uint32_t seconds = 0;
+    uint32_t microseconds = 0;
+    fpcap::util::calculateTimestampsMicroseconds(timestampResolution, timestampHigh,
+                                                 timestampLow, &seconds, &microseconds);
+
+    EXPECT_EQ(seconds, 1234567890u);
+    EXPECT_EQ(microseconds, 123456u);
+}
