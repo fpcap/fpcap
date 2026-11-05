@@ -290,7 +290,7 @@ void PcapNgBlockOptionParser::readISBOption(const uint8_t* data,
         //             starting from the beginning of the capture
         [[maybe_unused]] const uint64_t ifrecv = *reinterpret_cast<const uint64_t*>(option
             .value);
-        FPCAP_DEBUG_LOG_1("[ISB][OPT] Received Packets: %lu",
+        FPCAP_DEBUG_LOG_1("[ISB][OPT] Received Packets: %lu\n",
                           static_cast<unsigned long>(ifrecv));
         return;
     }
@@ -299,7 +299,7 @@ void PcapNgBlockOptionParser::readISBOption(const uint8_t* data,
         //             resources starting from the beginning of the capture
         [[maybe_unused]] const uint64_t ifdrop = *reinterpret_cast<const uint64_t*>(option
             .value);
-        FPCAP_DEBUG_LOG_1("[ISB][OPT] Dropped Packets (Interface): %lu",
+        FPCAP_DEBUG_LOG_1("[ISB][OPT] Dropped Packets (Interface): %lu\n",
                           static_cast<unsigned long>(ifdrop));
         return;
     }
@@ -308,7 +308,7 @@ void PcapNgBlockOptionParser::readISBOption(const uint8_t* data,
         //                   the beginning of the capture
         [[maybe_unused]] const uint64_t filteraccept = *reinterpret_cast<const uint64_t*>(
             option.value);
-        FPCAP_DEBUG_LOG_1("[ISB][OPT] Filtered Packets: %lu",
+        FPCAP_DEBUG_LOG_1("[ISB][OPT] Filtered Packets: %lu\n",
                           static_cast<unsigned long>(filteraccept));
         return;
     }
@@ -317,7 +317,7 @@ void PcapNgBlockOptionParser::readISBOption(const uint8_t* data,
         //             from the beginning of the capture
         [[maybe_unused]] const uint64_t osdrop = *reinterpret_cast<const uint64_t*>(option
             .value);
-        FPCAP_DEBUG_LOG_1("[ISB][OPT] Dropped Packets (OS): %lu",
+        FPCAP_DEBUG_LOG_1("[ISB][OPT] Dropped Packets (OS): %lu\n",
                           static_cast<unsigned long>(osdrop));
         return;
     }
@@ -326,7 +326,7 @@ void PcapNgBlockOptionParser::readISBOption(const uint8_t* data,
         //               beginning of the capture
         [[maybe_unused]] const uint64_t usrdeliv = *reinterpret_cast<const uint64_t*>(
             option.value);
-        FPCAP_DEBUG_LOG_1("[ISB][OPT] Packets Delivered to User: %lu",
+        FPCAP_DEBUG_LOG_1("[ISB][OPT] Packets Delivered to User: %lu\n",
                           static_cast<unsigned long>(usrdeliv));
         return;
     }

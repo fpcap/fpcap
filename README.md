@@ -117,6 +117,21 @@ cmake -DFPCAP_BUILD_EXAMPLES=ON -B build .
 cmake --build build
 ```
 
+### Debug Logging
+
+To print every parsed file header, block and packet to stdout (off by default, independent of the build type):
+
+```shell
+cmake -DFPCAP_DEBUG_LOGGING=ON -B build .
+```
+
+When using fpcap via FetchContent, set the option before making it available:
+
+```cmake
+set(FPCAP_DEBUG_LOGGING ON)
+FetchContent_MakeAvailable(fpcap)
+```
+
 ## Benchmarks
 
 See [fpcap-benchmark](https://github.com/fpcap/fpcap-benchmark) for performance comparisons against other libraries.

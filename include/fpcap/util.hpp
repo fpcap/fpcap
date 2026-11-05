@@ -8,15 +8,19 @@
 #include <fstream>
 #include <optional>
 
-#if DEBUG
+#if FPCAP_DEBUG_LOGGING
 #define FPCAP_DEBUG_LOG(format) printf(format);
 #define FPCAP_DEBUG_LOG_1(format, val) printf(format, val);
 #define FPCAP_DEBUG_LOG_2(format, val1, val2) printf(format, val1, val2);
-#define FPCAP_ASSERT(x) assert(x)
 #else
 #define FPCAP_DEBUG_LOG(format) (void)(format)
 #define FPCAP_DEBUG_LOG_1(format, val) (void)(format)
 #define FPCAP_DEBUG_LOG_2(format, val1, val2) (void)(format)
+#endif
+
+#if DEBUG
+#define FPCAP_ASSERT(x) assert(x)
+#else
 #define FPCAP_ASSERT(x) (void)(x)
 #endif
 #define FPCAP_WARN(msg) fprintf(stderr, msg)

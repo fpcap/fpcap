@@ -15,6 +15,7 @@ else()
     option(FPCAP_BUILD_TESTS "Force tests to build" OFF)
     option(FPCAP_BUILD_EXAMPLES "Build examples" OFF)
 endif()
+option(FPCAP_DEBUG_LOGGING "Print parsed headers and every packet to stdout" OFF)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -55,8 +56,12 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 endif()
 
 if((CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR) AND (CMAKE_BUILD_TYPE STREQUAL "Debug"))
-    # If compiling as stand-alone project in debug mode set debug flag
+    # If compiling as stand-alone project in debug mode enable assertions
     target_compile_options(fpcap PRIVATE -DDEBUG)
+endif()
+
+if(FPCAP_DEBUG_LOGGING)
+    target_compile_definitions(fpcap PRIVATE FPCAP_DEBUG_LOGGING=1)
 endif()
 
 if(WIN32)
