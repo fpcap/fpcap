@@ -3,26 +3,40 @@
 #include <fpcap/pcap/PcapParser.hpp>
 
 #include <iostream>
+#include <stdexcept>
+#include <string>
 
 namespace fpcap::pcap {
 
 template <typename TReader>
 PcapReader<TReader>::PcapReader(const std::string& filepath)
     : mReader(filepath) {
+    if (mReader.mFileSize < 24) {
+        throw std::runtime_error("Expected PCAP file to contain a 24 byte file "
+                                 "header, but it is only " +
+                                 std::to_string(mReader.mFileSize) + " bytes long");
+    }
     pcap::FileHeader fileHeader{};
     PcapParser::readFileHeader(mReader.data(), fileHeader);
     mDataLinkType = fileHeader.dataLinkType;
     mTimestampFormat = fileHeader.timestampFormat;
+    mByteSwapped = fileHeader.byteSwapped;
     mReader.mOffset += 24;
 }
 
 template <typename TReader>
 PcapReader<TReader>::PcapReader(TReader&& reader)
     : mReader(std::forward<TReader>(reader)) {
+    if (mReader.mFileSize < 24) {
+        throw std::runtime_error("Expected PCAP file to contain a 24 byte file "
+                                 "header, but it is only " +
+                                 std::to_string(mReader.mFileSize) + " bytes long");
+    }
     pcap::FileHeader fileHeader{};
     PcapParser::readFileHeader(mReader.data(), fileHeader);
     mDataLinkType = fileHeader.dataLinkType;
     mTimestampFormat = fileHeader.timestampFormat;
+    mByteSwapped = fileHeader.byteSwapped;
     mReader.mOffset += 24;
 }
 
@@ -44,11 +58,13 @@ bool PcapReader<TReader>::readNextPacket(Packet& packet) {
             "at least), but there are only "
             << mReader.getSafeToReadSize() << " bytes left in the file"
             << std::endl;
+        mReader.mOffset = mReader.mFileSize;
         return false;
     }
 
     pcap::PacketRecord packetRecord{};
-    PcapParser::readPacketRecord(&mReader.data()[mReader.mOffset], packetRecord);
+    PcapParser::readPacketRecord(&mReader.data()[mReader.mOffset], packetRecord,
+                                 mByteSwapped);
     mReader.mOffset += 16;
 
     if (packetRecord.captureLength > (mReader.mFileSize - mReader.mOffset)) {

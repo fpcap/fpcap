@@ -41,6 +41,7 @@ private:
     TReader mReader;
     uint16_t mDataLinkType{0};
     pcap::FileHeader::TimestampFormat mTimestampFormat{pcap::FileHeader::MICROSECONDS};
+    bool mByteSwapped{false};
 };
 
 typedef PcapReader<FReadFileReader> FReadPcapReader;

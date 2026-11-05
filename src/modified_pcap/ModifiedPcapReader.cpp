@@ -4,12 +4,19 @@
 #include <fpcap/modified_pcap/ModifiedPcapParser.hpp>
 
 #include <iostream>
+#include <stdexcept>
+#include <string>
 
 namespace fpcap::modified_pcap {
 
 template <typename TReader>
 ModifiedPcapReader<TReader>::ModifiedPcapReader(const std::string& filepath)
     : mReader(filepath) {
+    if (mReader.mFileSize < 24) {
+        throw std::runtime_error("Expected modified PCAP file to contain a 24 byte file "
+                                 "header, but it is only " +
+                                 std::to_string(mReader.mFileSize) + " bytes long");
+    }
     modified_pcap::FileHeader fileHeader{};
     ModifiedPcapParser::readFileHeader(mReader.data(), fileHeader);
     mReader.mOffset += 24;
@@ -20,6 +27,11 @@ ModifiedPcapReader<TReader>::ModifiedPcapReader(const std::string& filepath)
 template <typename TReader>
 ModifiedPcapReader<TReader>::ModifiedPcapReader(TReader&& reader)
     : mReader(std::forward<TReader>(reader)) {
+    if (mReader.mFileSize < 24) {
+        throw std::runtime_error("Expected modified PCAP file to contain a 24 byte file "
+                                 "header, but it is only " +
+                                 std::to_string(mReader.mFileSize) + " bytes long");
+    }
     modified_pcap::FileHeader fileHeader{};
     ModifiedPcapParser::readFileHeader(mReader.data(), fileHeader);
     mReader.mOffset += 24;
@@ -45,18 +57,29 @@ bool ModifiedPcapReader<TReader>::readNextPacket(Packet& packet) {
             "bytes at least), but there are only "
             << mReader.getSafeToReadSize() << " bytes left in the file"
             << std::endl;
+        mReader.mOffset = mReader.mFileSize;
         return false;
     }
 
     modified_pcap::PacketRecord packetRecord{};
     ModifiedPcapParser::readPacketRecord(&mReader.data()[mReader.mOffset], packetRecord);
+    mReader.mOffset += 24;
+
+    if (packetRecord.captureLength > (mReader.mFileSize - mReader.mOffset)) {
+        std::cerr << "Error: capture file appears to be cut short, trying to read "
+            << packetRecord.captureLength << " bytes, but only "
+            << (mReader.mFileSize - mReader.mOffset) << " are available" << std::endl;
+        mReader.mOffset = mReader.mFileSize;
+        return false;
+    }
+
     packet.timestampSeconds = packetRecord.timestampSeconds;
     packet.captureLength = packetRecord.captureLength;
     packet.length = packetRecord.length;
     packet.data = packetRecord.data;
     packet.dataLinkType = mLinkType;
 
-    mReader.mOffset += 24 + packetRecord.captureLength;
+    mReader.mOffset += packetRecord.captureLength;
 
     return true;
 }

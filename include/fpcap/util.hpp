@@ -44,6 +44,15 @@ read32bitsFromFile(const std::string& filepath) {
     return std::nullopt;
 }
 
+[[maybe_unused]] static uint16_t byteSwap16(const uint16_t value) {
+    return static_cast<uint16_t>(value << 8 | value >> 8);
+}
+
+[[maybe_unused]] static uint32_t byteSwap32(const uint32_t value) {
+    return value << 24 | (value & 0x0000FF00) << 8 | (value & 0x00FF0000) >> 8 |
+           value >> 24;
+}
+
 [[maybe_unused]] static void dumpMemory(const uint8_t* data, const size_t length) {
     for (size_t i = 1; i <= length; i++) {
         printf("%02hhx", data[i - 1]);

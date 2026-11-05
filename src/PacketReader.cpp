@@ -26,7 +26,9 @@ PacketReader::PacketReader(const std::string& filepath, const bool mmap)
 
     switch (fileMagic.value()) {
     case PCAP_MICROSECONDS:
-    case PCAP_NANOSECONDS: {
+    case PCAP_NANOSECONDS:
+    case PCAP_MICROSECONDS_SWAPPED:
+    case PCAP_NANOSECONDS_SWAPPED: {
         if (mmap) {
             mFileReader.emplace<pcap::MMPcapReader>(filepath);
         } else {
@@ -52,9 +54,14 @@ PacketReader::PacketReader(const std::string& filepath, const bool mmap)
     }
     case ZSTD: {
         ZstdFileReader compressedFileReader(filepath);
+        if (compressedFileReader.mFileSize < 4) {
+            throw runtime_error("decompressed file is too short to determine its type");
+        }
         switch (*reinterpret_cast<const uint32_t*>(compressedFileReader.data())) {
         case PCAP_MICROSECONDS:
-        case PCAP_NANOSECONDS: {
+        case PCAP_NANOSECONDS:
+        case PCAP_MICROSECONDS_SWAPPED:
+        case PCAP_NANOSECONDS_SWAPPED: {
             mFileReader.emplace<pcap::ZstdPcapReader>(std::move(compressedFileReader));
             break;
         }

@@ -28,7 +28,9 @@ unique_ptr<Reader> Reader::getReader(const string& filepath) {
 
     switch (fileMagic.value()) {
     case PCAP_MICROSECONDS:
-    case PCAP_NANOSECONDS: {
+    case PCAP_NANOSECONDS:
+    case PCAP_MICROSECONDS_SWAPPED:
+    case PCAP_NANOSECONDS_SWAPPED: {
         return make_unique<pcap::MMPcapReader>(filepath);
     }
     case PCAPNG: {
@@ -39,9 +41,14 @@ unique_ptr<Reader> Reader::getReader(const string& filepath) {
     }
     case ZSTD: {
         ZstdFileReader compressedFileReader(filepath);
+        if (compressedFileReader.mFileSize < 4) {
+            throw runtime_error("decompressed file is too short to determine its type");
+        }
         switch (*reinterpret_cast<const uint32_t*>(compressedFileReader.data())) {
         case PCAP_MICROSECONDS:
-        case PCAP_NANOSECONDS: {
+        case PCAP_NANOSECONDS:
+        case PCAP_MICROSECONDS_SWAPPED:
+        case PCAP_NANOSECONDS_SWAPPED: {
             return make_unique<pcap::ZstdPcapReader>(std::move(compressedFileReader));
         }
         case PCAPNG: {

@@ -24,7 +24,7 @@ public:
      *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
      * 16 |                            SnapLen                            |
      *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-     * 20 | FCS |f|0 0 0 0 0 0 0 0 0 0 0 0|         LinkType              |
+     * 20 |FCS len|R|P|     Reserved3     |        Link-layer type        |
      *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
      *
      */
@@ -48,7 +48,9 @@ public:
      *    /                                                               /
      *    +---------------------------------------------------------------+
      */
-    static void readPacketRecord(const uint8_t* data, PacketRecord& pr);
+    static void readPacketRecord(const uint8_t* data,
+                                 PacketRecord& pr,
+                                 bool byteSwapped = false);
 };
 } // namespace fpcap::pcap
 

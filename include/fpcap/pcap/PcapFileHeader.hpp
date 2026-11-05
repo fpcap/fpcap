@@ -11,7 +11,9 @@ struct FileHeader {
     uint16_t minorVersion{0};
     uint32_t snapLength{0};
     uint16_t dataLinkType{0};
-    uint16_t fcsSequence{0};
+    bool fcsLengthPresent{false};
+    uint8_t fcsLength{0};    // in 16-bit words, only meaningful if fcsLengthPresent
+    bool byteSwapped{false}; // file byte order differs from the host's
 };
 } // namespace fpcap::pcap
 
