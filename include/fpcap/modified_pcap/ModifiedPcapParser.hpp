@@ -4,13 +4,6 @@
 #include <fpcap/modified_pcap/ModifiedPcapFileHeader.hpp>
 #include <fpcap/modified_pcap/ModifiedPcapPacketRecord.hpp>
 
-#if __linux__
-#include <netinet/in.h>
-#elif _WIN32
-#include <winsock2.h>
-#include <windows.h>
-#endif
-
 namespace fpcap::modified_pcap {
 class ModifiedPcapParser {
 public:
@@ -42,7 +35,7 @@ public:
      *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
      *  0 |                      Timestamp (Seconds)                      |
      *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-     *  4 |            Timestamp (Microseconds or nanoseconds)            |
+     *  4 |                   Timestamp (Microseconds)                    |
      *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
      *  8 |                    Captured Packet Length                     |
      *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -58,10 +51,9 @@ public:
      *    /                                                               /
      *    +---------------------------------------------------------------+
      */
-    static void readPacketRecord(const uint8_t* data, PacketRecord& mppr);
-
-    static void readPacketRecordBE(const uint8_t* data,
-                                   PacketRecord& mppr);
+    static void readPacketRecord(const uint8_t* data,
+                                 PacketRecord& mppr,
+                                 bool byteSwapped = false);
 };
 } // namespace fpcap::modified_pcap
 

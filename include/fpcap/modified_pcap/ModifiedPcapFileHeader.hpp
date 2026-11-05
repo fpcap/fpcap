@@ -11,6 +11,7 @@ struct FileHeader {
     uint32_t sigfigs{0}; // accuracy of timestamps
     uint32_t snapLength{0}; // max length of captured packets, in octets
     uint32_t linkType{0}; // data link type
+    bool byteSwapped{false}; // file byte order differs from the host's
 };
 } // namespace fpcap::modified_pcap
 

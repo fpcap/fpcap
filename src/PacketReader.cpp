@@ -44,7 +44,8 @@ PacketReader::PacketReader(const std::string& filepath, const bool mmap)
         }
         break;
     }
-    case MODIFIED_PCAP: {
+    case MODIFIED_PCAP:
+    case MODIFIED_PCAP_BE: {
         if (mmap) {
             mFileReader.emplace<modified_pcap::MMModifiedPcapReader>(filepath);
         } else {
@@ -70,7 +71,8 @@ PacketReader::PacketReader(const std::string& filepath, const bool mmap)
                 pcapng::ZstdPcapNgReader>(std::move(compressedFileReader));
             break;
         }
-        case MODIFIED_PCAP: {
+        case MODIFIED_PCAP:
+        case MODIFIED_PCAP_BE: {
             mFileReader.emplace<modified_pcap::ZstdModifiedPcapReader>(
                 std::move(compressedFileReader));
             break;

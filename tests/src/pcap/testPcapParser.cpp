@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include "../TestFiles.hpp"
+
 #include <fpcap/Constants.hpp>
 #include <fpcap/pcap/PcapParser.hpp>
 
@@ -7,6 +9,9 @@
 #include <cstring>
 
 namespace {
+using fpcap::test::putSwapped16;
+using fpcap::test::putSwapped32;
+
 std::array<uint8_t, 24> makeFileHeader(const uint32_t linkTypeField) {
     std::array<uint8_t, 24> data{};
     const uint32_t magic = fpcap::PCAP_MICROSECONDS;
@@ -64,14 +69,11 @@ TEST(PcapParser, FileHeaderIgnoresReservedBits) {
 TEST(PcapParser, FileHeaderByteSwapped) {
     // Header written by a host of the opposite byte order, FCS len 2 with P bit set
     std::array<uint8_t, 24> data{};
-    const uint8_t magic[] = {0xA1, 0xB2, 0x3C, 0x4D};
-    const uint8_t version[] = {0x00, 0x02, 0x00, 0x04};
-    const uint8_t snapLength[] = {0x00, 0x00, 0xFF, 0xFF};
-    const uint8_t linkTypeField[] = {0x24, 0x00, 0x00, 0x71};
-    std::memcpy(&data[0], magic, 4);
-    std::memcpy(&data[4], version, 4);
-    std::memcpy(&data[16], snapLength, 4);
-    std::memcpy(&data[20], linkTypeField, 4);
+    putSwapped32(data.data(), 0, fpcap::PCAP_NANOSECONDS);
+    putSwapped16(data.data(), 4, 2);
+    putSwapped16(data.data(), 6, 4);
+    putSwapped32(data.data(), 16, 65535);
+    putSwapped32(data.data(), 20, 0x24000071);
 
     fpcap::pcap::FileHeader fh;
     fpcap::pcap::PcapParser::readFileHeader(data.data(), fh);
@@ -93,8 +95,10 @@ TEST(PcapParser, FileHeaderInvalidMagic) {
 }
 
 TEST(PcapParser, PacketRecordByteSwapped) {
-    const uint8_t data[] = {0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02,
-                            0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x04, 0xAB};
+    uint8_t data[17] = {};
+    for (uint32_t field = 0; field < 4; ++field) {
+        putSwapped32(data, field * 4, field + 1);
+    }
     fpcap::pcap::PacketRecord pr;
     fpcap::pcap::PcapParser::readPacketRecord(data, pr, true);
     EXPECT_EQ(pr.timestampSeconds, 1u);

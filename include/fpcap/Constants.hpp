@@ -17,7 +17,7 @@ enum MagicNumber : uint32_t {
     PCAPNG = 0x0A0D0D0A,
     ZSTD = 0xFD2FB528,
     MODIFIED_PCAP = 0xA1B2CD34,
-    MODIFIED_PCAP_BE = 0x34CDB2A1
+    MODIFIED_PCAP_BE = 0x34CDB2A1 // written by a host of the opposite byte order
 };
 
 /**

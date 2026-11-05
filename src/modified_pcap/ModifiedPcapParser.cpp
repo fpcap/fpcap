@@ -4,9 +4,6 @@
 #include <fpcap/util.hpp>
 
 #include <sstream>
-#ifdef _WIN32
-#include <winsock2.h>
-#endif
 
 namespace fpcap::modified_pcap {
 
@@ -30,13 +27,15 @@ void ModifiedPcapParser::readFileHeader(const uint8_t* data,
     mpfh.snapLength = *reinterpret_cast<const uint32_t*>(&data[16]);
     mpfh.linkType = *reinterpret_cast<const uint32_t*>(&data[20]);
 
-    if (magicNumber == MODIFIED_PCAP_BE) {
-        mpfh.majorVersion = ntohs(mpfh.majorVersion);
-        mpfh.minorVersion = ntohs(mpfh.minorVersion);
-        mpfh.thiszone = ntohl(mpfh.thiszone);
-        mpfh.sigfigs = ntohl(mpfh.sigfigs);
-        mpfh.snapLength = ntohl(mpfh.snapLength);
-        mpfh.linkType = ntohl(mpfh.linkType);
+    mpfh.byteSwapped = magicNumber == MODIFIED_PCAP_BE;
+    if (mpfh.byteSwapped) {
+        mpfh.majorVersion = util::byteSwap16(mpfh.majorVersion);
+        mpfh.minorVersion = util::byteSwap16(mpfh.minorVersion);
+        mpfh.thiszone = static_cast<int32_t>(
+            util::byteSwap32(static_cast<uint32_t>(mpfh.thiszone)));
+        mpfh.sigfigs = util::byteSwap32(mpfh.sigfigs);
+        mpfh.snapLength = util::byteSwap32(mpfh.snapLength);
+        mpfh.linkType = util::byteSwap32(mpfh.linkType);
     }
 
     FPCAP_DEBUG_LOG_1("--- [Modified PCAP File Header %p] ---\n", (void*)data);
@@ -48,7 +47,8 @@ void ModifiedPcapParser::readFileHeader(const uint8_t* data,
 }
 
 void ModifiedPcapParser::readPacketRecord(const uint8_t* data,
-                                          modified_pcap::PacketRecord& mppr) {
+                                          modified_pcap::PacketRecord& mppr,
+                                          const bool byteSwapped) {
     mppr.timestampSeconds = *reinterpret_cast<const uint32_t*>(&data[0]);
     mppr.timestampSubSeconds = *reinterpret_cast<const uint32_t*>(&data[4]);
     mppr.captureLength = *reinterpret_cast<const uint32_t*>(&data[8]);
@@ -58,6 +58,14 @@ void ModifiedPcapParser::readPacketRecord(const uint8_t* data,
     mppr.protocol = *reinterpret_cast<const uint16_t*>(&data[20]);
     mppr.packetType = data[22];
     mppr.padding = data[23];
+    if (byteSwapped) {
+        mppr.timestampSeconds = util::byteSwap32(mppr.timestampSeconds);
+        mppr.timestampSubSeconds = util::byteSwap32(mppr.timestampSubSeconds);
+        mppr.captureLength = util::byteSwap32(mppr.captureLength);
+        mppr.length = util::byteSwap32(mppr.length);
+        mppr.interfaceIndex = util::byteSwap32(mppr.interfaceIndex);
+        mppr.protocol = util::byteSwap16(mppr.protocol);
+    }
 
     if (mppr.captureLength > 0) {
         mppr.data = &data[24];
@@ -74,18 +82,6 @@ void ModifiedPcapParser::readPacketRecord(const uint8_t* data,
     FPCAP_DEBUG_LOG_1("[MPPR] Packet Type: %u\n", mppr.packetType);
     FPCAP_DEBUG_LOG_1("[MPPR] Padding: %u\n", mppr.padding);
     FPCAP_DEBUG_LOG_1("[MPPR] Data: %p\n", reinterpret_cast<const void*>(mppr.data));
-}
-
-void ModifiedPcapParser::readPacketRecordBE(const uint8_t* data,
-                                            modified_pcap::PacketRecord& mppr) {
-    readPacketRecord(data, mppr);
-
-    mppr.timestampSeconds = ntohl(mppr.timestampSeconds);
-    mppr.timestampSubSeconds = ntohl(mppr.timestampSubSeconds);
-    mppr.captureLength = ntohl(mppr.captureLength);
-    mppr.length = ntohl(mppr.length);
-    mppr.interfaceIndex = ntohl(mppr.interfaceIndex);
-    mppr.protocol = ntohs(mppr.protocol);
 }
 
 } // namespace fpcap

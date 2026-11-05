@@ -36,7 +36,8 @@ unique_ptr<Reader> Reader::getReader(const string& filepath) {
     case PCAPNG: {
         return make_unique<pcapng::MMPcapNgReader>(filepath);
     }
-    case MODIFIED_PCAP: {
+    case MODIFIED_PCAP:
+    case MODIFIED_PCAP_BE: {
         return make_unique<modified_pcap::MMModifiedPcapReader>(filepath);
     }
     case ZSTD: {
@@ -54,7 +55,8 @@ unique_ptr<Reader> Reader::getReader(const string& filepath) {
         case PCAPNG: {
             return make_unique<pcapng::ZstdPcapNgReader>(std::move(compressedFileReader));
         }
-        case MODIFIED_PCAP: {
+        case MODIFIED_PCAP:
+        case MODIFIED_PCAP_BE: {
             return make_unique<modified_pcap::ZstdModifiedPcapReader>(
                 std::move(compressedFileReader));
         }

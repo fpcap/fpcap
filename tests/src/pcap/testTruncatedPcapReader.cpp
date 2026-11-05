@@ -1,35 +1,15 @@
 #include <gtest/gtest.h>
 
+#include "../TestFiles.hpp"
+
 #include <fpcap/Constants.hpp>
 #include <fpcap/PacketReader.hpp>
 #include <fpcap/filesystem/Reader.hpp>
 
-#include <filesystem>
-#include <fstream>
-#include <string>
 #include <vector>
 
 namespace {
-class TempFile {
-public:
-    explicit TempFile(const std::vector<uint8_t>& bytes) {
-        const auto* test = testing::UnitTest::GetInstance()->current_test_info();
-        mPath = (std::filesystem::temp_directory_path() /
-                 ("fpcap_test_" + std::string(test->name()) + "_" +
-                  std::to_string(std::rand())))
-                    .string();
-        std::ofstream out(mPath, std::ios::binary);
-        out.write(reinterpret_cast<const char*>(bytes.data()),
-                  static_cast<std::streamsize>(bytes.size()));
-    }
-
-    ~TempFile() { std::filesystem::remove(mPath); }
-
-    const std::string& path() const { return mPath; }
-
-private:
-    std::string mPath;
-};
+using fpcap::test::TempFile;
 
 void expectAllReadersThrow(const std::vector<uint8_t>& bytes) {
     const TempFile file{bytes};
@@ -38,29 +18,34 @@ void expectAllReadersThrow(const std::vector<uint8_t>& bytes) {
     EXPECT_THROW(fpcap::Reader::getReader(file.path()), std::runtime_error);
 }
 
-void append32(std::vector<uint8_t>& bytes, const uint32_t value) {
-    for (int shift = 0; shift < 32; shift += 8) {
+void append32(std::vector<uint8_t>& bytes, const uint32_t value, const bool bigEndian) {
+    for (int i = 0; i < 4; ++i) {
+        const int shift = bigEndian ? 24 - 8 * i : 8 * i;
         bytes.push_back(static_cast<uint8_t>(value >> shift));
     }
 }
 
-// Little-endian file header followed by records of the given sizes. Each record is
-// recordHeaderLength bytes long, claims captureLength bytes and holds dataLength.
+// File header followed by one record of recordHeaderLength bytes that claims
+// captureLength bytes of data and holds dataLength
 std::vector<uint8_t> makeFile(const uint32_t magic,
                               const size_t recordHeaderLength,
                               const uint32_t captureLength,
-                              const size_t dataLength) {
+                              const size_t dataLength,
+                              const bool bigEndian = false) {
     std::vector<uint8_t> bytes;
-    append32(bytes, magic);
-    append32(bytes, 0x00040002); // version 2.4
-    append32(bytes, 0);
-    append32(bytes, 0);
-    append32(bytes, 65535);
-    append32(bytes, 1);
-    append32(bytes, 1700000000);
-    append32(bytes, 0);
-    append32(bytes, captureLength);
-    append32(bytes, captureLength);
+    const uint32_t header[] = {magic, 0, 0, 0, 65535, 1};
+    for (const uint32_t value : header) {
+        append32(bytes, value, bigEndian);
+    }
+    // version 2.4 as two 16-bit fields
+    bytes[4] = bigEndian ? 0 : 2;
+    bytes[5] = bigEndian ? 2 : 0;
+    bytes[6] = bigEndian ? 0 : 4;
+    bytes[7] = bigEndian ? 4 : 0;
+    const uint32_t record[] = {1700000000, 0, captureLength, captureLength};
+    for (const uint32_t value : record) {
+        append32(bytes, value, bigEndian);
+    }
     bytes.resize(bytes.size() + recordHeaderLength - 16 + dataLength, 0xAB);
     return bytes;
 }
@@ -136,4 +121,24 @@ TEST(TruncatedModifiedPcapReader, TrailingPartialRecordHeader) {
 
 TEST(TruncatedModifiedPcapReader, CaptureLengthBeyondFile) {
     expectExhaustsAfter(makeFile(fpcap::MODIFIED_PCAP, 24, 100, 10), 0);
+}
+
+TEST(TruncatedModifiedPcapReader, BigEndianTrailingPartialRecordHeader) {
+    auto bytes = makeFile(fpcap::MODIFIED_PCAP, 24, 4, 4, true);
+    bytes.resize(bytes.size() + 5, 0);
+    expectExhaustsAfter(bytes, 1);
+}
+
+TEST(TruncatedModifiedPcapReader, BigEndianCaptureLengthBeyondFile) {
+    expectExhaustsAfter(makeFile(fpcap::MODIFIED_PCAP, 24, 100, 10, true), 0);
+}
+
+TEST(TruncatedPcapReader, BigEndianTrailingPartialRecordHeader) {
+    auto bytes = makeFile(fpcap::PCAP_MICROSECONDS, 16, 4, 4, true);
+    bytes.resize(bytes.size() + 5, 0);
+    expectExhaustsAfter(bytes, 1);
+}
+
+TEST(TruncatedPcapReader, BigEndianCaptureLengthBeyondFile) {
+    expectExhaustsAfter(makeFile(fpcap::PCAP_MICROSECONDS, 16, 100, 10, true), 0);
 }

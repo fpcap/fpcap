@@ -40,6 +40,7 @@ public:
 private:
     TReader mReader;
     uint16_t mLinkType{0};
+    bool mByteSwapped{false};
 };
 
 typedef ModifiedPcapReader<FReadFileReader> FReadModifiedPcapReader;

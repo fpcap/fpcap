@@ -22,6 +22,7 @@ ModifiedPcapReader<TReader>::ModifiedPcapReader(const std::string& filepath)
     mReader.mOffset += 24;
     // TODO check if this field really is 32-bit
     mLinkType = static_cast<uint16_t>(fileHeader.linkType);
+    mByteSwapped = fileHeader.byteSwapped;
 }
 
 template <typename TReader>
@@ -37,6 +38,7 @@ ModifiedPcapReader<TReader>::ModifiedPcapReader(TReader&& reader)
     mReader.mOffset += 24;
     // TODO check if this field really is 32-bit
     mLinkType = static_cast<uint16_t>(fileHeader.linkType);
+    mByteSwapped = fileHeader.byteSwapped;
 }
 
 template <typename TReader>
@@ -62,7 +64,8 @@ bool ModifiedPcapReader<TReader>::readNextPacket(Packet& packet) {
     }
 
     modified_pcap::PacketRecord packetRecord{};
-    ModifiedPcapParser::readPacketRecord(&mReader.data()[mReader.mOffset], packetRecord);
+    ModifiedPcapParser::readPacketRecord(&mReader.data()[mReader.mOffset], packetRecord,
+                                         mByteSwapped);
     mReader.mOffset += 24;
 
     if (packetRecord.captureLength > (mReader.mFileSize - mReader.mOffset)) {
@@ -74,6 +77,7 @@ bool ModifiedPcapReader<TReader>::readNextPacket(Packet& packet) {
     }
 
     packet.timestampSeconds = packetRecord.timestampSeconds;
+    packet.timestampMicroseconds = packetRecord.timestampSubSeconds;
     packet.captureLength = packetRecord.captureLength;
     packet.length = packetRecord.length;
     packet.data = packetRecord.data;

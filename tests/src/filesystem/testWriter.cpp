@@ -10,7 +10,12 @@ TEST(fpcap, GetWriter) {
     const std::string tempFile = (std::filesystem::temp_directory_path() /
             ("fpcap_test_" + std::to_string(std::rand()) + ".tmp"))
         .string();
-    ASSERT_NE(nullptr, fpcap::Writer::getWriter(tempFile));
+    {
+        const auto writer = fpcap::Writer::getWriter(tempFile);
+        EXPECT_NE(nullptr, writer);
+    }
+    EXPECT_TRUE(std::filesystem::exists(tempFile));
+    std::filesystem::remove(tempFile);
 }
 
 TEST(fpcap, GetWriterEmptyFilepath) {

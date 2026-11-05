@@ -73,8 +73,7 @@ void expectPackets(TNextPacket nextPacket,
             const size_t payloadLength = sizeof(HELLO_PAYLOAD) - 1;
             ASSERT_GE(packet.captureLength, payloadLength);
             EXPECT_EQ(std::memcmp(packet.data + packet.captureLength - payloadLength,
-                                  HELLO_PAYLOAD,
-                                  payloadLength),
+                                  HELLO_PAYLOAD, payloadLength),
                       0);
         }
         ++index;

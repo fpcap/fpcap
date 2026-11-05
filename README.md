@@ -13,7 +13,7 @@ packet capture framework. If you want to easily access packets from `.pcap` or `
 ## Features
 
 - Memory-mapping Pcap & PcapNG reading
-- Pcap files in either byte order (modified Pcap is little-endian only)
+- Pcap and modified Pcap files in either byte order
 - Pcap & PcapNG writing
 - Modified Pcap support
 - Supported PcapNG block types:
