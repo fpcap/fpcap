@@ -19,6 +19,9 @@ jobs:
             image: ${{ matrix.image }}
         name: debian-${{ matrix.version }}
         steps:
+            - name: Use archive mirror for Debian 11
+              if: matrix.version == '11'
+              run: sed -i 's|deb.debian.org|archive.debian.org|g' /etc/apt/sources.list
             - name: Install build tools
               run: apt update && apt install -y build-essential gcc g++ make cmake git
             - uses: actions/checkout@v7
