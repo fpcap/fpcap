@@ -1,12 +1,16 @@
 #include <gtest/gtest.h>
 
+#include "BlockTestUtil.hpp"
+
 #include <fpcap/pcapng/PcapNgBlockParser.hpp>
 #include <fpcap/pcapng/PcapNgBlockType.hpp>
 #include <cstring>
 #include <fstream>
 #include <iterator>
-#include <memory>
 #include <vector>
+
+using fpcap::test::ExactBlock;
+using fpcap::test::optionHeader;
 
 namespace {
 
@@ -53,18 +57,6 @@ std::vector<uint8_t> createInterfaceStatisticsBlock(const uint32_t timestampHigh
     append(block, body.data(), body.size());
     append(block, &blockTotalLength, 4);
     return block;
-}
-
-// exact-size heap copy so reads past the block hit other memory (or ASan)
-std::unique_ptr<uint8_t[]> exactBlock(const std::vector<uint32_t>& words) {
-    const size_t size = words.size() * sizeof(uint32_t);
-    auto block = std::make_unique<uint8_t[]>(size);
-    std::memcpy(block.get(), words.data(), size);
-    return block;
-}
-
-constexpr uint32_t optionHeader(const uint16_t type, const uint16_t length) {
-    return type | static_cast<uint32_t>(length) << 16;
 }
 
 } // namespace
@@ -126,7 +118,7 @@ TEST(InterfaceStatisticsBlock, IgnoresCounterWithWrongLength) {
 }
 
 TEST(InterfaceStatisticsBlock, IgnoresCounterHeaderInLastOptionBytes) {
-    const auto block = exactBlock({5, 28, 0, 0, 0, optionHeader(4, 8), 28});
+    const ExactBlock block({5, 28, 0, 0, 0, optionHeader(4, 8), 28});
 
     fpcap::pcapng::InterfaceStatisticsBlock isb{};
     fpcap::pcapng::PcapNgBlockParser::readISB(block.get(), isb);
@@ -135,7 +127,7 @@ TEST(InterfaceStatisticsBlock, IgnoresCounterHeaderInLastOptionBytes) {
 }
 
 TEST(InterfaceStatisticsBlock, IgnoresCounterRunningIntoTrailer) {
-    const auto block = exactBlock({5, 32, 0, 0, 0, optionHeader(4, 8), 0xAAAAAAAA, 32});
+    const ExactBlock block({5, 32, 0, 0, 0, optionHeader(4, 8), 0xAAAAAAAA, 32});
 
     fpcap::pcapng::InterfaceStatisticsBlock isb{};
     fpcap::pcapng::PcapNgBlockParser::readISB(block.get(), isb);
@@ -144,7 +136,7 @@ TEST(InterfaceStatisticsBlock, IgnoresCounterRunningIntoTrailer) {
 }
 
 TEST(InterfaceStatisticsBlock, IgnoresZeroLengthCounterAtEnd) {
-    const auto block = exactBlock({5, 28, 0, 0, 0, optionHeader(4, 0), 28});
+    const ExactBlock block({5, 28, 0, 0, 0, optionHeader(4, 0), 28});
 
     fpcap::pcapng::InterfaceStatisticsBlock isb{};
     fpcap::pcapng::PcapNgBlockParser::readISB(block.get(), isb);
@@ -153,9 +145,9 @@ TEST(InterfaceStatisticsBlock, IgnoresZeroLengthCounterAtEnd) {
 }
 
 TEST(InterfaceStatisticsBlock, ReusedBlockDoesNotKeepOldCounters) {
-    const auto first =
-        exactBlock({5, 40, 0, 0, 0, optionHeader(7, 8), 42, 0, optionHeader(0, 0), 40});
-    const auto second = exactBlock({5, 28, 0, 0, 0, optionHeader(0, 0), 28});
+    const ExactBlock first(
+        {5, 40, 0, 0, 0, optionHeader(7, 8), 42, 0, optionHeader(0, 0), 40});
+    const ExactBlock second({5, 28, 0, 0, 0, optionHeader(0, 0), 28});
 
     fpcap::pcapng::InterfaceStatisticsBlock isb{};
     fpcap::pcapng::PcapNgBlockParser::readISB(first.get(), isb);

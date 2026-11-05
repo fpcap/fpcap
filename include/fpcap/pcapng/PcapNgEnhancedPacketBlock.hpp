@@ -12,6 +12,9 @@ struct EnhancedPacketBlock {
     uint32_t capturePacketLength{0};
     uint32_t originalPacketLength{0};
     const uint8_t* packetData{nullptr};
+    // unparsed options area, nullptr if the block has no options
+    const uint8_t* options{nullptr};
+    uint32_t optionsLength{0};
 };
 } // namespace fpcap::pcapng
 

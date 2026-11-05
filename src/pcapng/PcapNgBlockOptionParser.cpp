@@ -210,53 +210,44 @@ void PcapNgBlockOptionParser::readEPBOption(const uint8_t* data,
                                             const size_t offset) {
     readOption(data, option, offset);
 
-    // TODO check if pre-defined options have the correct length, e.g., uint32_t = 4
     switch (option.type) {
-    case 2: {
-        // epb_flags: 32-bit flags word containing link-layer information
-        [[maybe_unused]] const uint32_t flags = *reinterpret_cast<const uint32_t*>(option.
-            value);
-        FPCAP_DEBUG_LOG_1("[IDB][OPT] Frame Check Sequence: 0x%04X\n", flags);
+    case EPB_FLAGS: {
+        // link-layer information such as direction and reception type
+        if (option.length != sizeof(uint32_t)) {
+            break;
+        }
+        FPCAP_DEBUG_LOG_1("[EPB][OPT] Flags: 0x%08X\n", parseUInt32(option));
         return;
     }
-    case 3: {
-        // epb_hash: hash of the packet
+    case EPB_HASH: {
         // TODO parse epb_hash
         break;
     }
-    case 4: {
-        // epb_dropcount: number of packets lost (by the interface and the operating
-        // system)
-        //                between this packet and the preceding one for the same interface
-        //                or, for the first packet for an interface, between this packet
-        //                and the start of the capture process
-        [[maybe_unused]] const uint64_t dropCount = *reinterpret_cast<const uint64_t*>(
-            option.value);
+    case EPB_DROPCOUNT: {
+        // packets lost between this packet and the preceding one on the same interface
+        if (option.length != sizeof(uint64_t)) {
+            break;
+        }
         FPCAP_DEBUG_LOG_1("[EPB][OPT] Drop Count: %lu packets\n",
-                          static_cast<unsigned long>(dropCount));
+                          static_cast<unsigned long>(parseUInt64(option)));
         return;
     }
-    case 5: {
-        // epb_packetid: 64-bit unsigned integer that uniquely identifies the packet
-        [[maybe_unused]] const uint64_t packetId = *reinterpret_cast<const uint64_t*>(
-            option.value);
+    case EPB_PACKETID: {
+        if (option.length != sizeof(uint64_t)) {
+            break;
+        }
         FPCAP_DEBUG_LOG_1("[EPB][OPT] Packet ID: %lu\n",
-                          static_cast<unsigned long>(packetId));
+                          static_cast<unsigned long>(parseUInt64(option)));
         return;
     }
-    case 6: {
-        // epb_queue: 32-bit unsigned integer that identifies on which queue of the
-        // interface
-        //            the specific packet was received
-        [[maybe_unused]] const uint32_t queue = *reinterpret_cast<const uint32_t*>(option.
-            value);
-        FPCAP_DEBUG_LOG_1("[EPB][OPT] Queue: %u\n", queue);
+    case EPB_QUEUE: {
+        if (option.length != sizeof(uint32_t)) {
+            break;
+        }
+        FPCAP_DEBUG_LOG_1("[EPB][OPT] Queue: %u\n", parseUInt32(option));
         return;
     }
-    case 7: {
-        // epb_verdict: verdict of the packet; indicates what would be done with the
-        // packet after
-        //              processing it
+    case EPB_VERDICT: {
         // TODO parse epb_verdict
         break;
     }
@@ -310,6 +301,12 @@ void PcapNgBlockOptionParser::readISBOption(const uint8_t* data,
 
 std::string PcapNgBlockOptionParser::parseUTF8(const Option& option) {
     return std::string(reinterpret_cast<const char*>(option.value), option.length);
+}
+
+uint32_t PcapNgBlockOptionParser::parseUInt32(const Option& option) {
+    uint32_t value;
+    std::memcpy(&value, option.value, sizeof(value));
+    return value;
 }
 
 uint64_t PcapNgBlockOptionParser::parseUInt64(const Option& option) {

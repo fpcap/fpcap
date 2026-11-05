@@ -9,6 +9,50 @@
 
 namespace fpcap::pcapng {
 
+namespace {
+
+// Calls handle(option, offset) for each option up to opt_endofopt, stopping at an option
+// whose value would run past the options area.
+template <typename Handler>
+void forEachOption(const uint8_t* data,
+                   const size_t offset,
+                   const uint32_t totalOptionsLength,
+                   Handler handle) {
+    uint32_t readOptionsLength = 0;
+    while (readOptionsLength + 4 <= totalOptionsLength) {
+        Option option{};
+        PcapNgBlockOptionParser::readOption(data, option, offset + readOptionsLength);
+        if (option.type == END_OF_OPT ||
+            option.length > totalOptionsLength - readOptionsLength - 4) {
+            return;
+        }
+        handle(option, offset + readOptionsLength);
+        readOptionsLength += option.totalLength();
+    }
+}
+
+// Enhanced and Packet Blocks: 28 bytes of fixed fields, padded packet data, options and
+// the trailing block total length.
+template <typename PacketBlockType>
+void readPacketBlockOptions(const uint8_t* data, PacketBlockType& block) {
+    block.options = nullptr;
+    block.optionsLength = 0;
+    const uint64_t optionsOffset = 28 + static_cast<uint64_t>(block.capturePacketLength) +
+                                   (4 - block.capturePacketLength % 4) % 4;
+    if (block.blockTotalLength <= optionsOffset + 4) {
+        return;
+    }
+    block.options = &data[optionsOffset];
+    block.optionsLength =
+        static_cast<uint32_t>(block.blockTotalLength - optionsOffset - 4);
+    forEachOption(data, static_cast<size_t>(optionsOffset), block.optionsLength,
+                  [data](Option& option, const size_t offset) {
+                      PcapNgBlockOptionParser::readEPBOption(data, option, offset);
+                  });
+}
+
+} // namespace
+
 /**
  * 4.1.  Section Header Block
  *
@@ -226,22 +270,7 @@ void PcapNgBlockParser::readEPB(const uint8_t* data, EnhancedPacketBlock& epb) {
     FPCAP_DEBUG_LOG_1("[EPB] Packet Data: %p\n",
                       reinterpret_cast<const void*>(epb.packetData));
 
-    // packet data is padded to 32 bits, calculate the total size in memory (including
-    // padding)
-    const auto packetDataTotalLength =
-        epb.capturePacketLength + (4u - epb.capturePacketLength % 4u) % 4u;
-    // standard Enhanced Packet Block has size 32 (without packet data or options)
-    if (epb.blockTotalLength - 32u > packetDataTotalLength) {
-        const uint32_t totalOptionsLength =
-            epb.blockTotalLength - 32u - packetDataTotalLength;
-        uint32_t readOptionsLength = 0;
-        while (readOptionsLength < totalOptionsLength) {
-            Option option{};
-            PcapNgBlockOptionParser::readEPBOption(
-                data, option, 32u + packetDataTotalLength + readOptionsLength);
-            readOptionsLength += option.totalLength();
-        }
-    }
+    readPacketBlockOptions(data, epb);
 
     // make sure that the block actually ends with block total length
     const auto blockTotalLength =
@@ -255,7 +284,7 @@ void PcapNgBlockParser::readEPB(const uint8_t* data, EnhancedPacketBlock& epb) {
  *                         1                   2                   3
  *     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
  *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- *  0 |                    Block Type = 0x00000006                    |
+ *  0 |                    Block Type = 0x00000002                    |
  *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  *  4 |                      Block Total Length                       |
  *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -306,22 +335,7 @@ void PcapNgBlockParser::readPB(const uint8_t* data, PacketBlock& pb) {
     FPCAP_DEBUG_LOG_1("[PB] Packet Data: %p\n",
                       reinterpret_cast<const void*>(pb.packetData));
 
-    // packet data is padded to 32 bits, calculate the total size in memory (including
-    // padding)
-    const auto packetDataTotalLength =
-        pb.capturePacketLength + (4 - pb.capturePacketLength % 4) % 4;
-    // standard Enhanced Packet Block has size 32 (without packet data or options)
-    if (pb.blockTotalLength - 32 > packetDataTotalLength) {
-        const uint32_t totalOptionsLength =
-            pb.blockTotalLength - 32 - packetDataTotalLength;
-        uint32_t readOptionsLength = 0;
-        while (readOptionsLength < totalOptionsLength) {
-            Option option{};
-            PcapNgBlockOptionParser::readEPBOption(
-                data, option, 32 + packetDataTotalLength + readOptionsLength);
-            readOptionsLength += option.totalLength();
-        }
-    }
+    readPacketBlockOptions(data, pb);
 
     // make sure that the block actually ends with block total length
     const auto blockTotalLength =
@@ -413,17 +427,8 @@ void PcapNgBlockParser::readISB(const uint8_t* data, InterfaceStatisticsBlock& i
     isb.options = {};
     // standard Interface Statistics Block has size 24 (without any options)
     if (isb.blockTotalLength > 24) {
-        const uint32_t totalOptionsLength = isb.blockTotalLength - 24;
-        uint32_t readOptionsLength = 0;
-        while (readOptionsLength + 4 <= totalOptionsLength) {
-            Option option{};
-            PcapNgBlockOptionParser::readOption(data, option, 20 + readOptionsLength);
-            if (option.type == END_OF_OPT ||
-                option.length > totalOptionsLength - readOptionsLength - 4) {
-                break;
-            }
-            PcapNgBlockOptionParser::readISBOption(data, option, 20 + readOptionsLength);
-            readOptionsLength += option.totalLength();
+        const auto readCounter = [data, &isb](Option& option, const size_t offset) {
+            PcapNgBlockOptionParser::readISBOption(data, option, offset);
 
             std::optional<uint64_t>* counter = nullptr;
             switch (option.type) {
@@ -447,7 +452,8 @@ void PcapNgBlockParser::readISB(const uint8_t* data, InterfaceStatisticsBlock& i
             if (counter && option.length == sizeof(uint64_t)) {
                 *counter = PcapNgBlockOptionParser::parseUInt64(option);
             }
-        }
+        };
+        forEachOption(data, 20, isb.blockTotalLength - 24, readCounter);
     }
 
     // make sure that the block actually ends with block total length

@@ -20,6 +20,13 @@ enum BlockOptionType : uint16_t {
     IDB_FILTER = 11,
     IDB_OS = 12,
 
+    EPB_FLAGS = 2,
+    EPB_HASH = 3,
+    EPB_DROPCOUNT = 4,
+    EPB_PACKETID = 5,
+    EPB_QUEUE = 6,
+    EPB_VERDICT = 7,
+
     ISB_STARTTIME = 2,
     ISB_ENDTIME = 3,
     ISB_IFRECV = 4,
