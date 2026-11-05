@@ -130,7 +130,7 @@ bool PcapNgReader<TReader>::readNextPacket(Packet& packet) {
         PcapNgBlockParser::readEPB(&mReader.data()[mReader.mOffset], epb);
         packet.interfaceIndex = epb.interfaceId;
         packet.dataLinkType = mTraceInterfaces[packet.interfaceIndex].dataLinkType;
-        util::calculateTimestamps(
+        util::calculateTimestampsMicroseconds(
             mTraceInterfaces[packet.interfaceIndex].timestampResolution,
             epb.timestampHigh, epb.timestampLow, &(packet.timestampSeconds),
             &(packet.timestampMicroseconds));
@@ -146,7 +146,7 @@ bool PcapNgReader<TReader>::readNextPacket(Packet& packet) {
         PcapNgBlockParser::readPB(&mReader.data()[mReader.mOffset], pb);
         packet.interfaceIndex = pb.interfaceId;
         packet.dataLinkType = mTraceInterfaces[packet.interfaceIndex].dataLinkType;
-        util::calculateTimestamps(
+        util::calculateTimestampsMicroseconds(
             mTraceInterfaces[packet.interfaceIndex].timestampResolution, pb.timestampHigh,
             pb.timestampLow, &(packet.timestampSeconds), &(packet.timestampMicroseconds));
         packet.captureLength = pb.capturePacketLength;
